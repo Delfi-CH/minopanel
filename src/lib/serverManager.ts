@@ -1,9 +1,11 @@
 import axios from 'axios';
 
 class MCServer {
+	id: number;
 	name: string;
 	mcVersion: string;
 	modloader: Modloader;
+	
 }
 
 class Modloader {
@@ -23,8 +25,8 @@ class Modloader {
 			);
 			const manifestVersion = manifest.data.versions.find((ver: object) => ver.id === this.version);
 			console.log(manifestVersion);
-			this.url = manifestVersion.url
-            this.sha1sum = manifestVersion.sha1
+			this.url = manifestVersion.url;
+			this.sha1sum = manifestVersion.sha1;
 		}
 	}
 }
