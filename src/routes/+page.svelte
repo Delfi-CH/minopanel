@@ -1,5 +1,5 @@
 <script lang="ts">
-	import DownloadInterface from '$lib/components/DownloadInterface.svelte';
+	import DownloadInterface from '$lib/components/GenericDownloadInterface.svelte';
 	import { Modloader, ModloaderType } from '$lib/serverManager';
 	import { onMount } from 'svelte';
 
