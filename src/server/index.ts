@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
+import { downloadWss } from './sockets/downloadSocket.ts';
 
 const app = express();
 app.use(express.json());
@@ -12,7 +13,6 @@ const port = 6502;
 const server = createServer(app);
 const mcWss = new WebSocketServer({ noServer: true });
 const mcStreams = new Map();
-const downloadWss = new WebSocketServer({ noServer: true });
 
 server.on('upgrade', (req, socket, head) => {
 	if (!req.url) {
@@ -21,7 +21,7 @@ server.on('upgrade', (req, socket, head) => {
 
 	const { pathname } = new URL(req.url, `http://${req.headers.host}`);
 	const mcPathRegex = /^\/api\/server\/stream\/\d+$/;
-	const downloadPathRegex = /^\/api\/download\/stream$/;
+	const downloadPathRegex = /^\/api\/download\/stream\/\d+$/;
 
 	if (mcPathRegex.test(pathname)) {
 		mcWss.handleUpgrade(req, socket, head, (ws) => {
@@ -61,6 +61,7 @@ mcWss.on('connection', (ws, req) => {
 		mcStreams.get(serverId)?.delete(ws);
 	});
 });
+
 
 app.get('/', (req, res) => {
 	res.send('hello world');
