@@ -62,7 +62,6 @@ mcWss.on('connection', (ws, req) => {
 	});
 });
 
-
 app.get('/', (req, res) => {
 	res.send('hello world');
 });

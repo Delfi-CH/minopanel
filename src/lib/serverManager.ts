@@ -5,7 +5,6 @@ class MCServer {
 	name: string;
 	mcVersion: string;
 	modloader: Modloader;
-	
 }
 
 class Modloader {

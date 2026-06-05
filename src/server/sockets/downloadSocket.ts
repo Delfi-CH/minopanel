@@ -1,13 +1,6 @@
 import { WebSocketServer } from 'ws';
-import {
-	DownloadCallback,
-	DownloadManager,
-	DownloadState
-} from '../../lib/download/downloader.ts';
-import {
-	DownloadDTO,
-	DownloadDTOType
-} from '../../lib/download/dataTransferObjects.ts';
+import { DownloadCallback, DownloadManager, DownloadState } from '../../lib/download/downloader.ts';
+import { DownloadDTO, DownloadDTOType } from '../../lib/download/dataTransferObjects.ts';
 
 const downloadManager = new DownloadManager();
 const downloadStreams = new Map<number, Set<any>>();
@@ -50,10 +43,7 @@ downloadWss.on('connection', (ws, req) => {
 					path: json.data.downloadPath,
 					filename: json.data.downloadFilename,
 					callback: (state) => {
-						const stateDTO = new DownloadDTO(
-							DownloadDTOType.status,
-							state
-						);
+						const stateDTO = new DownloadDTO(DownloadDTOType.status, state);
 
 						ws.send(JSON.stringify(stateDTO));
 					}
@@ -61,10 +51,7 @@ downloadWss.on('connection', (ws, req) => {
 
 				const okDTO = new DownloadDTO(
 					DownloadDTOType.status,
-					new DownloadCallback(
-						'Download created',
-						DownloadState.Inactive
-					)
+					new DownloadCallback('Download created', DownloadState.Inactive)
 				);
 
 				ws.send(JSON.stringify(okDTO));

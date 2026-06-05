@@ -62,13 +62,7 @@ export class DownloadTask {
 
 		this.registerEvents();
 
-		this.emit(
-			new DownloadCallback(
-				'Inactive',
-				DownloadState.Inactive,
-				0
-			)
-		);
+		this.emit(new DownloadCallback('Inactive', DownloadState.Inactive, 0));
 	}
 
 	private emit(state: DownloadCallback) {
@@ -90,32 +84,16 @@ export class DownloadTask {
 
 		this.downloader.on('end', (stats) => {
 			this.emit(
-				new DownloadCallback(
-					'Finished',
-					DownloadState.Finished,
-					100,
-					0,
-					stats.totalSize ?? 0
-				)
+				new DownloadCallback('Finished', DownloadState.Finished, 100, 0, stats.totalSize ?? 0)
 			);
 		});
 
 		this.downloader.on('stop', () => {
-			this.emit(
-				new DownloadCallback(
-					'Stopped',
-					DownloadState.Stopped
-				)
-			);
+			this.emit(new DownloadCallback('Stopped', DownloadState.Stopped));
 		});
 
 		this.downloader.on('error', (err) => {
-			this.emit(
-				new DownloadCallback(
-					err.message,
-					DownloadState.Failed
-				)
-			);
+			this.emit(new DownloadCallback(err.message, DownloadState.Failed));
 		});
 	}
 
@@ -188,15 +166,11 @@ export class DownloadManager {
 	}
 
 	async startAll(): Promise<void> {
-		await Promise.all(
-			[...this.downloads.values()].map((d) => d.start())
-		);
+		await Promise.all([...this.downloads.values()].map((d) => d.start()));
 	}
 
 	async stopAll(): Promise<void> {
-		await Promise.allSettled(
-			[...this.downloads.values()].map((d) => d.stop())
-		);
+		await Promise.allSettled([...this.downloads.values()].map((d) => d.stop()));
 	}
 
 	getAll(): DownloadTask[] {
