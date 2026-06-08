@@ -22,6 +22,8 @@
 			if (json.type === DownloadDTOType.status && json.data !== null) {
 				// @ts-expect-error womp womp
 				downloadStatus = json.data;
+			} else if (json.type === DownloadDTOType.openjdkFinished) {
+				console.log(json.data)
 			}
 		});
     })

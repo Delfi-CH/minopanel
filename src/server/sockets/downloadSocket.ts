@@ -9,6 +9,9 @@ import stream from "node:stream/promises"
 import axios from 'axios';
 import { MachineArchitecture, OperatingSystem } from '../../lib/system.ts';
 import { ApplicatonPaths } from '../../lib/config/paths.ts';
+import decompress from '@xhmikosr/decompress';
+import decompressUnzip from '@xhmikosr/decompress-unzip';
+import decompressTargz from '@xhmikosr/decompress-targz';
 
 const downloadManager = new DownloadManager();
 const downloadStreams = new Map<number, Set<any>>();
@@ -127,6 +130,34 @@ downloadWss.on('connection', (ws, req) => {
 									)))
 								}
 							})
+
+							if (openjdk.fileExtension === "zip") {
+								decompress(new ApplicatonPaths(openjdk.system).tmpPath + "/" + `openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`, new ApplicatonPaths(openjdk.system).jdkDirectory+ "/openjdk" +openjdk.version, {
+									plugins: [decompressUnzip()],
+									strip: 1
+								}).then(()=> {
+									openjdk.pathOnDisk = new ApplicatonPaths(openjdk.system).jdkDirectory+ "/openjdk" +openjdk.version
+									openjdk.writeToDisk().then(()=> {
+										ws.send(JSON.stringify(new DownloadDTO(
+											DownloadDTOType.openjdkFinished,
+											openjdk
+										)))
+									})	
+								})
+							} else if (openjdk.fileExtension === "tar.gz") {
+								decompress(new ApplicatonPaths(openjdk.system).tmpPath + "/" + `openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`, new ApplicatonPaths(openjdk.system).jdkDirectory + "/openjdk" +openjdk.version, {
+									plugins: [decompressTargz()],
+									strip: 1
+								}).then(()=> {
+									openjdk.pathOnDisk = new ApplicatonPaths(openjdk.system).jdkDirectory+ "/openjdk" +openjdk.version
+									openjdk.writeToDisk().then(()=> {
+										ws.send(JSON.stringify(new DownloadDTO(
+											DownloadDTOType.openjdkFinished,
+											openjdk
+										)))
+									})
+								})
+							}
 						}
 						ws.send(JSON.stringify(stateDTO));
 					}

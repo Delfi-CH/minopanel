@@ -7,7 +7,7 @@
 
 	onMount(async () => {
 		const ml = new Modloader(ModloaderType.Vanilla, '1.21.1');
-		ml.buildURL();
+		await ml.buildURL();
 	});
 </script>
 

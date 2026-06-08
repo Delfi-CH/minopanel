@@ -2,7 +2,7 @@
 	import JVMDownloadInterface from "$lib/components/JVMDownloadInterface.svelte";
     import { JavaVersion } from "$lib/jvm/java";
 
-    let javaVersions = Object.values(JavaVersion)
+    let javaVersions = $state(Object.values(JavaVersion))
     javaVersions = javaVersions.slice(0, (javaVersions.length / 2))
 
     let selectedJavaVersion: JavaVersion = $state(JavaVersion.OpenJdk25)
@@ -10,9 +10,9 @@
 
 </script>
 
-<h1>Java settings</h1>
+<h2>Java settings</h2>
 
-<h2>Installations</h2>
+<h3>Installations</h3>
 
 {#each javaVersions as jversion, index (index)}
     <p>{jversion}</p>
