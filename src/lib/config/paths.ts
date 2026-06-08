@@ -83,4 +83,32 @@ export class ApplicatonPaths {
             return false
         }
     }
+
+    async init(): Promise<boolean> {
+        if (isNode) {
+            const fs = await import("node:fs/promises")
+            try {
+                await fs.mkdir(this.mcServerDirectory, {
+                    recursive: true
+                })
+                await fs.mkdir(this.mcServerMetadataDirectory, {
+                    recursive: true
+                })
+                await fs.mkdir(this.jdkDirectory, {
+                    recursive: true
+                })
+                await fs.mkdir(this.jdkMetadataDirectory, {
+                    recursive: true
+                })
+                await fs.mkdir(this.frontendDirectory, {
+                    recursive: true
+                })
+                return true
+            } catch {
+                return false
+            }
+        } else {
+            return false
+        }
+    }
 }
