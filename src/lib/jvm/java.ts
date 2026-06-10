@@ -34,7 +34,16 @@ export class CorretoOpenJDK {
 		this.sha256URL = `https://corretto.aws/downloads/latest_sha256/amazon-corretto-${version}-${arch}-${system}-jdk.${this.fileExtension}`;
 	}
 
-	test() {}
+	static fromJSON(json: any) {
+		const jdk = new CorretoOpenJDK(
+			json.name,
+			json.version,
+			json.system,
+			json.arch
+		)
+		jdk.pathOnDisk = json.pathOnDisk
+		return jdk
+	}
 
 	async writeToDisk() {
 		if (isNode) {

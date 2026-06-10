@@ -3,7 +3,7 @@
 	import { DownloadDTO, DownloadDTOType } from '$lib/download/dataTransferObjects';
 	import { DownloadCallback, DownloadState } from '$lib/download/downloader';
 
-	let { javaVersion } = $props();
+	let { javaVersion, onFinish } = $props();
 	let downloadStatus: DownloadCallback = $state(
 		new DownloadCallback('Inactive', DownloadState.Inactive, 0)
 	);
@@ -24,8 +24,10 @@
 				downloadStatus = json.data;
 			} else if (json.type === DownloadDTOType.openjdkFinished) {
 				console.log(json.data);
+				onFinish()
 			}
 		});
+
 	});
 
 	onDestroy(() => {

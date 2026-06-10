@@ -3,12 +3,15 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { downloadWss } from './sockets/downloadSocket.ts';
+import { loadConfig, loadJavaFiles } from '../lib/data/data.ts';
+import { Config } from '../lib/config/config.ts';
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const port = 6502;
+const config = loadConfig()
+const port = config.backend.port;
 
 const server = createServer(app);
 const mcWss = new WebSocketServer({ noServer: true });
@@ -66,6 +69,10 @@ app.get('/', (req, res) => {
 	res.send('hello world');
 });
 
+app.get('/api/jvm', (req,res)=>{
+	res.send(loadJavaFiles(config.paths))
+})
+
 server.listen(port, '0.0.0.0', () => {
-	console.log('server listening on port: ' + port);
+	console.log('server listening on port ' + port);
 });

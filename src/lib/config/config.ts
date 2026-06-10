@@ -32,27 +32,20 @@ export class Config {
 
 		const { writeFile } = await import('node:fs/promises');
 
-		await writeFile(this.paths.serverConfigPath, JSON.stringify(this), 'utf-8');
+		await writeFile(this.paths.serverConfigPath, JSON.stringify(this, null, 2), 'utf-8');
 	}
 
-	static async readFromFile(filePath: string) {
-		if (!isNode) {
-			throw new Error('not a nodejs enviroment');
-		}
-
-		const { readFile } = await import('node:fs/promises');
-
-		const content = await readFile(filePath, {
-			encoding: 'utf-8'
-		});
-		return JSON.parse(content);
+	static fromJSON(json: any) {
+		return new Config(
+			json.system,
+			json.arch,
+			json.backend,
+			json.version,
+			json.branding
+		)
 	}
 }
 
-export class BackendOptions {
+export interface BackendOptions {
 	port: number;
-
-	constructor(port: number) {
-		this.port = port;
-	}
 }
