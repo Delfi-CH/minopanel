@@ -1,15 +1,18 @@
 import axios from 'axios';
+import type { JavaVersion } from './jvm/java';
 
 class MCServer {
 	id: number;
 	name: string;
 	mcVersion: string;
 	modloader: Modloader;
-	constructor(id: number, name: string, mcVersion: string, modloader: Modloader) {
+	preferedJavaVersion: JavaVersion
+	constructor(id: number, name: string, mcVersion: string, modloader: Modloader, preferedJavaVersion: JavaVersion	) {
 		this.id = id;
 		this.name = name;
 		this.mcVersion = mcVersion;
 		this.modloader = modloader;
+		this.preferedJavaVersion = preferedJavaVersion
 	}
 }
 
@@ -46,4 +49,15 @@ enum ModloaderType {
 	Folia = 'Folia'
 }
 
-export { MCServer, Modloader, ModloaderType };
+async function getMCVersions() {
+	const manifest = await axios.get("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")
+	const versions: Array<string> = []
+	manifest.data.versions.map((v)=> {
+		if (v.type === "release") {
+			versions.push(v.id)
+		}
+	})
+	return versions
+}
+
+export { MCServer, Modloader, ModloaderType, getMCVersions };
