@@ -6,10 +6,10 @@ class MCServer {
 	mcVersion: string;
 	modloader: Modloader;
 	constructor(id: number, name: string, mcVersion: string, modloader: Modloader) {
-		this.id = id
-		this.name = name
-		this.mcVersion = mcVersion
-		this.modloader = modloader
+		this.id = id;
+		this.name = name;
+		this.mcVersion = mcVersion;
+		this.modloader = modloader;
 	}
 }
 

@@ -2,10 +2,10 @@ import { WebSocketServer } from 'ws';
 import { DownloadCallback, DownloadManager, DownloadState } from '../../lib/download/downloader.ts';
 import { DownloadDTO, DownloadDTOType } from '../../lib/download/dataTransferObjects.ts';
 import { CorretoOpenJDK, JavaVersion } from '../../lib/jvm/java.ts';
-import os from "node:os"
-import fs from "node:fs"
-import crypto from "node:crypto"
-import stream from "node:stream/promises"
+import os from 'node:os';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+import stream from 'node:stream/promises';
 import axios from 'axios';
 import { MachineArchitecture, OperatingSystem } from '../../lib/system.ts';
 import { ApplicatonPaths } from '../../lib/config/paths.ts';
@@ -81,36 +81,42 @@ downloadWss.on('connection', (ws, req) => {
 
 		if (json.type === DownloadDTOType.openjdk) {
 			try {
-				const javaVersion = json.openjdkVersion 
+				const javaVersion = json.openjdkVersion;
 
 				let system;
 				switch (os.platform()) {
-					case "linux": system = OperatingSystem.Linux; break
-					case "win32": system = OperatingSystem.Windows; break
-					default: system = OperatingSystem.Other; break
+					case 'linux':
+						system = OperatingSystem.Linux;
+						break;
+					case 'win32':
+						system = OperatingSystem.Windows;
+						break;
+					default:
+						system = OperatingSystem.Other;
+						break;
 				}
 
 				let arch;
 				switch (os.arch()) {
-					case "x64": arch = MachineArchitecture.x64; break
-					case "arm64": arch = MachineArchitecture.aarch64; break
-					default: throw new Error("Architecture not supported")
+					case 'x64':
+						arch = MachineArchitecture.x64;
+						break;
+					case 'arm64':
+						arch = MachineArchitecture.aarch64;
+						break;
+					default:
+						throw new Error('Architecture not supported');
 				}
 
-				const name = `correto-${JavaVersion[javaVersion]}-${system}-${arch}-jdk`
+				const name = `correto-${JavaVersion[javaVersion]}-${system}-${arch}-jdk`;
 
-				const openjdk = new CorretoOpenJDK(
-					name,
-					javaVersion,
-					system,
-					arch
-				)
+				const openjdk = new CorretoOpenJDK(name, javaVersion, system, arch);
 
-				const hash = crypto.createHash("sha256")
+				const hash = crypto.createHash('sha256');
 				let originHash: string;
-				axios.get(openjdk.sha256URL).then((res)=>{
-					originHash = res.data
-				})
+				axios.get(openjdk.sha256URL).then((res) => {
+					originHash = res.data;
+				});
 				downloadManager.addDownload({
 					id: name,
 					url: openjdk.downloadURL,
@@ -119,51 +125,102 @@ downloadWss.on('connection', (ws, req) => {
 					callback: (state) => {
 						const stateDTO = new DownloadDTO(DownloadDTOType.status, state);
 						if (state.state == DownloadState.Finished) {
-							const readStram = fs.createReadStream(new ApplicatonPaths(openjdk.system).tmpPath + "/" + `openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`)
-							stream.pipeline(readStram, hash).then(()=>{
-								if (hash.digest("hex") !== originHash) {
-									ws.send(JSON.stringify(new DownloadDTO(
-										DownloadDTOType.status, new DownloadCallback(
-											"Error: Could nod validate hash",
-											DownloadState.Failed
+							const readStram = fs.createReadStream(
+								new ApplicatonPaths(openjdk.system).tmpPath +
+									'/' +
+									`openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`
+							);
+							stream.pipeline(readStram, hash).then(() => {
+								if (hash.digest('hex') !== originHash) {
+									ws.send(
+										JSON.stringify(
+											new DownloadDTO(
+												DownloadDTOType.status,
+												new DownloadCallback('Error: Could nod validate hash', DownloadState.Failed)
+											)
 										)
-									)))
+									);
 								}
-							})
+							});
 
-							if (openjdk.fileExtension === "zip") {
-								decompress(new ApplicatonPaths(openjdk.system).tmpPath + "/" + `openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`, new ApplicatonPaths(openjdk.system).jdkDirectory+ "/openjdk" +openjdk.version, {
-									plugins: [decompressUnzip()],
-									strip: 1
-								}).then(()=> {
-									openjdk.pathOnDisk = new ApplicatonPaths(openjdk.system).jdkDirectory+ "/openjdk" +openjdk.version
-									openjdk.writeToDisk().then(()=> {
-										ws.send(JSON.stringify(new DownloadDTO(
-											DownloadDTOType.openjdkFinished,
-											openjdk
-										)))
-									})	
-								})
-							} else if (openjdk.fileExtension === "tar.gz") {
-								decompress(new ApplicatonPaths(openjdk.system).tmpPath + "/" + `openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`, new ApplicatonPaths(openjdk.system).jdkDirectory + "/openjdk" +openjdk.version, {
-									plugins: [decompressTargz()],
-									strip: 1
-								}).then(()=> {
-									openjdk.pathOnDisk = new ApplicatonPaths(openjdk.system).jdkDirectory+ "/openjdk" +openjdk.version
-									openjdk.writeToDisk().then(()=> {
-										ws.send(JSON.stringify(new DownloadDTO(
-											DownloadDTOType.openjdkFinished,
-											openjdk
-										)))
+							if (openjdk.fileExtension === 'zip') {
+								decompress(
+									new ApplicatonPaths(openjdk.system).tmpPath +
+										'/' +
+										`openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`,
+									new ApplicatonPaths(openjdk.system).jdkDirectory + '/openjdk' + openjdk.version,
+									{
+										plugins: [decompressUnzip()],
+										strip: 1
+									}
+								)
+									.then(() => {
+										openjdk.pathOnDisk =
+											new ApplicatonPaths(openjdk.system).jdkDirectory +
+											'/openjdk' +
+											openjdk.version;
+										openjdk
+											.writeToDisk()
+											.then(() => {
+												ws.send(
+													JSON.stringify(new DownloadDTO(DownloadDTOType.openjdkFinished, openjdk))
+												);
+											})
+											.catch((err) => {
+												console.error(err);
+											});
 									})
-								})
+									.catch((err) => {
+										console.error(err);
+									});
+							} else if (openjdk.fileExtension === 'tar.gz') {
+								decompress(
+									new ApplicatonPaths(openjdk.system).tmpPath +
+										'/' +
+										`openjdk-${JavaVersion[openjdk.version]}.${openjdk.fileExtension}`,
+									new ApplicatonPaths(openjdk.system).jdkDirectory + '/openjdk' + openjdk.version,
+									{
+										plugins: [decompressTargz()],
+										strip: 1
+									}
+								)
+									.then(() => {
+										openjdk.pathOnDisk =
+											new ApplicatonPaths(openjdk.system).jdkDirectory +
+											'/openjdk' +
+											openjdk.version;
+										openjdk
+											.writeToDisk()
+											.then(() => {
+												ws.send(
+													JSON.stringify(new DownloadDTO(DownloadDTOType.openjdkFinished, openjdk))
+												);
+											})
+											.catch((err) => {
+												console.error(err);
+											});
+										openjdk.selfTest().catch((err) => {
+											console.error(err);
+											ws.send(
+												JSON.stringify(
+													new DownloadDTO(
+														DownloadDTOType.status,
+														new DownloadCallback('Error: Self Test failed', DownloadState.Failed)
+													)
+												)
+											);
+										});
+									})
+									.catch((err) => {
+										console.error(err);
+									});
 							}
 						}
 						ws.send(JSON.stringify(stateDTO));
 					}
-				})
+				});
 
-				downloadManager.startDownload(name)
+				downloadManager.startDownload(name);
 			} catch {
 				// noting
 			}
@@ -171,8 +228,8 @@ downloadWss.on('connection', (ws, req) => {
 	});
 
 	ws.on('close', () => {
-		downloadManager.removeDownload(String(downloadId))
-		console.log("Client stopped Download " + downloadId)
+		downloadManager.removeDownload(String(downloadId));
+		console.log('Client stopped Download ' + downloadId);
 		downloadStreams.get(downloadId)?.delete(ws);
 
 		if (downloadStreams.get(downloadId)?.size === 0) {

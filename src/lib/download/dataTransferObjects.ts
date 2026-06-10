@@ -4,8 +4,12 @@ import { DownloadCallback } from './downloader.ts';
 export class DownloadDTO {
 	type: DownloadDTOType;
 	data: DownloadDTOInitOptions | DownloadCallback | CorretoOpenJDK | null;
-	openjdkVersion?: JavaVersion
-	constructor(type: DownloadDTOType, data: DownloadDTOInitOptions | DownloadCallback | CorretoOpenJDK | null, openjdkVersion?: JavaVersion) {
+	openjdkVersion?: JavaVersion;
+	constructor(
+		type: DownloadDTOType,
+		data: DownloadDTOInitOptions | DownloadCallback | CorretoOpenJDK | null,
+		openjdkVersion?: JavaVersion
+	) {
 		this.type = type;
 		this.data = data;
 		this.openjdkVersion = openjdkVersion;
