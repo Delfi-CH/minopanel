@@ -1,6 +1,7 @@
 import { Config } from '$lib/config/config';
 import { ApplicatonPaths } from '$lib/config/paths';
 import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
+import { MCServer } from '$lib/serverManager';
 import { OperatingSystem, MachineArchitecture } from '$lib/system';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -65,7 +66,7 @@ export function loadJavaFiles(paths: ApplicatonPaths) {
 		});
 		return jdkList;
 	} catch (err) {
-		console.error('Failed to read from the JDK Files: ' + err);
+		console.error('Failed to read from ' + paths.jdkMetadataDirectory + ': ' + err);
 		return [];
 	}
 }
@@ -80,6 +81,42 @@ export function loadJavaFile(paths: ApplicatonPaths, version: JavaVersion) {
 	} catch (err) {
 		console.error(
 			`Failed to read file ${paths.jdkMetadataDirectory}/openjdk${version}.json: ${err}`
+		);
+		return null;
+	}
+}
+
+export function loadServerFiles(paths: ApplicatonPaths) {
+	let serverList: MCServer[] = [];
+	try {
+		const files = fs.readdirSync(paths.mcServerMetadataDirectory);
+		files.forEach((f) => {
+			if (f.endsWith('.json')) {
+				serverList = [
+					...serverList,
+					MCServer.fromJSON(
+						JSON.parse(fs.readFileSync(paths.mcServerMetadataDirectory + '/' + f, 'utf8'))
+					)
+				];
+			}
+		});
+		return serverList;
+	} catch (err) {
+		console.error(`Failed to read from ${paths.mcServerMetadataDirectory}: ${err}`);
+		return [];
+	}
+}
+
+export function loadServerFile(paths: ApplicatonPaths, serverName: string) {
+	try {
+		return CorretoOpenJDK.fromJSON(
+			JSON.parse(
+				fs.readFileSync(paths.mcServerMetadataDirectory + '/' + serverName + '.json', 'utf-8')
+			)
+		);
+	} catch (err) {
+		console.error(
+			`Failed to read file ${paths.mcServerMetadataDirectory}/${serverName}.json: ${err}`
 		);
 		return null;
 	}

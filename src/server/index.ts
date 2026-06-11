@@ -3,9 +3,10 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { downloadWss } from './sockets/downloadSocket.ts';
-import { loadConfig, loadJavaFiles, loadJavaFile } from '../lib/data/data.ts';
-import { Config } from '../lib/config/config.ts';
+import { loadConfig, loadJavaFiles, loadJavaFile, loadServerFiles } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
+import axios from 'axios';
+import { MCServer } from '../lib/serverManager.ts';
 
 const app = express();
 app.use(express.json());
@@ -91,6 +92,36 @@ app.post('/api/jvm/:version/test', (req, res) => {
 
 app.get('/api/config', (req, res) => {
 	res.send(config);
+});
+
+app.get('/api/proxy/forge-metadata', async (req, res) => {
+	const proxyRes = await axios.get(
+		'https://files.minecraftforge.net/net/minecraftforge/forge/maven-metadata.json'
+	);
+	res.send(proxyRes.data);
+});
+
+app.get('/api/server/static', (req, res) => {
+	res.send(loadServerFiles(config.paths));
+});
+
+app.post('/api/server/static', async (req, res) => {
+	const body = req.body;
+	const srv = MCServer.fromJSON(body);
+	const existingServers = loadServerFiles(config.paths);
+	let send409 = false;
+	existingServers.forEach((existingSrv) => {
+		if (existingSrv.name === srv.name) {
+			send409 = true;
+		}
+	});
+	if (send409) {
+		res.sendStatus(409);
+		return;
+	}
+	srv.writeToDisk(config.system);
+	res.sendStatus(201);
+	return;
 });
 
 server.listen(port, '0.0.0.0', () => {
