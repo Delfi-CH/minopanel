@@ -75,17 +75,19 @@ app.get('/api/jvm', (req, res) => {
 });
 
 app.post('/api/jvm/:version/test', (req, res) => {
-	const version = JavaVersion[req.params.version as keyof typeof JavaVersion] 
+	const version = JavaVersion[req.params.version as keyof typeof JavaVersion];
 	const jvm = loadJavaFile(config.paths, version);
-	jvm?.selfTest().then(()=>{
-		res.status(200).send("ok")
-		return
-	}).catch((err)=>{
-		console.error("Self test failed! " + err)
-		res.status(418).send("failed")
-	})
+	jvm
+		?.selfTest()
+		.then(() => {
+			res.status(200).send('ok');
+			return;
+		})
+		.catch((err) => {
+			console.error('Self test failed! ' + err);
+			res.status(418).send('failed');
+		});
 });
-
 
 app.get('/api/config', (req, res) => {
 	res.send(config);

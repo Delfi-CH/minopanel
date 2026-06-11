@@ -72,9 +72,15 @@ export function loadJavaFiles(paths: ApplicatonPaths) {
 
 export function loadJavaFile(paths: ApplicatonPaths, version: JavaVersion) {
 	try {
-		return CorretoOpenJDK.fromJSON(JSON.parse(fs.readFileSync(paths.jdkMetadataDirectory + '/openjdk' + version + ".json", "utf-8")))
+		return CorretoOpenJDK.fromJSON(
+			JSON.parse(
+				fs.readFileSync(paths.jdkMetadataDirectory + '/openjdk' + version + '.json', 'utf-8')
+			)
+		);
 	} catch (err) {
-		console.error(`Failed to read file ${paths.jdkMetadataDirectory}/openjdk${version}.json: ${err}`)
-		return null
+		console.error(
+			`Failed to read file ${paths.jdkMetadataDirectory}/openjdk${version}.json: ${err}`
+		);
+		return null;
 	}
 }
