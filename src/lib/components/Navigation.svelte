@@ -21,6 +21,7 @@
 	</NavItem>
 	<NavigationLink href="/" name="Home"></NavigationLink>
 	<NavigationLink href="/new" name="New Server"></NavigationLink>
+	<NavigationLink href="/servers" name="Servers"></NavigationLink>
 	<NavigationLink href="/settings" name="Settings"></NavigationLink>
 	<NavigationLink href="/about" name="About"></NavigationLink>
 </Nav>

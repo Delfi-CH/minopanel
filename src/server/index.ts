@@ -3,7 +3,7 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { downloadWss } from './sockets/downloadSocket.ts';
-import { loadConfig, loadJavaFiles, loadJavaFile, loadServerFiles } from '../lib/data/data.ts';
+import { loadConfig, loadJavaFiles, loadJavaFile, loadServerFiles, loadServerFile } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
 import { MCServer } from '../lib/serverManager.ts';
@@ -103,6 +103,11 @@ app.get('/api/proxy/forge-metadata', async (req, res) => {
 
 app.get('/api/server/static', (req, res) => {
 	res.send(loadServerFiles(config.paths));
+});
+
+app.get('/api/server/static/:name', (req, res) => {
+	const name = req.params.name
+	res.send(loadServerFile(config.paths, name));
 });
 
 app.post('/api/server/static', async (req, res) => {

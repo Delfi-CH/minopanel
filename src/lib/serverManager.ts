@@ -11,13 +11,16 @@ class MCServer {
 	preferedJavaVersion: JavaVersion;
 	serverExecutableFilePath?: string = '';
 	serverPropertiesFilePath?: string = '';
+	port: number;
 	memoryMin: string;
 	memoryMax: string;
+	running: boolean
 	constructor(
 		name: string,
 		mcVersion: string,
 		modloader: Modloader,
 		preferedJavaVersion: JavaVersion,
+		port?: number,
 		memoryMin?: string,
 		memoryMax?: string
 	) {
@@ -25,16 +28,19 @@ class MCServer {
 		this.mcVersion = mcVersion;
 		this.modloader = modloader;
 		this.preferedJavaVersion = preferedJavaVersion;
+		this.port = port ?? 25565;
 		this.memoryMin = memoryMin ?? '1G';
 		this.memoryMax = memoryMax ?? '4G';
+		this.running = false;
 	}
 
-	static fromJSON(json: object) {
+	static fromJSON(json: any) {
 		const srv = new MCServer(json.name, json.mcVersion, json.modloader, json.preferedJavaVersion);
 		srv.serverExecutableFilePath = json.serverExecutableFilePath;
 		srv.serverExecutableFilePath = json.serverPropertiesFilePath;
 		srv.memoryMin = json.memoryMin;
 		srv.memoryMax = json.memoryMax;
+		srv.port = json.port;
 		return srv;
 	}
 
@@ -53,12 +59,14 @@ class MCServer {
 class Modloader {
 	type: ModloaderType;
 	gameVersion: string;
+	modloaderVersion: string;
 	url?: string;
 	sha1sum?: string;
 	sha256sum?: string;
-	constructor(type: ModloaderType, gameVersion: string) {
+	constructor(type: ModloaderType, gameVersion: string, modloaderVersion: string) {
 		this.type = type;
 		this.gameVersion = gameVersion;
+		this.modloaderVersion = modloaderVersion;
 	}
 
 	async buildURL() {
@@ -72,7 +80,9 @@ class Modloader {
 			);
 			const packageManifest = await axios.get(manifestVersion.url);
 			this.url = packageManifest.data.downloads.server.url;
+			this.modloaderVersion = this.gameVersion
 			this.sha1sum = packageManifest.data.downloads.server.sha1;
+
 		} else if (this.type === ModloaderType.Paper) {
 			const version = versions.find((ver: string) => ver === this.gameVersion);
 			const res = await axios.get(
@@ -80,15 +90,57 @@ class Modloader {
 			);
 			const latestBuild = res.data[0];
 			this.url = latestBuild.downloads['server:default'].url;
+			this.modloaderVersion = latestBuild.downloads['server:default'].name.slice(0, -4);
 			this.sha256sum = latestBuild.downloads['server:default'].checksums.sha256;
+
 		} else if (this.type === ModloaderType.Folia) {
 			const version = versions.find((ver: string) => ver === this.gameVersion);
 			const res = await axios.get(
 				`https://fill.papermc.io/v3/projects/folia/versions/${version}/builds`
 			);
 			const latestBuild = res.data[0];
+			this.modloaderVersion = latestBuild.downloads['server:default'].name.slice(0, -4)
 			this.url = latestBuild.downloads['server:default'].url;
 			this.sha256sum = latestBuild.downloads['server:default'].checksums.sha256;
+
+		} else if (this.type === ModloaderType.Forge) {
+			const metadata = await axios.get('http://localhost:6502/api/proxy/forge-metadata');
+			const versionBase = metadata.data[this.gameVersion].reverse()[0]
+			this.modloaderVersion = versionBase.replace(this.gameVersion + "-", "")
+			this.url = `https://maven.minecraftforge.net/net/minecraftforge/forge/${versionBase}/forge-${versionBase}-installer.jar`
+			const shaRes = await axios.get(this.url + ".sha256")
+			this.sha256sum = shaRes.data
+
+		} else if (this.type === ModloaderType.NeoForge) {
+			const metadata = await axios.get(
+				'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge'
+			);
+			const neoforgeVersions = metadata.data.versions;
+			let compatibleNeoforgeVersions: string[] = []
+			neoforgeVersions.forEach((v: string) => {
+				// Remove 0.25w14craftmine and other april fools versions
+				if (v.startsWith('0')) return;
+				if (v.includes('+')) return;
+				const mcVer = getMcVersionFromNeoForgeVersion(v)
+				if (mcVer === this.gameVersion) {
+					compatibleNeoforgeVersions = [...compatibleNeoforgeVersions, v]
+				}
+			});
+			this.modloaderVersion = compatibleNeoforgeVersions.reverse()[0]
+			this.url = `https://maven.neoforged.net/releases/net/neoforged/neoforge/${this.modloaderVersion}/neoforge-${this.modloaderVersion}-installer.jar`
+			const shaRes = await axios.get(this.url + ".sha256")
+			this.sha256sum = shaRes.data
+
+		} else if (this.type === ModloaderType.Fabric) {
+			this.modloaderVersion = "latest"
+			this.url = "https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.1.1/fabric-installer-1.1.1.jar"
+			const shaRes = await axios.get(this.url + ".sha256")
+			this.sha256sum = shaRes.data
+		} else if (this.type === ModloaderType.Quilt) {
+			this.modloaderVersion = "latest"
+			this.url = "https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-installer/0.13.1/quilt-installer-0.13.1.jar"	
+			const shaRes = await axios.get(this.url + ".sha256")
+			this.sha256sum = shaRes.data
 		}
 	}
 
@@ -104,6 +156,7 @@ class Modloader {
 				}
 			});
 			return versions;
+
 		} else if (type === ModloaderType.Paper) {
 			const fill = await axios.get('https://fill.papermc.io/v3/projects/paper');
 			let versions: string[] = [];
@@ -124,6 +177,7 @@ class Modloader {
 				versions = versions.toSpliced(versions.indexOf(''), 1);
 			}
 			return versions;
+
 		} else if (type === ModloaderType.Folia) {
 			const fill = await axios.get('https://fill.papermc.io/v3/projects/folia');
 			let versions: string[] = [];
@@ -144,6 +198,7 @@ class Modloader {
 				versions = versions.toSpliced(versions.indexOf(''), 1);
 			}
 			return versions;
+			
 		} else if (type === ModloaderType.Forge) {
 			const metadata = await axios.get('http://localhost:6502/api/proxy/forge-metadata');
 			let versions = Object.keys(metadata.data);
@@ -159,6 +214,7 @@ class Modloader {
 				versions = versions.toSpliced(versions.indexOf(''), 1);
 			}
 			return versions;
+
 		} else if (type === ModloaderType.NeoForge) {
 			const metadata = await axios.get(
 				'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge'
@@ -168,11 +224,12 @@ class Modloader {
 			neoforgeVersions.forEach((v: string) => {
 				// Remove 0.25w14craftmine and other april fools versions
 				if (v.startsWith('0')) return;
-				if (v.includes('-')) return;
+				if (v.includes('+')) return;
 				versions = [...versions, getMcVersionFromNeoForgeVersion(v)];
 			});
 			versions = [...new Set(versions)];
 			return versions;
+
 		} else if (type === ModloaderType.Fabric) {
 			const newVersionRegex = /^[2-9][0-9]\.[1-9](\.[1-9])?$/gm;
 			const oldVersionRegex = /^1\.(1[4-9]|2[0-9])(\.[1-9]+)?$/gm;
@@ -186,6 +243,7 @@ class Modloader {
 				}
 			});
 			return versions;
+
 		} else if (type === ModloaderType.Quilt) {
 			const newVersionRegex = /^[2-9][0-9]\.[1-9](\.[1-9])?$/gm;
 			const oldVersionRegex = /^1\.(14.4|1[5-9]|2[0-9])(\.[1-9]+)?$/gm;
