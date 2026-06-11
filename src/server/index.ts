@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const config = loadConfig()
+const config = loadConfig();
 const port = config.backend.port;
 
 const server = createServer(app);
@@ -69,14 +69,13 @@ app.get('/', (req, res) => {
 	res.send('hello world');
 });
 
-app.get('/api/jvm', (req,res)=>{
-	res.send(loadJavaFiles(config.paths))
-})
+app.get('/api/jvm', (req, res) => {
+	res.send(loadJavaFiles(config.paths));
+});
 
-app.get('/api/config', (req,res)=>{
-	res.send(config)
-})
-
+app.get('/api/config', (req, res) => {
+	res.send(config);
+});
 
 server.listen(port, '0.0.0.0', () => {
 	console.log('server listening on port ' + port);

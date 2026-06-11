@@ -35,14 +35,9 @@ export class CorretoOpenJDK {
 	}
 
 	static fromJSON(json: any) {
-		const jdk = new CorretoOpenJDK(
-			json.name,
-			json.version,
-			json.system,
-			json.arch
-		)
-		jdk.pathOnDisk = json.pathOnDisk
-		return jdk
+		const jdk = new CorretoOpenJDK(json.name, json.version, json.system, json.arch);
+		jdk.pathOnDisk = json.pathOnDisk;
+		return jdk;
 	}
 
 	async writeToDisk() {

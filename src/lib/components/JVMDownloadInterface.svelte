@@ -24,10 +24,9 @@
 				downloadStatus = json.data;
 			} else if (json.type === DownloadDTOType.openjdkFinished) {
 				console.log(json.data);
-				onFinish()
+				onFinish();
 			}
 		});
-
 	});
 
 	onDestroy(() => {

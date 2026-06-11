@@ -44,23 +44,28 @@ export function loadConfig() {
 			},
 			'0.0.1'
 		);
-        cfg.writeToFile().then()
-        return cfg
+		cfg.writeToFile().then();
+		return cfg;
 	}
 }
 
 export function loadJavaFiles(paths: ApplicatonPaths) {
-    let jdkList: CorretoOpenJDK[] = []
-    try {
-        const files = fs.readdirSync(paths.jdkMetadataDirectory)
-        files.forEach((f)=>{
-            if (f.endsWith(".json")) {
-                jdkList = [...jdkList, CorretoOpenJDK.fromJSON(JSON.parse(fs.readFileSync(paths.jdkMetadataDirectory + "/" + f, 'utf8')))]
-            }
-        })
-        return jdkList
-    } catch (err) {
-        console.error("Failed to read from the JDK Files: " + err)
-        return []
-    }
+	let jdkList: CorretoOpenJDK[] = [];
+	try {
+		const files = fs.readdirSync(paths.jdkMetadataDirectory);
+		files.forEach((f) => {
+			if (f.endsWith('.json')) {
+				jdkList = [
+					...jdkList,
+					CorretoOpenJDK.fromJSON(
+						JSON.parse(fs.readFileSync(paths.jdkMetadataDirectory + '/' + f, 'utf8'))
+					)
+				];
+			}
+		});
+		return jdkList;
+	} catch (err) {
+		console.error('Failed to read from the JDK Files: ' + err);
+		return [];
+	}
 }

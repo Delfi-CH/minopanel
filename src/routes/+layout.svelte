@@ -1,7 +1,7 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import Navigation from '$lib/components/Navigation.svelte';
-	import "bootswatch/dist/solar/bootstrap.min.css"
+	import 'bootswatch/dist/solar/bootstrap.min.css';
 	let { children } = $props();
 </script>
 

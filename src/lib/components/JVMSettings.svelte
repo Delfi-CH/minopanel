@@ -5,20 +5,22 @@
 	import { onMount } from 'svelte';
 
 	let allJavaVersions = $state(Object.values(JavaVersion));
-	let localJavaVersions: CorretoOpenJDK[] = $state([])
+	let localJavaVersions: CorretoOpenJDK[] = $state([]);
 	allJavaVersions = allJavaVersions.slice(0, allJavaVersions.length / 2);
 
 	let selectedJavaVersion: JavaVersion = $state(JavaVersion.OpenJdk25);
 	let showOpenJdkDownload: boolean = $state(false);
 
-	onMount(async ()=> {
-		await fetchLocalJavaVersions()
-	})
+	onMount(async () => {
+		await fetchLocalJavaVersions();
+	});
 
 	async function fetchLocalJavaVersions() {
-		const tmpJavaVersions = await axios.get("http://localhost:6502/api/jvm")
-		localJavaVersions = tmpJavaVersions.data
-		allJavaVersions = allJavaVersions.filter((e)=> !localJavaVersions.map((e)=> JavaVersion[e.version]).includes(e))
+		const tmpJavaVersions = await axios.get('http://localhost:6502/api/jvm');
+		localJavaVersions = tmpJavaVersions.data;
+		allJavaVersions = allJavaVersions.filter(
+			(e) => !localJavaVersions.map((e) => JavaVersion[e.version]).includes(e)
+		);
 	}
 </script>
 
@@ -47,9 +49,12 @@
 {/if}
 
 {#if showOpenJdkDownload}
-	<JVMDownloadInterface javaVersion={selectedJavaVersion} onFinish={async ()=> {
-		showOpenJdkDownload = false
-		await fetchLocalJavaVersions()
-	}}></JVMDownloadInterface>
+	<JVMDownloadInterface
+		javaVersion={selectedJavaVersion}
+		onFinish={async () => {
+			showOpenJdkDownload = false;
+			await fetchLocalJavaVersions();
+		}}
+	></JVMDownloadInterface>
 	<button onclick={() => (showOpenJdkDownload = false)}>Close</button>
 {/if}

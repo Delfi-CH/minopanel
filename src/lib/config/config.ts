@@ -36,13 +36,7 @@ export class Config {
 	}
 
 	static fromJSON(json: any) {
-		return new Config(
-			json.system,
-			json.arch,
-			json.backend,
-			json.version,
-			json.branding
-		)
+		return new Config(json.system, json.arch, json.backend, json.version, json.branding);
 	}
 }
 
