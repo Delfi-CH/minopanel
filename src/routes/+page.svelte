@@ -2,4 +2,4 @@
 
 </script>
 
-<h1>minopanel</h1>
+<h1>home</h1>
