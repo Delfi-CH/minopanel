@@ -3,8 +3,9 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { downloadWss } from './sockets/downloadSocket.ts';
-import { loadConfig, loadJavaFiles } from '../lib/data/data.ts';
+import { loadConfig, loadJavaFiles, loadJavaFile } from '../lib/data/data.ts';
 import { Config } from '../lib/config/config.ts';
+import { JavaVersion } from '../lib/jvm/java.ts';
 
 const app = express();
 app.use(express.json());
@@ -72,6 +73,19 @@ app.get('/', (req, res) => {
 app.get('/api/jvm', (req, res) => {
 	res.send(loadJavaFiles(config.paths));
 });
+
+app.post('/api/jvm/:version/test', (req, res) => {
+	const version = JavaVersion[req.params.version as keyof typeof JavaVersion] 
+	const jvm = loadJavaFile(config.paths, version);
+	jvm?.selfTest().then(()=>{
+		res.status(200).send("ok")
+		return
+	}).catch((err)=>{
+		console.error("Self test failed! " + err)
+		res.status(418).send("failed")
+	})
+});
+
 
 app.get('/api/config', (req, res) => {
 	res.send(config);

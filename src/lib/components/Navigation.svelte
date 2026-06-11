@@ -13,7 +13,7 @@
 	});
 </script>
 
-<Nav pills class="p-2" color="dark">
+<Nav pills class="p-2 bg-dark">
 	<NavItem class="m-1">
 		<NavbarBrand>
 			<NavLink href={resolve('/')}><h5>{branding}</h5></NavLink>

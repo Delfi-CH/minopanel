@@ -27,12 +27,12 @@
 
 <h2>Java settings</h2>
 
-<h3>Installations</h3>
+<h3>Java Versions</h3>
 
 <Col>
-<h4>Local Installations</h4>
+<h4>Installed</h4>
 {#each localJavaVersions as jversion, index (index)}
-	<Card>
+	<Card class="m-1">
 		<CardHeader>
 			<CardTitle>
 				{JavaVersion[jversion.version]}
@@ -40,15 +40,24 @@
 		</CardHeader>
 		<CardBody>
 			<p>Path: {jversion.pathOnDisk}</p>
+			<Button onclick={async ()=>{
+				try {
+					await axios.post("http://localhost:6502/api/jvm/" + JavaVersion[jversion.version] + "/test")
+					jversion.selfTestState = "Self Test was sucessfull"
+				} catch {
+					jversion.selfTestState = "Self Test failed!"
+				}
+			}}>Run Self Test</Button>
+			<p class={jversion.selfTestState == "Self Test was sucessfull" ? "text-success" : "text-danger"}>{jversion.selfTestState}</p>
 		</CardBody>
 	</Card>
 {/each}
 </Col>
 
 <Col>
-<h4>Available Installations</h4>
+<h4>Available</h4>
 {#each allJavaVersions as jversion, index (index)}
-	<Card>
+	<Card class="m-1">
 		<CardHeader>
 			<CardTitle>{jversion}</CardTitle>
 		</CardHeader>

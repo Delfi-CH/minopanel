@@ -1,6 +1,6 @@
 import { Config } from '$lib/config/config';
 import { ApplicatonPaths } from '$lib/config/paths';
-import { CorretoOpenJDK } from '$lib/jvm/java';
+import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
 import { OperatingSystem, MachineArchitecture } from '$lib/system';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -67,5 +67,14 @@ export function loadJavaFiles(paths: ApplicatonPaths) {
 	} catch (err) {
 		console.error('Failed to read from the JDK Files: ' + err);
 		return [];
+	}
+}
+
+export function loadJavaFile(paths: ApplicatonPaths, version: JavaVersion) {
+	try {
+		return CorretoOpenJDK.fromJSON(JSON.parse(fs.readFileSync(paths.jdkMetadataDirectory + '/openjdk' + version + ".json", "utf-8")))
+	} catch (err) {
+		console.error(`Failed to read file ${paths.jdkMetadataDirectory}/openjdk${version}.json: ${err}`)
+		return null
 	}
 }

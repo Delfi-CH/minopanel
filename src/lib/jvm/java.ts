@@ -19,6 +19,7 @@ export class CorretoOpenJDK {
 	sha256URL: string;
 	fileExtension: string;
 	pathOnDisk: string = '';
+	selfTestState: string = '';
 	constructor(
 		name: string,
 		version: JavaVersion,
