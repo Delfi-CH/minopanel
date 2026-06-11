@@ -1,6 +1,7 @@
 <script lang="ts">
 	import JVMDownloadInterface from '$lib/components/JVMDownloadInterface.svelte';
 	import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
+	import { Card, CardBody, CardHeader, CardTitle, Col, Button } from "@sveltestrap/sveltestrap"
 	import axios from 'axios';
 	import { onMount } from 'svelte';
 
@@ -28,25 +29,43 @@
 
 <h3>Installations</h3>
 
+<Col>
 <h4>Local Installations</h4>
 {#each localJavaVersions as jversion, index (index)}
-	<p>{JavaVersion[jversion.version]}</p>
-	<p>Path: {jversion.pathOnDisk}</p>
+	<Card>
+		<CardHeader>
+			<CardTitle>
+				{JavaVersion[jversion.version]}
+			</CardTitle>
+		</CardHeader>
+		<CardBody>
+			<p>Path: {jversion.pathOnDisk}</p>
+		</CardBody>
+	</Card>
 {/each}
+</Col>
 
+<Col>
 <h4>Available Installations</h4>
 {#each allJavaVersions as jversion, index (index)}
-	<p>{jversion}</p>
-	<button
+	<Card>
+		<CardHeader>
+			<CardTitle>{jversion}</CardTitle>
+		</CardHeader>
+		<CardBody>
+			<Button
 		onclick={() => {
 			selectedJavaVersion = JavaVersion[jversion as keyof typeof JavaVersion];
 			showOpenJdkDownload = true;
-		}}>Download</button
+		}}>Download</Button
 	>
+		</CardBody>
+	</Card>
 {/each}
 {#if allJavaVersions.length < 1}
 	<p>No Java Installations available</p>
 {/if}
+</Col>
 
 {#if showOpenJdkDownload}
 	<JVMDownloadInterface
