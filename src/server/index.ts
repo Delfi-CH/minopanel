@@ -73,6 +73,11 @@ app.get('/api/jvm', (req,res)=>{
 	res.send(loadJavaFiles(config.paths))
 })
 
+app.get('/api/config', (req,res)=>{
+	res.send(config)
+})
+
+
 server.listen(port, '0.0.0.0', () => {
 	console.log('server listening on port ' + port);
 });
