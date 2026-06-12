@@ -1,11 +1,32 @@
 <script lang="ts">
-	import { Nav, NavItem, NavbarBrand, NavLink } from '@sveltestrap/sveltestrap';
+	import {
+		Navbar,
+		Nav,
+		NavbarToggler,
+		Collapse,
+		NavbarBrand,
+		DropdownItem
+	} from '@sveltestrap/sveltestrap';
 	import NavigationLink from '$lib/components/NavigationLink.svelte';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
+	import NavigationDownload from './NavigationDownload.svelte';
 
 	let branding = $state('Minopanel');
+
+	let isMobile = $state(false);
+	let isOpen = $state(false);
+
+	function update() {
+		isMobile = window.innerWidth < 768;
+	}
+
+	onMount(() => {
+		update();
+		window.addEventListener('resize', update);
+		return () => window.removeEventListener('resize', update);
+	});
 
 	onMount(async () => {
 		const res = await axios.get('http://localhost:6502/api/config');
@@ -13,15 +34,32 @@
 	});
 </script>
 
-<Nav pills class="p-2 bg-dark">
-	<NavItem class="m-1">
-		<NavbarBrand>
-			<NavLink href={resolve('/')}><h5>{branding}</h5></NavLink>
-		</NavbarBrand>
-	</NavItem>
-	<NavigationLink href="/" name="Home"></NavigationLink>
-	<NavigationLink href="/new" name="New Server"></NavigationLink>
-	<NavigationLink href="/servers" name="Servers"></NavigationLink>
-	<NavigationLink href="/settings" name="Settings"></NavigationLink>
-	<NavigationLink href="/about" name="About"></NavigationLink>
-</Nav>
+<Navbar color="dark" expand="md" container="md">
+	<NavbarBrand href={resolve('/')} class="text-success">
+		{branding}
+	</NavbarBrand>
+
+	<NavbarToggler onclick={() => (isOpen = !isOpen)} />
+
+	{#if isMobile}
+		<Collapse {isOpen} navbar class="bg-dark">
+			<Nav pills class="ms-auto">
+				<NavigationLink href="/" name="Home"></NavigationLink>
+				<NavigationLink href="/new" name="New Server"></NavigationLink>
+				<NavigationLink href="/servers" name="Servers"></NavigationLink>
+				<NavigationLink href="/settings" name="Settings"></NavigationLink>
+				<NavigationLink href="/about" name="About"></NavigationLink>
+				<NavigationDownload></NavigationDownload>
+			</Nav>
+		</Collapse>
+	{:else}
+		<Nav pills class="ms-auto">
+			<NavigationLink href="/" name="Home"></NavigationLink>
+			<NavigationLink href="/new" name="New Server"></NavigationLink>
+			<NavigationLink href="/servers" name="Servers"></NavigationLink>
+			<NavigationLink href="/settings" name="Settings"></NavigationLink>
+			<NavigationLink href="/about" name="About"></NavigationLink>
+			<NavigationDownload></NavigationDownload>
+		</Nav>
+	{/if}
+</Navbar>

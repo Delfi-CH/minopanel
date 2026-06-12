@@ -1,7 +1,7 @@
 import { Config } from '$lib/config/config';
 import { ApplicatonPaths } from '$lib/config/paths';
 import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
-import { MCServer } from '$lib/serverManager';
+import { MCServer } from '$lib/servers/servers';
 import { OperatingSystem, MachineArchitecture } from '$lib/system';
 import fs from 'node:fs';
 import os from 'node:os';

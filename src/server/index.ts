@@ -6,7 +6,9 @@ import { downloadWss } from './sockets/downloadSocket.ts';
 import { loadConfig, loadJavaFiles, loadJavaFile, loadServerFiles, loadServerFile } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
-import { MCServer } from '../lib/serverManager.ts';
+import { MCServer } from '../lib/servers/servers.ts';
+import { DownloadManager } from '../lib/download/downloader.ts';
+export const downloadManager = new DownloadManager();
 
 const app = express();
 app.use(express.json());
@@ -124,10 +126,14 @@ app.post('/api/server/static', async (req, res) => {
 		res.sendStatus(409);
 		return;
 	}
-	srv.writeToDisk(config.system);
+	srv.writeToDisk(config.paths);
 	res.sendStatus(201);
 	return;
 });
+
+app.get("/api/downloads/static", (req,res)=>{
+	res.send(downloadManager.getAll())
+})
 
 server.listen(port, '0.0.0.0', () => {
 	console.log('server listening on port ' + port);

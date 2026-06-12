@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws';
-import { DownloadCallback, DownloadManager, DownloadState } from '../../lib/download/downloader.ts';
+import { DownloadCallback, DownloadState } from '../../lib/download/downloader.ts';
 import { DownloadDTO, DownloadDTOType } from '../../lib/download/dataTransferObjects.ts';
 import { CorretoOpenJDK, JavaVersion } from '../../lib/jvm/java.ts';
 import os from 'node:os';
@@ -12,8 +12,9 @@ import { ApplicatonPaths } from '../../lib/config/paths.ts';
 import decompress from '@xhmikosr/decompress';
 import decompressUnzip from '@xhmikosr/decompress-unzip';
 import decompressTargz from '@xhmikosr/decompress-targz';
+import { downloadManager } from "../index.ts"
 
-const downloadManager = new DownloadManager();
+
 const downloadStreams = new Map<number, Set<any>>();
 
 export const downloadWss = new WebSocketServer({ noServer: true });
@@ -44,10 +45,11 @@ downloadWss.on('connection', (ws, req) => {
 	ws.on('message', (data) => {
 		const json = JSON.parse(data.toString());
 
-		if (json.type === DownloadDTOType.init) {
+		if (json.type === DownloadDTOType.init || json.type === DownloadDTOType.init_start) {
 			try {
 				downloadManager.removeDownload(String(downloadId));
 
+				fs.mkdirSync(json.data.downloadPath, {recursive: true})
 				downloadManager.addDownload({
 					id: String(downloadId),
 					url: json.data.downloadURL,
@@ -57,6 +59,10 @@ downloadWss.on('connection', (ws, req) => {
 						const stateDTO = new DownloadDTO(DownloadDTOType.status, state);
 
 						ws.send(JSON.stringify(stateDTO));
+
+						if (state.state === DownloadState.Finished) {
+							ws.close()
+						}
 					}
 				});
 
@@ -66,16 +72,20 @@ downloadWss.on('connection', (ws, req) => {
 				);
 
 				ws.send(JSON.stringify(okDTO));
-			} catch {
-				// nothing
+
+				if (json.type === DownloadDTOType.init_start) {
+					downloadManager.startDownload(String(downloadId));
+				}
+			} catch (err) {
+				console.error(err)
 			}
 		}
 
 		if (json.type === DownloadDTOType.start) {
 			try {
 				downloadManager.startDownload(String(downloadId));
-			} catch {
-				// nothing
+			} catch (err) {
+				console.error(err)
 			}
 		}
 
@@ -165,6 +175,8 @@ downloadWss.on('connection', (ws, req) => {
 												ws.send(
 													JSON.stringify(new DownloadDTO(DownloadDTOType.openjdkFinished, openjdk))
 												);
+												ws.close()
+												downloadManager.removeDownload(name)
 											})
 											.catch((err) => {
 												console.error(err);
@@ -195,6 +207,8 @@ downloadWss.on('connection', (ws, req) => {
 												ws.send(
 													JSON.stringify(new DownloadDTO(DownloadDTOType.openjdkFinished, openjdk))
 												);
+												ws.close();
+												downloadManager.removeDownload(name)
 											})
 											.catch((err) => {
 												console.error(err);
@@ -221,8 +235,8 @@ downloadWss.on('connection', (ws, req) => {
 				});
 
 				downloadManager.startDownload(name);
-			} catch {
-				// noting
+			} catch (err) {
+				console.error(err)
 			}
 		}
 	});

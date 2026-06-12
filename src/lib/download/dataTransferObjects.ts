@@ -24,6 +24,7 @@ export interface DownloadDTOInitOptions {
 
 export enum DownloadDTOType {
 	init,
+	init_start,
 	start,
 	status,
 	openjdk,

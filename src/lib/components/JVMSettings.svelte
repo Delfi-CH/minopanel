@@ -1,5 +1,5 @@
 <script lang="ts">
-	import JVMDownloadInterface from '$lib/components/JVMDownloadInterface.svelte';
+	import { webDownloadManager } from '$lib/download/downloader';
 	import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
 	import { Card, CardBody, CardHeader, CardTitle, Col, Button } from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
@@ -8,9 +8,6 @@
 	let allJavaVersions = $state(Object.values(JavaVersion));
 	let localJavaVersions: CorretoOpenJDK[] = $state([]);
 	allJavaVersions = allJavaVersions.slice(0, allJavaVersions.length / 2);
-
-	let selectedJavaVersion: JavaVersion = $state(JavaVersion.OpenJdk25);
-	let showOpenJdkDownload: boolean = $state(false);
 
 	onMount(async () => {
 		await fetchLocalJavaVersions();
@@ -74,8 +71,15 @@
 			<CardBody>
 				<Button
 					onclick={() => {
-						selectedJavaVersion = JavaVersion[jversion as keyof typeof JavaVersion];
-						showOpenJdkDownload = true;
+						const task = webDownloadManager.addOpenJDKDownload(JavaVersion[jversion as keyof typeof JavaVersion]);
+						webDownloadManager.startDownloadSilent(task.id)
+						const interval = setInterval(async ()=>{
+							console.log(!webDownloadManager.exists(task.id))
+							if (!webDownloadManager.exists(task.id)) {
+								clearInterval(interval)
+								await fetchLocalJavaVersions()
+							}
+						}, 1000)
 					}}>Download</Button
 				>
 			</CardBody>
@@ -85,14 +89,3 @@
 		<p>No Java Installations available</p>
 	{/if}
 </Col>
-
-{#if showOpenJdkDownload}
-	<JVMDownloadInterface
-		javaVersion={selectedJavaVersion}
-		onFinish={async () => {
-			showOpenJdkDownload = false;
-			await fetchLocalJavaVersions();
-		}}
-	></JVMDownloadInterface>
-	<button onclick={() => (showOpenJdkDownload = false)}>Close</button>
-{/if}

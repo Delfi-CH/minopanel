@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import isNode from 'is-node';
-import { JavaVersion } from './jvm/java';
-import { ApplicatonPaths } from './config/paths';
-import type { OperatingSystem } from './system';
+import { JavaVersion } from '../jvm/java';
+import { ApplicatonPaths } from '../config/paths';
+import { webDownloadManager } from '$lib/download/downloader';
 
 class MCServer {
 	name: string;
@@ -14,7 +15,8 @@ class MCServer {
 	port: number;
 	memoryMin: string;
 	memoryMax: string;
-	running: boolean
+	running: boolean;
+	installed: boolean;
 	constructor(
 		name: string,
 		mcVersion: string,
@@ -32,6 +34,7 @@ class MCServer {
 		this.memoryMin = memoryMin ?? '1G';
 		this.memoryMax = memoryMax ?? '4G';
 		this.running = false;
+		this.installed = false
 	}
 
 	static fromJSON(json: any) {
@@ -41,32 +44,56 @@ class MCServer {
 		srv.memoryMin = json.memoryMin;
 		srv.memoryMax = json.memoryMax;
 		srv.port = json.port;
+		srv.running = json.running
+		srv.installed = json.installed
 		return srv;
 	}
 
-	async writeToDisk(system: OperatingSystem) {
+	async writeToDisk(paths: ApplicatonPaths) {
 		if (isNode) {
 			const { writeFile } = await import('node:fs/promises');
-			const paths = new ApplicatonPaths(system);
 			const filepath = paths.mcServerMetadataDirectory + '/' + this.name + '.json';
 			await writeFile(filepath, JSON.stringify(this), 'utf8');
 		} else {
 			throw new Error('not a nodejs enviroment');
 		}
 	}
+
+	installFiles(paths: ApplicatonPaths) {
+			const id = "Server " + this.name
+			if (!this.modloader.url) {
+				throw new Error("no url!")
+			}
+			let filename = "server.jar"
+			if (this.modloader.type === ModloaderType.Forge) {
+				filename = "forge-installer.jar"
+			} else if (this.modloader.type === ModloaderType.NeoForge) {
+				filename = "neoforge-installer.jar"
+			} else if (this.modloader.type === ModloaderType.Fabric) {
+				filename = "fabric-installer.jar"
+			} else if (this.modloader.type === ModloaderType.Quilt) {
+				filename = "quilt-installer.jar"
+			} 
+			webDownloadManager.addDownload({
+				id: id,
+				url: this.modloader.url,
+				path: paths.mcServerDirectory + "/" + this.name,
+				filename: filename
+			})
+			webDownloadManager.startDownloadSilent(id)
+	} 
 }
 
 class Modloader {
 	type: ModloaderType;
 	gameVersion: string;
-	modloaderVersion: string;
+	modloaderVersion?: string;
 	url?: string;
 	sha1sum?: string;
 	sha256sum?: string;
-	constructor(type: ModloaderType, gameVersion: string, modloaderVersion: string) {
+	constructor(type: ModloaderType, gameVersion: string) {
 		this.type = type;
 		this.gameVersion = gameVersion;
-		this.modloaderVersion = modloaderVersion;
 	}
 
 	async buildURL() {
@@ -76,7 +103,7 @@ class Modloader {
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
 			);
 			const manifestVersion = manifest.data.versions.find(
-				(ver: object) => ver.id === this.gameVersion
+				(ver: any) => ver.id === this.gameVersion
 			);
 			const packageManifest = await axios.get(manifestVersion.url);
 			this.url = packageManifest.data.downloads.server.url;
@@ -150,7 +177,7 @@ class Modloader {
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
 			);
 			const versions: Array<string> = [];
-			manifest.data.versions.map((v) => {
+			manifest.data.versions.map((v: any) => {
 				if (v.type === 'release') {
 					versions.push(v.id);
 				}
@@ -237,7 +264,7 @@ class Modloader {
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
 			);
 			const versions: Array<string> = [];
-			manifest.data.versions.map((v) => {
+			manifest.data.versions.map((v: any) => {
 				if (newVersionRegex.test(v.id) || oldVersionRegex.test(v.id)) {
 					versions.push(v.id);
 				}
@@ -251,7 +278,7 @@ class Modloader {
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
 			);
 			const versions: Array<string> = [];
-			manifest.data.versions.map((v) => {
+			manifest.data.versions.map((v: any) => {
 				if (newVersionRegex.test(v.id) || oldVersionRegex.test(v.id)) {
 					versions.push(v.id);
 				}

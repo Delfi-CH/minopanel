@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ModloaderType, type MCServer } from "$lib/serverManager";
+	import { ModloaderType, type MCServer } from "$lib/servers/servers";
     import { Container, Row, Col, Card, CardBody, CardHeader, CardTitle } from "@sveltestrap/sveltestrap";
 	import axios from "axios";
 	import { onMount } from "svelte";
