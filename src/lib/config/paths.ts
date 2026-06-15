@@ -115,4 +115,24 @@ export class ApplicatonPaths {
 			return false;
 		}
 	}
+
+	static toFancyStrings(paths: ApplicatonPaths) {
+		let list: string[] = []
+
+		list = [...list, `Server Configuration File: ${paths.serverConfigPath}`]
+		list = [...list, `CLI Configuration File: ${paths.cliConfigPath}`]
+		list = [...list, `Minecraft Server Directory: ${paths.mcServerDirectory}`]
+		list = [...list, `Minecraft Server Metadata Directory: ${paths.mcServerMetadataDirectory}`]
+		list = [...list, `Java Installation Directory: ${paths.jdkDirectory}`]
+		list = [...list, `Java Metadata Directory: ${paths.jdkMetadataDirectory}`]
+		list = [...list, `CLI Binary: ${paths.cliBinaryPath}`]
+		list = [...list, `Server Binary: ${paths.serverBinaryPath}`]
+		list = [...list, `WebUI Directory: ${paths.frontendDirectory}`]
+		list = [...list, `OS Temporary Directory: ${paths.tmpPath}`]
+		if (paths.systemdServicePath !== ".") {
+			list = [...list, `systemd Service File: ${paths.systemdServicePath}`]	
+		}
+		
+		return list
+	}
 }

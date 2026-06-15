@@ -1,5 +1,5 @@
 import isNode from 'is-node';
-import type { MachineArchitecture, OperatingSystem } from '../system.ts';
+import { MachineArchitecture, OperatingSystem } from "../system.js";
 import { ApplicatonPaths } from './paths.ts';
 
 export class Config {
@@ -37,6 +37,10 @@ export class Config {
 
 	static fromJSON(json: any) {
 		return new Config(json.system, json.arch, json.backend, json.version, json.branding);
+	}
+
+	static blank() {
+		return new Config(OperatingSystem.Other, MachineArchitecture.x64, {port: 6502}, "Minopanel")
 	}
 }
 
