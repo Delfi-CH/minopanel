@@ -72,8 +72,6 @@ class MCServer {
 			filename = 'neoforge-installer.jar';
 		} else if (this.modloader.type === ModloaderType.Fabric) {
 			filename = 'fabric-installer.jar';
-		} else if (this.modloader.type === ModloaderType.Quilt) {
-			filename = 'quilt-installer.jar';
 		}
 		webDownloadManager.addDownload({
 			id: id,
@@ -216,12 +214,6 @@ class Modloader {
 				'https://maven.fabricmc.net/net/fabricmc/fabric-installer/1.1.1/fabric-installer-1.1.1.jar';
 			const shaRes = await axios.get(this.url + '.sha256');
 			this.sha256sum = shaRes.data;
-		} else if (this.type === ModloaderType.Quilt) {
-			this.modloaderVersion = 'latest';
-			this.url =
-				'https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-installer/0.13.1/quilt-installer-0.13.1.jar';
-			const shaRes = await axios.get(this.url + '.sha256');
-			this.sha256sum = shaRes.data;
 		} else {
 			this.url = "/"
 		}
@@ -321,19 +313,6 @@ class Modloader {
 				}
 			});
 			return versions;
-		} else if (type === ModloaderType.Quilt) {
-			const newVersionRegex = /^[2-9][0-9]\.[1-9](\.[1-9])?$/gm;
-			const oldVersionRegex = /^1\.(14.4|1[5-9]|2[0-9])(\.[1-9]+)?$/gm;
-			const manifest = await axios.get(
-				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
-			);
-			const versions: Array<string> = [];
-			manifest.data.versions.map((v: any) => {
-				if (newVersionRegex.test(v.id) || oldVersionRegex.test(v.id)) {
-					versions.push(v.id);
-				}
-			});
-			return versions;
 		} else {
 			return [];
 		}
@@ -371,7 +350,6 @@ enum ModloaderType {
 	Forge = 'Forge',
 	NeoForge = 'NeoForge',
 	Fabric = 'Fabric',
-	Quilt = 'Quilt',
 	Paper = 'Paper',
 	Folia = 'Folia'
 }
