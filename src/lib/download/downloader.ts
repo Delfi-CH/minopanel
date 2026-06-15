@@ -347,6 +347,7 @@ export class WebDownloadManager {
 		}
 
 		this.downloads.delete(id);
+		this.openDownloads.delete(id)
 	}
 
 	getAll(): string[] {

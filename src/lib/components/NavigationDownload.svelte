@@ -19,7 +19,7 @@
 
 	onMount(() => {
 		doDownloads();
-		setInterval(doDownloads, 10);
+		setInterval(doDownloads, 100);
 	});
 
 	function doDownloads() {
@@ -36,9 +36,13 @@
 					}
 				} else if (json.type === DownloadDTOType.openjdkFinished) {
 					runningDownloads.delete(id);
+					webDownloadManager.removeDownload(id);
 				}
 			});
 		});
+		if (allDownloads.length < 1) {
+			runningDownloads.clear()
+		}
 	}
 </script>
 

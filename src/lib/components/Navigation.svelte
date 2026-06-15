@@ -4,8 +4,7 @@
 		Nav,
 		NavbarToggler,
 		Collapse,
-		NavbarBrand,
-		DropdownItem
+		NavbarBrand
 	} from '@sveltestrap/sveltestrap';
 	import NavigationLink from '$lib/components/NavigationLink.svelte';
 	import { resolve } from '$app/paths';
@@ -47,9 +46,9 @@
 				<NavigationLink href="/" name="Home"></NavigationLink>
 				<NavigationLink href="/new" name="New Server"></NavigationLink>
 				<NavigationLink href="/servers" name="Servers"></NavigationLink>
+				<NavigationDownload></NavigationDownload>
 				<NavigationLink href="/settings" name="Settings"></NavigationLink>
 				<NavigationLink href="/about" name="About"></NavigationLink>
-				<NavigationDownload></NavigationDownload>
 			</Nav>
 		</Collapse>
 	{:else}
@@ -57,9 +56,9 @@
 			<NavigationLink href="/" name="Home"></NavigationLink>
 			<NavigationLink href="/new" name="New Server"></NavigationLink>
 			<NavigationLink href="/servers" name="Servers"></NavigationLink>
+			<NavigationDownload></NavigationDownload>
 			<NavigationLink href="/settings" name="Settings"></NavigationLink>
 			<NavigationLink href="/about" name="About"></NavigationLink>
-			<NavigationDownload></NavigationDownload>
 		</Nav>
 	{/if}
 </Navbar>
