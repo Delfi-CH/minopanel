@@ -16,7 +16,9 @@ import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
 import { MCServer } from '../lib/servers/servers.ts';
 import { DownloadManager } from '../lib/download/downloader.ts';
+import { ActiveServerInstance, ServerManager } from '../lib/servers/manager.ts';
 export const downloadManager = new DownloadManager();
+export const serverManager = new ServerManager()
 
 const app = express();
 app.use(express.json());
@@ -140,6 +142,23 @@ app.get('/api/server/static/:name', (req, res) => {
 		return
 	}
 	res.send(srv);
+});
+
+app.get('/api/server/static/:name/start', (req, res) => {
+	const name = req.params.name;
+	const srv = loadServerFile(config.paths, name)
+	if (!srv) {
+		res.sendStatus(404)
+		return
+	}
+	const java = loadJavaFile(config.paths, srv.preferedJavaVersion)
+	if (!java) {
+		res.sendStatus(404)
+		return
+	}
+	const srvInstance = new ActiveServerInstance(srv, java)
+	serverManager.addInstance(srvInstance.base.name, srvInstance)
+	serverManager.startInstance(srvInstance.base.name)
 });
 
 app.delete('/api/server/static/:name', async (req, res) => {

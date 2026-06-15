@@ -13,8 +13,9 @@ class MCServer {
 	modloader: Modloader;
 	preferedJavaVersion: JavaVersion;
 	serverExecutableFilePath?: string = '';
+	serverExecutableArgs?: string[] = [];
 	serverPropertiesFilePath?: string = '';
-	port: number;
+	serverDirectory?: string = '';
 	memoryMin: string;
 	memoryMax: string;
 	running: boolean;
@@ -32,7 +33,6 @@ class MCServer {
 		this.mcVersion = mcVersion;
 		this.modloader = modloader;
 		this.preferedJavaVersion = preferedJavaVersion;
-		this.port = port ?? 25565;
 		this.memoryMin = memoryMin ?? '1G';
 		this.memoryMax = memoryMax ?? '4G';
 		this.running = false;
@@ -42,11 +42,12 @@ class MCServer {
 	static fromJSON(json: any) {
 		const srv = new MCServer(json.name, json.mcVersion, json.modloader, json.preferedJavaVersion);
 		srv.serverExecutableFilePath = json.serverExecutableFilePath;
+		srv.serverDirectory = json.serverDirectory
 		srv.serverExecutableFilePath = json.serverPropertiesFilePath;
 		srv.memoryMin = json.memoryMin;
 		srv.memoryMax = json.memoryMax;
-		srv.port = json.port;
 		srv.running = json.running;
+		srv.serverExecutableArgs = json.serverExecutableArgs
 		srv.installed = json.installed;
 		return srv;
 	}
@@ -85,7 +86,7 @@ class MCServer {
 
 	async runSetup(paths: ApplicatonPaths, java: CorretoOpenJDK) {
 		if (isNode) {
-			const { writeFile, rm } = await import("node:fs/promises")
+			const { writeFile } = await import("node:fs/promises")
 			const { spawn } = await import('node:child_process');
 			const { once } = await import('node:events');
 			const eulaPath = paths.mcServerDirectory + '/' + this.name + "/eula.txt"
@@ -100,6 +101,7 @@ class MCServer {
 				}
 				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
 				this.serverExecutableFilePath = java.system === OperatingSystem.Windows ? paths.mcServerDirectory + '/' + this.name + "/run.bat" : paths.mcServerDirectory + '/' + this.name + "/run.sh"
+				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`, "nogui"]
 			} else if (this.modloader.type === ModloaderType.NeoForge) {
 				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", "--installServer", paths.mcServerDirectory + '/' + this.name], {cwd: paths.mcServerDirectory + '/' + this.name})
 				const [code] = await once(installer, 'close');
@@ -108,6 +110,7 @@ class MCServer {
 				}
 				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
 				this.serverExecutableFilePath = java.system === OperatingSystem.Windows ? paths.mcServerDirectory + '/' + this.name + "/run.bat" : paths.mcServerDirectory + '/' + this.name + "/run.sh"
+				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`, "nogui"]
 			} else if (this.modloader.type === ModloaderType.Fabric) {
 				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/fabric-installer.jar", "server", "-mcversion", this.mcVersion, "-dir", paths.mcServerDirectory + '/' + this.name])
 				const [code] = await once(installer, 'close');
@@ -129,12 +132,15 @@ class MCServer {
 				})
 				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
 				this.serverExecutableFilePath = paths.mcServerDirectory + '/' + this.name + "/fabric-server-launch.jar"
+				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`,"-jar", this.serverExecutableFilePath,  "nogui"]
 			} else {
 				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
 				this.serverExecutableFilePath = paths.mcServerDirectory + '/' + this.name + "/server.jar"
+				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`,"-jar", this.serverExecutableFilePath,  "nogui"]
 			}
 
 			this.installed = true
+			this.serverDirectory = paths.mcServerDirectory + '/' + this.name
 			await this.writeToDisk(paths)	
 		} else {
 			throw new Error("not a nodejs enviroment");

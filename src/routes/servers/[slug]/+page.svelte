@@ -22,6 +22,9 @@
 			<Button onclick={()=> {
 				showDeleteModal = true
 			}} color="warning">Delete</Button>
+			<Button onclick={async()=>{
+				await axios.get("http://localhost:6502/api/server/static/" + data.post.name + "/start")
+			}}>Start</Button>
 		</Col>
 	</Row>
 </Container>
