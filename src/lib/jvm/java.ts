@@ -78,14 +78,14 @@ export class CorretoOpenJDK {
 
 	async delete() {
 		if (isNode) {
-			const { deleteJavaFile } = await import("../data/data")
+			const { deleteJavaFile } = await import('../data/data');
 			if (deleteJavaFile(new ApplicatonPaths(this.system), this.version)) {
-				return true
+				return true;
 			} else {
-				return false
+				return false;
 			}
 		} else {
-			await axios.delete("/api/jvm/" + this.version)
+			await axios.delete('/api/jvm/' + this.version);
 		}
 	}
 }

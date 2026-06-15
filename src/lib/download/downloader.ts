@@ -204,12 +204,12 @@ export class WebDownloadManager {
 
 	addOpenJDKDownload(java: JavaVersion): WebDownloadTask {
 		const task: WebDownloadTask = {
-			id: "Openjdk " + java,
-			filename: "java",
-			path: "java",
-			url: "java",
+			id: 'Openjdk ' + java,
+			filename: 'java',
+			path: 'java',
+			url: 'java',
 			openJDK: java
-		}
+		};
 		if (this.downloads.has(task.id)) {
 			throw new Error(`Download "${task.id}" already exists.`);
 		}
@@ -225,16 +225,16 @@ export class WebDownloadManager {
 		if (!task) {
 			throw new Error(`Download "${id}" not found.`);
 		}
-		
-		return task
+
+		return task;
 	}
 
 	exists(id: string): boolean {
 		const task = this.downloads.get(id);
 		if (!task) {
-			return false
+			return false;
 		}
-		return true
+		return true;
 	}
 
 	startDownload(id: string, callback: (dto: DownloadDTO) => void): void {
@@ -256,10 +256,10 @@ export class WebDownloadManager {
 			ws.send(JSON.stringify(initDTO));
 		});
 
-		ws.addEventListener("message", (e)=>{
+		ws.addEventListener('message', (e) => {
 			const json: DownloadDTO = JSON.parse(e.data);
-			callback(json)
-		})
+			callback(json);
+		});
 	}
 
 	startDownloadSilent(id: string): void {
@@ -281,29 +281,31 @@ export class WebDownloadManager {
 				});
 				ws.send(JSON.stringify(initDTO));
 			} else {
-				const initDTO = new DownloadDTO(DownloadDTOType.openjdk, null, task.openJDK)
+				const initDTO = new DownloadDTO(DownloadDTOType.openjdk, null, task.openJDK);
 				ws.send(JSON.stringify(initDTO));
 			}
-			
 		});
 
-		ws.addEventListener("message", (e)=>{
+		ws.addEventListener('message', (e) => {
 			const json: DownloadDTO = JSON.parse(e.data);
 			if (!json.data) {
 				// @ts-expect-error womp womp
-			} else if (json.data.status === DownloadState.Finished || json.type === DownloadDTOType.openjdkFinished) {
-                ws.close()
-				this.openDownloads.delete(id);	
-				this.downloads.delete(id)
-            }
-		})
+			} else if (
+				json.data.status === DownloadState.Finished ||
+				json.type === DownloadDTOType.openjdkFinished
+			) {
+				ws.close();
+				this.openDownloads.delete(id);
+				this.downloads.delete(id);
+			}
+		});
 
-		ws.addEventListener("close", ()=> {
-			this.openDownloads.delete(id);	
-			this.downloads.delete(id)
-		})
+		ws.addEventListener('close', () => {
+			this.openDownloads.delete(id);
+			this.downloads.delete(id);
+		});
 
-		this.openDownloads.set(id, ws)
+		this.openDownloads.set(id, ws);
 	}
 
 	listenToDownload(id: string, callback: (dto: DownloadDTO) => void): void {
@@ -313,22 +315,25 @@ export class WebDownloadManager {
 			throw new Error(`Download "${id}" not found.`);
 		}
 
-		ws.addEventListener("message", (e)=>{
+		ws.addEventListener('message', (e) => {
 			const json: DownloadDTO = JSON.parse(e.data);
-			callback(json)
+			callback(json);
 			if (!json.data) {
 				// @ts-expect-error womp womp
-			} else if (json.data.status === DownloadState.Finished || json.type === DownloadDTOType.openjdkFinished) {
-                ws.close()
-				this.openDownloads.delete(id);	
-				this.removeDownload(id)
-            }
-		})
+			} else if (
+				json.data.status === DownloadState.Finished ||
+				json.type === DownloadDTOType.openjdkFinished
+			) {
+				ws.close();
+				this.openDownloads.delete(id);
+				this.removeDownload(id);
+			}
+		});
 
-		ws.addEventListener("close", ()=> {
-			this.openDownloads.delete(id);	
-			this.removeDownload(id)
-		})
+		ws.addEventListener('close', () => {
+			this.openDownloads.delete(id);
+			this.removeDownload(id);
+		});
 	}
 
 	stopDownload(id: string): void {
@@ -347,7 +352,7 @@ export class WebDownloadManager {
 		}
 
 		this.downloads.delete(id);
-		this.openDownloads.delete(id)
+		this.openDownloads.delete(id);
 	}
 
 	getAll(): string[] {
@@ -359,4 +364,4 @@ export class WebDownloadManager {
 	}
 }
 
-export const webDownloadManager = new WebDownloadManager()
+export const webDownloadManager = new WebDownloadManager();

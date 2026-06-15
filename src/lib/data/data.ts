@@ -93,10 +93,12 @@ export function deleteJavaFile(paths: ApplicatonPaths, version: JavaVersion) {
 			recursive: false,
 			maxRetries: 3,
 			retryDelay: 100
-		})
+		});
 	} catch (err) {
-		console.error(`Failed to delete file ${paths.jdkMetadataDirectory}/openjdk${version}.json: ${err}`)
-		return false
+		console.error(
+			`Failed to delete file ${paths.jdkMetadataDirectory}/openjdk${version}.json: ${err}`
+		);
+		return false;
 	}
 	try {
 		fs.rmSync(paths.jdkDirectory + '/openjdk' + version, {
@@ -104,12 +106,12 @@ export function deleteJavaFile(paths: ApplicatonPaths, version: JavaVersion) {
 			recursive: true,
 			maxRetries: 3,
 			retryDelay: 100
-		})
+		});
 	} catch (err) {
-		console.error(`Failed to delete directory ${paths.jdkDirectory}/openjdk${version}: ${err}`)
-		return false
+		console.error(`Failed to delete directory ${paths.jdkDirectory}/openjdk${version}: ${err}`);
+		return false;
 	}
-	return true
+	return true;
 }
 
 export function loadServerFiles(paths: ApplicatonPaths) {

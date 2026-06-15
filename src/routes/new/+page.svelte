@@ -15,7 +15,7 @@
 	let avialableJavaVersions: CorretoOpenJDK[] = $state([]);
 	let errorMessage = $state('');
 
-	let paths: ApplicatonPaths | undefined = $state()
+	let paths: ApplicatonPaths | undefined = $state();
 
 	onMount(async () => {
 		await getAvailableVersions();
@@ -23,8 +23,8 @@
 		const tmpJavaVersions = await axios.get('http://localhost:6502/api/jvm');
 		avialableJavaVersions = tmpJavaVersions.data;
 
-		const config = await axios.get('http://localhost:6502/api/config')
-		paths = config.data.paths
+		const config = await axios.get('http://localhost:6502/api/config');
+		paths = config.data.paths;
 	});
 
 	async function getAvailableVersions() {
@@ -62,12 +62,12 @@
 					const server = new MCServer(newServerName, selectedVersion, ml, selectedJavaVersion);
 					console.log(server);
 					if (!paths) {
-						throw new Error("Paths not loaded!")
+						throw new Error('Paths not loaded!');
 					}
 					try {
 						await axios.post('http://localhost:6502/api/server/static', server);
-						server.installFiles(paths)
-						console.log()
+						server.installFiles(paths);
+						console.log();
 					} catch (err) {
 						if (err.status === 409) {
 							errorMessage = `Duplicate name: "${server.name}"! Each Server must have a unique name!`;

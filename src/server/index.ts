@@ -3,7 +3,14 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { downloadWss } from './sockets/downloadSocket.ts';
-import { loadConfig, loadJavaFiles, loadJavaFile, loadServerFiles, loadServerFile, deleteJavaFile } from '../lib/data/data.ts';
+import {
+	loadConfig,
+	loadJavaFiles,
+	loadJavaFile,
+	loadServerFiles,
+	loadServerFile,
+	deleteJavaFile
+} from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
 import { MCServer } from '../lib/servers/servers.ts';
@@ -92,16 +99,16 @@ app.post('/api/jvm/:version/test', (req, res) => {
 		});
 });
 
-app.delete('/api/jvm/:version', (req,res)=>{
+app.delete('/api/jvm/:version', (req, res) => {
 	const version = JavaVersion[req.params.version as keyof typeof JavaVersion];
 	if (deleteJavaFile(config.paths, version)) {
-		res.sendStatus(204)
-		return
+		res.sendStatus(204);
+		return;
 	} else {
-		res.sendStatus(404)
-		return
+		res.sendStatus(404);
+		return;
 	}
-})
+});
 
 app.get('/api/config', (req, res) => {
 	res.send(config);
@@ -119,7 +126,7 @@ app.get('/api/server/static', (req, res) => {
 });
 
 app.get('/api/server/static/:name', (req, res) => {
-	const name = req.params.name
+	const name = req.params.name;
 	res.send(loadServerFile(config.paths, name));
 });
 
@@ -142,9 +149,9 @@ app.post('/api/server/static', async (req, res) => {
 	return;
 });
 
-app.get("/api/downloads/static", (req,res)=>{
-	res.send(downloadManager.getAll())
-})
+app.get('/api/downloads/static', (req, res) => {
+	res.send(downloadManager.getAll());
+});
 
 server.listen(port, '0.0.0.0', () => {
 	console.log('server listening on port ' + port);

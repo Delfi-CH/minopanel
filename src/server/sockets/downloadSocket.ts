@@ -12,8 +12,7 @@ import { ApplicatonPaths } from '../../lib/config/paths.ts';
 import decompress from '@xhmikosr/decompress';
 import decompressUnzip from '@xhmikosr/decompress-unzip';
 import decompressTargz from '@xhmikosr/decompress-targz';
-import { downloadManager } from "../index.ts"
-
+import { downloadManager } from '../index.ts';
 
 const downloadStreams = new Map<number, Set<any>>();
 
@@ -49,7 +48,7 @@ downloadWss.on('connection', (ws, req) => {
 			try {
 				downloadManager.removeDownload(String(downloadId));
 
-				fs.mkdirSync(json.data.downloadPath, {recursive: true})
+				fs.mkdirSync(json.data.downloadPath, { recursive: true });
 				downloadManager.addDownload({
 					id: String(downloadId),
 					url: json.data.downloadURL,
@@ -61,7 +60,7 @@ downloadWss.on('connection', (ws, req) => {
 						ws.send(JSON.stringify(stateDTO));
 
 						if (state.state === DownloadState.Finished) {
-							ws.close()
+							ws.close();
 						}
 					}
 				});
@@ -77,7 +76,7 @@ downloadWss.on('connection', (ws, req) => {
 					downloadManager.startDownload(String(downloadId));
 				}
 			} catch (err) {
-				console.error(err)
+				console.error(err);
 			}
 		}
 
@@ -85,7 +84,7 @@ downloadWss.on('connection', (ws, req) => {
 			try {
 				downloadManager.startDownload(String(downloadId));
 			} catch (err) {
-				console.error(err)
+				console.error(err);
 			}
 		}
 
@@ -175,8 +174,8 @@ downloadWss.on('connection', (ws, req) => {
 												ws.send(
 													JSON.stringify(new DownloadDTO(DownloadDTOType.openjdkFinished, openjdk))
 												);
-												ws.close()
-												downloadManager.removeDownload(name)
+												ws.close();
+												downloadManager.removeDownload(name);
 											})
 											.catch((err) => {
 												console.error(err);
@@ -208,7 +207,7 @@ downloadWss.on('connection', (ws, req) => {
 													JSON.stringify(new DownloadDTO(DownloadDTOType.openjdkFinished, openjdk))
 												);
 												ws.close();
-												downloadManager.removeDownload(name)
+												downloadManager.removeDownload(name);
 											})
 											.catch((err) => {
 												console.error(err);
@@ -236,7 +235,7 @@ downloadWss.on('connection', (ws, req) => {
 
 				downloadManager.startDownload(name);
 			} catch (err) {
-				console.error(err)
+				console.error(err);
 			}
 		}
 	});

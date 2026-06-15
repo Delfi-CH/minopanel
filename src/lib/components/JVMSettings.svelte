@@ -8,19 +8,19 @@
 	import { SvelteSet } from 'svelte/reactivity';
 
 	let allJavaVersions = $state(Object.values(JavaVersion));
-	let downloadingVersions: SvelteSet<string | JavaVersion> = new SvelteSet<string | JavaVersion>()
+	let downloadingVersions: SvelteSet<string | JavaVersion> = new SvelteSet<string | JavaVersion>();
 	let localJavaVersions: CorretoOpenJDK[] = $state([]);
 
-	let showDeleteModal = $state(false)
-	let deleteModalMessage = $state("")
-	let deletedJavaVersion = $state()
+	let showDeleteModal = $state(false);
+	let deleteModalMessage = $state('');
+	let deletedJavaVersion = $state();
 
 	onMount(async () => {
 		await fetchLocalJavaVersions();
 	});
 
 	async function fetchLocalJavaVersions() {
-		allJavaVersions = Object.values(JavaVersion)
+		allJavaVersions = Object.values(JavaVersion);
 		allJavaVersions = allJavaVersions.slice(0, allJavaVersions.length / 2);
 		const tmpJavaVersions = await axios.get('http://localhost:6502/api/jvm');
 		localJavaVersions = tmpJavaVersions.data;
@@ -57,11 +57,14 @@
 						}
 					}}>Run Self Test</Button
 				>
-				<Button color="warning" onclick={()=> {
-					deleteModalMessage = JavaVersion[jversion.version]
-					showDeleteModal = true
-					deletedJavaVersion = jversion.version
-				}}>Delete</Button>
+				<Button
+					color="warning"
+					onclick={() => {
+						deleteModalMessage = JavaVersion[jversion.version];
+						showDeleteModal = true;
+						deletedJavaVersion = jversion.version;
+					}}>Delete</Button
+				>
 				<p
 					class={jversion.selfTestState == 'Self Test was sucessfull'
 						? 'text-success'
@@ -86,16 +89,18 @@
 					disabled={downloadingVersions.has(jversion)}
 					onclick={() => {
 						downloadingVersions.add(jversion);
-						const task = webDownloadManager.addOpenJDKDownload(JavaVersion[jversion as keyof typeof JavaVersion]);
-						webDownloadManager.startDownloadSilent(task.id)
-						const interval = setInterval(async ()=>{
-							console.log(!webDownloadManager.exists(task.id))
+						const task = webDownloadManager.addOpenJDKDownload(
+							JavaVersion[jversion as keyof typeof JavaVersion]
+						);
+						webDownloadManager.startDownloadSilent(task.id);
+						const interval = setInterval(async () => {
+							console.log(!webDownloadManager.exists(task.id));
 							if (!webDownloadManager.exists(task.id)) {
-								clearInterval(interval)
-								await fetchLocalJavaVersions()
+								clearInterval(interval);
+								await fetchLocalJavaVersions();
 								downloadingVersions.delete(jversion);
 							}
-						}, 1000)
+						}, 1000);
 					}}>{downloadingVersions.has(jversion) ? 'Downloading...' : 'Download'}</Button
 				>
 			</CardBody>
@@ -105,13 +110,18 @@
 		<p>No Java Installations available</p>
 	{/if}
 	{#if showDeleteModal}
-		<DeleteModal open={showDeleteModal} message={deleteModalMessage} onClose={()=> {
-			showDeleteModal = false
-		}} onDelete={async ()=> {
-			showDeleteModal = false
-			// @ts-expect-error womp womp
-			await axios.delete("http://localhost:6502/api/jvm/" + JavaVersion[deletedJavaVersion])
-			await fetchLocalJavaVersions()
-		}}></DeleteModal>
+		<DeleteModal
+			open={showDeleteModal}
+			message={deleteModalMessage}
+			onClose={() => {
+				showDeleteModal = false;
+			}}
+			onDelete={async () => {
+				showDeleteModal = false;
+				// @ts-expect-error womp womp
+				await axios.delete('http://localhost:6502/api/jvm/' + JavaVersion[deletedJavaVersion]);
+				await fetchLocalJavaVersions();
+			}}
+		></DeleteModal>
 	{/if}
 </Col>

@@ -6,7 +6,7 @@
 
 <Container>
 	<h1>Settings</h1>
-	<Row>	
+	<Row>
 		<InstanceSettings></InstanceSettings>
 	</Row>
 	<Row>

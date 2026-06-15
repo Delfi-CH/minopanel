@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		Navbar,
-		Nav,
-		NavbarToggler,
-		Collapse,
-		NavbarBrand
-	} from '@sveltestrap/sveltestrap';
+	import { Navbar, Nav, NavbarToggler, Collapse, NavbarBrand } from '@sveltestrap/sveltestrap';
 	import NavigationLink from '$lib/components/NavigationLink.svelte';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';

@@ -15,7 +15,7 @@
 		string,
 		DownloadCallback
 	>();
-	let runningDownloadCount = $derived(runningDownloads.size)
+	let runningDownloadCount = $derived(runningDownloads.size);
 
 	onMount(() => {
 		doDownloads();
@@ -41,13 +41,15 @@
 			});
 		});
 		if (allDownloads.length < 1) {
-			runningDownloads.clear()
+			runningDownloads.clear();
 		}
 	}
 </script>
 
 <Dropdown nav inNavbar class="m-1" autoClose={false}>
-	<DropdownToggle nav caret>Downloads {runningDownloadCount > 0 ? `(${runningDownloadCount} running)`: ""}</DropdownToggle>
+	<DropdownToggle nav caret
+		>Downloads {runningDownloadCount > 0 ? `(${runningDownloadCount} running)` : ''}</DropdownToggle
+	>
 	<DropdownMenu end>
 		<DropdownItem style="min-width: 25vw;">All Downloads</DropdownItem>
 		{#each runningDownloads as download, index (index)}
@@ -55,8 +57,8 @@
 			<DropdownItem>{download[0]} | {download[1].message}</DropdownItem>
 			<DropdownItem
 				><Progress striped bar={true} value={download[1].progress} color="info"
-					>{Math.floor(download[1].progress ?? 0)}%	</Progress
-				></DropdownItem
+					>{Math.floor(download[1].progress ?? 0)}%
+				</Progress></DropdownItem
 			>
 		{/each}
 	</DropdownMenu>
