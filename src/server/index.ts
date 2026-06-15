@@ -9,7 +9,8 @@ import {
 	loadJavaFile,
 	loadServerFiles,
 	loadServerFile,
-	deleteJavaFile
+	deleteJavaFile,
+	deleteServerFile
 } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
@@ -133,7 +134,17 @@ app.get('/api/server/static', (req, res) => {
 
 app.get('/api/server/static/:name', (req, res) => {
 	const name = req.params.name;
-	res.send(loadServerFile(config.paths, name));
+	const srv = loadServerFile(config.paths, name)
+	if (!srv) {
+		res.sendStatus(404)
+		return
+	}
+	res.send(srv);
+});
+
+app.delete('/api/server/static/:name', async (req, res) => {
+	const name = req.params.name;
+	res.send(deleteServerFile(config.paths, name));
 });
 
 app.post('/api/server/static', async (req, res) => {

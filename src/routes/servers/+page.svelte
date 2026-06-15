@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { ModloaderType, type MCServer } from '$lib/servers/servers';
 	import {
 		Container,
@@ -44,7 +45,7 @@
 			{#each inactiveList as srv (srv.name)}
 				<Card class="m-1">
 					<CardHeader>
-						<CardTitle>{srv.name}</CardTitle>
+						<CardTitle><a href={resolve("/servers/[slug]", {slug: srv.name})}>{srv.name}</a></CardTitle>
 					</CardHeader>
 					<CardBody>
 						<p>Minecraft {srv.mcVersion}</p>
@@ -58,9 +59,7 @@
 						<p>Installed: {srv.installed ? "Yes" : "No"}</p>
 					</CardBody>
 					<CardFooter>
-						<Button onclick={async ()=> {
-							await axios.post("http://localhost:6502/api/server/static/" + srv.name + "/setup")
-						}}>Run Setup</Button>
+						<Button href={resolve("/servers/[slug]", {slug: srv.name})}>View</Button>
 					</CardFooter>
 				</Card>
 			{/each}

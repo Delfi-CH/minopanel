@@ -149,3 +149,31 @@ export function loadServerFile(paths: ApplicatonPaths, serverName: string) {
 		return null;
 	}
 }
+
+export function deleteServerFile(paths: ApplicatonPaths, name: string) {
+	try {
+		fs.rmSync(paths.mcServerMetadataDirectory + '/' + name + '.json', {
+			force: true,
+			recursive: false,
+			maxRetries: 3,
+			retryDelay: 100
+		});
+	} catch (err) {
+		console.error(
+			`Failed to delete file ${paths.mcServerMetadataDirectory}/${name}.json: ${err}`
+		);
+		return false;
+	}
+	try {
+		fs.rmSync(paths.mcServerDirectory + '/' + name, {
+			force: true,
+			recursive: true,
+			maxRetries: 3,
+			retryDelay: 100
+		});
+	} catch (err) {
+		console.error(`Failed to delete directory ${paths.mcServerDirectory}/${name}: ${err}`);
+		return false;
+	}
+	return true;
+}

@@ -9,12 +9,12 @@
 </script>
 
 <Modal isOpen={open} {toggle}>
-	<ModalHeader {toggle}>Warning!</ModalHeader>
+	<ModalHeader {toggle} class="bg-warning text-white">Warning!</ModalHeader>
 	<ModalBody>
 		Are you sure you want do delete {message}?
 	</ModalBody>
 	<ModalFooter>
-		<Button onclick={onDelete}>Delete</Button>
+		<Button onclick={onDelete} color="warning">Delete</Button>
 		<Button onclick={onClose}>Close</Button>
 	</ModalFooter>
 </Modal>
