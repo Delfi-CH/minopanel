@@ -121,6 +121,12 @@ app.get('/api/proxy/forge-metadata', async (req, res) => {
 	res.send(proxyRes.data);
 });
 
+app.get("/api/proxy/neoforge-maven/sha256/:neoforgeVersion", async (req, res)=>{
+	const neoforgeVersion = req.params.neoforgeVersion
+	const proxyRes = await axios.get(`https://maven.neoforged.net/releases/net/neoforged/neoforge/${neoforgeVersion}/neoforge-${neoforgeVersion}-installer.jar.sha256`)
+	res.send(proxyRes.data)
+})
+
 app.get('/api/server/static', (req, res) => {
 	res.send(loadServerFiles(config.paths));
 });

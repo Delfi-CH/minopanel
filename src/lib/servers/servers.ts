@@ -5,6 +5,7 @@ import { CorretoOpenJDK, JavaVersion } from '../jvm/java';
 import { ApplicatonPaths } from '../config/paths';
 import { webDownloadManager } from '$lib/download/downloader';
 import { DownloaderHelper } from 'node-downloader-helper';
+import { OperatingSystem } from '$lib/system';
 
 class MCServer {
 	name: string;
@@ -90,34 +91,28 @@ class MCServer {
 			const eulaPath = paths.mcServerDirectory + '/' + this.name + "/eula.txt"
 			await writeFile(eulaPath, "eula=true", "utf8")
 			if (this.modloader.type === ModloaderType.Forge) {
-				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/forge-installer.jar", "--installServer"])
+				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/forge-installer.jar", "--installServer"], {
+					cwd: paths.mcServerDirectory + '/' + this.name
+				})
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
 					throw new Error("installation failed!")
-				} else {
-					await rm(paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", {
-						force: true
-					})
 				}
+				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
+				this.serverExecutableFilePath = java.system === OperatingSystem.Windows ? paths.mcServerDirectory + '/' + this.name + "/run.bat" : paths.mcServerDirectory + '/' + this.name + "/run.sh"
 			} else if (this.modloader.type === ModloaderType.NeoForge) {
-				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", "--installServer"])
+				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", "--installServer", paths.mcServerDirectory + '/' + this.name], {cwd: paths.mcServerDirectory + '/' + this.name})
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
 					throw new Error("installation failed!")
-				} else {
-					await rm(paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", {
-						force: true
-					})
 				}
+				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
+				this.serverExecutableFilePath = java.system === OperatingSystem.Windows ? paths.mcServerDirectory + '/' + this.name + "/run.bat" : paths.mcServerDirectory + '/' + this.name + "/run.sh"
 			} else if (this.modloader.type === ModloaderType.Fabric) {
 				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/fabric-installer.jar", "server", "-mcversion", this.mcVersion, "-dir", paths.mcServerDirectory + '/' + this.name])
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
 					throw new Error("installation failed!")
-				} else {
-					await rm(paths.mcServerDirectory + '/' + this.name + "/fabric-installer.jar", {
-						force: true
-					})
 				}
 				const tmpVanilla = new Modloader(ModloaderType.Vanilla, this.mcVersion);
 				await tmpVanilla.buildURL()
@@ -132,7 +127,15 @@ class MCServer {
 				dl.on("end", ()=>{
 					return;
 				})
+				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
+				this.serverExecutableFilePath = paths.mcServerDirectory + '/' + this.name + "/fabric-server-launch.jar"
+			} else {
+				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
+				this.serverExecutableFilePath = paths.mcServerDirectory + '/' + this.name + "/server.jar"
 			}
+
+			this.installed = true
+			await this.writeToDisk(paths)	
 		} else {
 			throw new Error("not a nodejs enviroment");
 		}
@@ -185,6 +188,7 @@ class Modloader {
 		} else if (this.type === ModloaderType.Forge) {
 			const metadata = await axios.get('http://localhost:6502/api/proxy/forge-metadata');
 			const versionBase = metadata.data[this.gameVersion].reverse()[0];
+			console.log(metadata.data)
 			this.modloaderVersion = versionBase.replace(this.gameVersion + '-', '');
 			this.url = `https://maven.minecraftforge.net/net/minecraftforge/forge/${versionBase}/forge-${versionBase}-installer.jar`;
 			const shaRes = await axios.get(this.url + '.sha256');
@@ -206,7 +210,7 @@ class Modloader {
 			});
 			this.modloaderVersion = compatibleNeoforgeVersions.reverse()[0];
 			this.url = `https://maven.neoforged.net/releases/net/neoforged/neoforge/${this.modloaderVersion}/neoforge-${this.modloaderVersion}-installer.jar`;
-			const shaRes = await axios.get(this.url + '.sha256');
+			const shaRes = await axios.get("http://localhost:6502/api/proxy/neoforge-maven/sha256/" + this.modloaderVersion);
 			this.sha256sum = shaRes.data;
 		} else if (this.type === ModloaderType.Fabric) {
 			this.modloaderVersion = 'latest';
@@ -274,8 +278,9 @@ class Modloader {
 		} else if (type === ModloaderType.Forge) {
 			const metadata = await axios.get('http://localhost:6502/api/proxy/forge-metadata');
 			let versions = Object.keys(metadata.data);
+			const reallyOldVersions = /^1\.[1-4](\.[0-9])?$/m
 			versions = versions.map((v) => {
-				if (!v.includes('_')) {
+				if (!v.includes('_') && !reallyOldVersions.test(v)) {
 					return v;
 				} else {
 					return '';
