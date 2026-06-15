@@ -1,5 +1,6 @@
 import { ApplicatonPaths } from '$lib/config/paths';
 import { OperatingSystem, MachineArchitecture } from '$lib/system';
+import axios from 'axios';
 import isNode from 'is-node';
 
 export enum JavaVersion {
@@ -72,6 +73,19 @@ export class CorretoOpenJDK {
 			}
 		} else {
 			throw new Error('not a nodejs enviroment');
+		}
+	}
+
+	async delete() {
+		if (isNode) {
+			const { deleteJavaFile } = await import("../data/data")
+			if (deleteJavaFile(new ApplicatonPaths(this.system), this.version)) {
+				return true
+			} else {
+				return false
+			}
+		} else {
+			await axios.delete("/api/jvm/" + this.version)
 		}
 	}
 }

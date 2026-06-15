@@ -3,7 +3,7 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 import { downloadWss } from './sockets/downloadSocket.ts';
-import { loadConfig, loadJavaFiles, loadJavaFile, loadServerFiles, loadServerFile } from '../lib/data/data.ts';
+import { loadConfig, loadJavaFiles, loadJavaFile, loadServerFiles, loadServerFile, deleteJavaFile } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
 import { MCServer } from '../lib/servers/servers.ts';
@@ -91,6 +91,17 @@ app.post('/api/jvm/:version/test', (req, res) => {
 			res.status(418).send('failed');
 		});
 });
+
+app.delete('/api/jvm/:version', (req,res)=>{
+	const version = JavaVersion[req.params.version as keyof typeof JavaVersion];
+	if (deleteJavaFile(config.paths, version)) {
+		res.sendStatus(204)
+		return
+	} else {
+		res.sendStatus(404)
+		return
+	}
+})
 
 app.get('/api/config', (req, res) => {
 	res.send(config);

@@ -86,6 +86,32 @@ export function loadJavaFile(paths: ApplicatonPaths, version: JavaVersion) {
 	}
 }
 
+export function deleteJavaFile(paths: ApplicatonPaths, version: JavaVersion) {
+	try {
+		fs.rmSync(paths.jdkMetadataDirectory + '/openjdk' + version + '.json', {
+			force: true,
+			recursive: false,
+			maxRetries: 3,
+			retryDelay: 100
+		})
+	} catch (err) {
+		console.error(`Failed to delete file ${paths.jdkMetadataDirectory}/openjdk${version}.json: ${err}`)
+		return false
+	}
+	try {
+		fs.rmSync(paths.jdkDirectory + '/openjdk' + version, {
+			force: true,
+			recursive: true,
+			maxRetries: 3,
+			retryDelay: 100
+		})
+	} catch (err) {
+		console.error(`Failed to delete directory ${paths.jdkDirectory}/openjdk${version}: ${err}`)
+		return false
+	}
+	return true
+}
+
 export function loadServerFiles(paths: ApplicatonPaths) {
 	let serverList: MCServer[] = [];
 	try {
