@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import isNode from 'is-node';
-import { JavaVersion } from '../jvm/java';
+import { CorretoOpenJDK, JavaVersion } from '../jvm/java';
 import { ApplicatonPaths } from '../config/paths';
 import { webDownloadManager } from '$lib/download/downloader';
+import { DownloaderHelper } from 'node-downloader-helper';
 
 class MCServer {
 	name: string;
@@ -81,6 +82,62 @@ class MCServer {
 			filename: filename
 		});
 		webDownloadManager.startDownloadSilent(id);
+	}
+
+	async runSetup(paths: ApplicatonPaths, java: CorretoOpenJDK) {
+		if (isNode) {
+			const { writeFile, rm } = await import("node:fs/promises")
+			const { spawn } = await import('node:child_process');
+			const { once } = await import('node:events');
+			const eulaPath = paths.mcServerDirectory + '/' + this.name + "/eula.txt"
+			await writeFile(eulaPath, "eula=true", "utf8")
+			if (this.modloader.type === ModloaderType.Forge) {
+				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/forge-installer.jar", "--installServer"])
+				const [code] = await once(installer, 'close');
+				if (code !== 0) {
+					throw new Error("installation failed!")
+				} else {
+					await rm(paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", {
+						force: true
+					})
+				}
+			} else if (this.modloader.type === ModloaderType.NeoForge) {
+				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", "--installServer"])
+				const [code] = await once(installer, 'close');
+				if (code !== 0) {
+					throw new Error("installation failed!")
+				} else {
+					await rm(paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", {
+						force: true
+					})
+				}
+			} else if (this.modloader.type === ModloaderType.Fabric) {
+				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/fabric-installer.jar", "server", "-mcversion", this.mcVersion, "-dir", paths.mcServerDirectory + '/' + this.name])
+				const [code] = await once(installer, 'close');
+				if (code !== 0) {
+					throw new Error("installation failed!")
+				} else {
+					await rm(paths.mcServerDirectory + '/' + this.name + "/fabric-installer.jar", {
+						force: true
+					})
+				}
+				const tmpVanilla = new Modloader(ModloaderType.Vanilla, this.mcVersion);
+				await tmpVanilla.buildURL()
+
+				if (!tmpVanilla.url) {
+					throw new Error("no url.")
+				}
+
+				const dl = new DownloaderHelper(tmpVanilla.url, paths.mcServerDirectory + '/' + this.name)
+				await dl.start()
+				dl.on('error', (err) => {throw err})
+				dl.on("end", ()=>{
+					return;
+				})
+			}
+		} else {
+			throw new Error("not a nodejs enviroment");
+		}
 	}
 }
 
@@ -165,6 +222,8 @@ class Modloader {
 				'https://maven.quiltmc.org/repository/release/org/quiltmc/quilt-installer/0.13.1/quilt-installer-0.13.1.jar';
 			const shaRes = await axios.get(this.url + '.sha256');
 			this.sha256sum = shaRes.data;
+		} else {
+			this.url = "/"
 		}
 	}
 

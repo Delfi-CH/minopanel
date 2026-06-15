@@ -149,6 +149,36 @@ app.post('/api/server/static', async (req, res) => {
 	return;
 });
 
+app.post('/api/server/static/:name/setup', async (req, res) => {
+	const name = req.params.name;
+	const jdks = loadJavaFiles(config.paths)
+	const srv = loadServerFile(config.paths, name)
+	if (!srv || !jdks) {
+		res.sendStatus(404)
+		return
+	}
+	let selectedJDK = jdks.find((jdk)=> jdk.version === JavaVersion.OpenJdk26)
+	if (!selectedJDK) {
+		selectedJDK = jdks.find((jdk)=> jdk.version === JavaVersion.OpenJdk25)
+	}
+	if (!selectedJDK) {
+		selectedJDK = jdks.find((jdk)=> jdk.version === JavaVersion.OpenJdk21)
+	}
+	if (!selectedJDK) {
+		res.sendStatus(404)
+		return
+	}
+	try {
+		await srv.runSetup(config.paths, selectedJDK)
+		res.sendStatus(201)
+		return
+	} catch (err) {
+		console.error("An error occured during server setup: " + err)
+		res.sendStatus(500)
+		return
+	}
+})
+
 app.get('/api/downloads/static', (req, res) => {
 	res.send(downloadManager.getAll());
 });

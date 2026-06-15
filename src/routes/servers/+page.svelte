@@ -7,7 +7,10 @@
 		Card,
 		CardBody,
 		CardHeader,
-		CardTitle
+		CardTitle,
+		Button,
+		CardFooter
+
 	} from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
@@ -19,6 +22,7 @@
 		const tmpList = await axios.get('http://localhost:6502/api/server/static');
 		activeList = tmpList.data.filter((srv) => srv.running === true);
 		inactiveList = tmpList.data.filter((srv) => srv.running === false);
+
 	});
 </script>
 
@@ -28,7 +32,7 @@
 		<Col>
 			<h2>Running</h2>
 			{#each activeList as srv (srv.name)}
-				<Card>
+				<Card class="m-1">
 					<CardHeader>
 						<CardTitle>{srv.name}</CardTitle>
 					</CardHeader>
@@ -38,7 +42,7 @@
 		<Col>
 			<h2>Stopped</h2>
 			{#each inactiveList as srv (srv.name)}
-				<Card>
+				<Card class="m-1">
 					<CardHeader>
 						<CardTitle>{srv.name}</CardTitle>
 					</CardHeader>
@@ -49,7 +53,15 @@
 						{:else}
 							<p>{srv.modloader.type}</p>
 						{/if}
+						<p>Java Version: {srv.preferedJavaVersion}</p>
+						<p>Allocated RAM: {srv.memoryMin} - {srv.memoryMax}</p>
+						<p>Installed: {srv.installed ? "Yes" : "No"}</p>
 					</CardBody>
+					<CardFooter>
+						<Button onclick={async ()=> {
+							await axios.post("http://localhost:6502/api/server/static/" + srv.name + "/setup")
+						}}>Run Setup</Button>
+					</CardFooter>
 				</Card>
 			{/each}
 		</Col>

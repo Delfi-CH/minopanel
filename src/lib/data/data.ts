@@ -137,7 +137,7 @@ export function loadServerFiles(paths: ApplicatonPaths) {
 
 export function loadServerFile(paths: ApplicatonPaths, serverName: string) {
 	try {
-		return CorretoOpenJDK.fromJSON(
+		return MCServer.fromJSON(
 			JSON.parse(
 				fs.readFileSync(paths.mcServerMetadataDirectory + '/' + serverName + '.json', 'utf-8')
 			)
