@@ -10,6 +10,6 @@ export async function load({ params }) {
 			post: res.data
 		};
 	} catch {
-		error(404, "Server not found")
+		error(404, 'Server not found');
 	}
 }

@@ -11,7 +11,6 @@
 		CardTitle,
 		Button,
 		CardFooter
-
 	} from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
@@ -23,7 +22,6 @@
 		const tmpList = await axios.get('http://localhost:6502/api/server/static');
 		activeList = tmpList.data.filter((srv) => srv.running === true);
 		inactiveList = tmpList.data.filter((srv) => srv.running === false);
-
 	});
 </script>
 
@@ -45,7 +43,9 @@
 			{#each inactiveList as srv (srv.name)}
 				<Card class="m-1">
 					<CardHeader>
-						<CardTitle><a href={resolve("/servers/[slug]", {slug: srv.name})}>{srv.name}</a></CardTitle>
+						<CardTitle
+							><a href={resolve('/servers/[slug]', { slug: srv.name })}>{srv.name}</a></CardTitle
+						>
 					</CardHeader>
 					<CardBody>
 						<p>Minecraft {srv.mcVersion}</p>
@@ -56,10 +56,10 @@
 						{/if}
 						<p>Java Version: {srv.preferedJavaVersion}</p>
 						<p>Allocated RAM: {srv.memoryMin} - {srv.memoryMax}</p>
-						<p>Installed: {srv.installed ? "Yes" : "No"}</p>
+						<p>Installed: {srv.installed ? 'Yes' : 'No'}</p>
 					</CardBody>
 					<CardFooter>
-						<Button href={resolve("/servers/[slug]", {slug: srv.name})}>View</Button>
+						<Button href={resolve('/servers/[slug]', { slug: srv.name })}>View</Button>
 					</CardFooter>
 				</Card>
 			{/each}

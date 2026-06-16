@@ -42,12 +42,12 @@ class MCServer {
 	static fromJSON(json: any) {
 		const srv = new MCServer(json.name, json.mcVersion, json.modloader, json.preferedJavaVersion);
 		srv.serverExecutableFilePath = json.serverExecutableFilePath;
-		srv.serverDirectory = json.serverDirectory
+		srv.serverDirectory = json.serverDirectory;
 		srv.serverExecutableFilePath = json.serverPropertiesFilePath;
 		srv.memoryMin = json.memoryMin;
 		srv.memoryMax = json.memoryMax;
 		srv.running = json.running;
-		srv.serverExecutableArgs = json.serverExecutableArgs
+		srv.serverExecutableArgs = json.serverExecutableArgs;
 		srv.installed = json.installed;
 		return srv;
 	}
@@ -86,64 +86,114 @@ class MCServer {
 
 	async runSetup(paths: ApplicatonPaths, java: CorretoOpenJDK) {
 		if (isNode) {
-			const { writeFile } = await import("node:fs/promises")
+			const { writeFile } = await import('node:fs/promises');
 			const { spawn } = await import('node:child_process');
 			const { once } = await import('node:events');
-			const eulaPath = paths.mcServerDirectory + '/' + this.name + "/eula.txt"
-			await writeFile(eulaPath, "eula=true", "utf8")
+			const eulaPath = paths.mcServerDirectory + '/' + this.name + '/eula.txt';
+			await writeFile(eulaPath, 'eula=true', 'utf8');
 			if (this.modloader.type === ModloaderType.Forge) {
-				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/forge-installer.jar", "--installServer"], {
-					cwd: paths.mcServerDirectory + '/' + this.name
-				})
+				const installer = spawn(
+					java.pathOnDisk + '/bin/java',
+					[
+						'-jar',
+						paths.mcServerDirectory + '/' + this.name + '/forge-installer.jar',
+						'--installServer'
+					],
+					{
+						cwd: paths.mcServerDirectory + '/' + this.name
+					}
+				);
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
-					throw new Error("installation failed!")
+					throw new Error('installation failed!');
 				}
-				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
-				this.serverExecutableFilePath = java.system === OperatingSystem.Windows ? paths.mcServerDirectory + '/' + this.name + "/run.bat" : paths.mcServerDirectory + '/' + this.name + "/run.sh"
-				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`, "nogui"]
+				this.serverPropertiesFilePath =
+					paths.mcServerDirectory + '/' + this.name + '/server.properties';
+				this.serverExecutableFilePath =
+					java.system === OperatingSystem.Windows
+						? paths.mcServerDirectory + '/' + this.name + '/run.bat'
+						: paths.mcServerDirectory + '/' + this.name + '/run.sh';
+				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`, `-Xms${this.memoryMin}`, 'nogui'];
 			} else if (this.modloader.type === ModloaderType.NeoForge) {
-				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/neoforge-installer.jar", "--installServer", paths.mcServerDirectory + '/' + this.name], {cwd: paths.mcServerDirectory + '/' + this.name})
+				const installer = spawn(
+					java.pathOnDisk + '/bin/java',
+					[
+						'-jar',
+						paths.mcServerDirectory + '/' + this.name + '/neoforge-installer.jar',
+						'--installServer',
+						paths.mcServerDirectory + '/' + this.name
+					],
+					{ cwd: paths.mcServerDirectory + '/' + this.name }
+				);
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
-					throw new Error("installation failed!")
+					throw new Error('installation failed!');
 				}
-				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
-				this.serverExecutableFilePath = java.system === OperatingSystem.Windows ? paths.mcServerDirectory + '/' + this.name + "/run.bat" : paths.mcServerDirectory + '/' + this.name + "/run.sh"
-				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`, "nogui"]
+				this.serverPropertiesFilePath =
+					paths.mcServerDirectory + '/' + this.name + '/server.properties';
+				this.serverExecutableFilePath =
+					java.system === OperatingSystem.Windows
+						? paths.mcServerDirectory + '/' + this.name + '/run.bat'
+						: paths.mcServerDirectory + '/' + this.name + '/run.sh';
+				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`, `-Xms${this.memoryMin}`, 'nogui'];
 			} else if (this.modloader.type === ModloaderType.Fabric) {
-				const installer = spawn(java.pathOnDisk + "/bin/java", ["-jar", paths.mcServerDirectory + '/' + this.name + "/fabric-installer.jar", "server", "-mcversion", this.mcVersion, "-dir", paths.mcServerDirectory + '/' + this.name])
+				const installer = spawn(java.pathOnDisk + '/bin/java', [
+					'-jar',
+					paths.mcServerDirectory + '/' + this.name + '/fabric-installer.jar',
+					'server',
+					'-mcversion',
+					this.mcVersion,
+					'-dir',
+					paths.mcServerDirectory + '/' + this.name
+				]);
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
-					throw new Error("installation failed!")
+					throw new Error('installation failed!');
 				}
 				const tmpVanilla = new Modloader(ModloaderType.Vanilla, this.mcVersion);
-				await tmpVanilla.buildURL()
+				await tmpVanilla.buildURL();
 
 				if (!tmpVanilla.url) {
-					throw new Error("no url.")
+					throw new Error('no url.');
 				}
 
-				const dl = new DownloaderHelper(tmpVanilla.url, paths.mcServerDirectory + '/' + this.name)
-				await dl.start()
-				dl.on('error', (err) => {throw err})
-				dl.on("end", ()=>{
+				const dl = new DownloaderHelper(tmpVanilla.url, paths.mcServerDirectory + '/' + this.name);
+				await dl.start();
+				dl.on('error', (err) => {
+					throw err;
+				});
+				dl.on('end', () => {
 					return;
-				})
-				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
-				this.serverExecutableFilePath = paths.mcServerDirectory + '/' + this.name + "/fabric-server-launch.jar"
-				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`,"-jar", this.serverExecutableFilePath,  "nogui"]
+				});
+				this.serverPropertiesFilePath =
+					paths.mcServerDirectory + '/' + this.name + '/server.properties';
+				this.serverExecutableFilePath =
+					paths.mcServerDirectory + '/' + this.name + '/fabric-server-launch.jar';
+				this.serverExecutableArgs = [
+					`-Xmx${this.memoryMax}`,
+					`-Xms${this.memoryMin}`,
+					'-jar',
+					this.serverExecutableFilePath,
+					'nogui'
+				];
 			} else {
-				this.serverPropertiesFilePath = paths.mcServerDirectory + '/' + this.name + "/server.properties"
-				this.serverExecutableFilePath = paths.mcServerDirectory + '/' + this.name + "/server.jar"
-				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`,"-jar", this.serverExecutableFilePath,  "nogui"]
+				this.serverPropertiesFilePath =
+					paths.mcServerDirectory + '/' + this.name + '/server.properties';
+				this.serverExecutableFilePath = paths.mcServerDirectory + '/' + this.name + '/server.jar';
+				this.serverExecutableArgs = [
+					`-Xmx${this.memoryMax}`,
+					`-Xms${this.memoryMin}`,
+					'-jar',
+					this.serverExecutableFilePath,
+					'nogui'
+				];
 			}
 
-			this.installed = true
-			this.serverDirectory = paths.mcServerDirectory + '/' + this.name
-			await this.writeToDisk(paths)	
+			this.installed = true;
+			this.serverDirectory = paths.mcServerDirectory + '/' + this.name;
+			await this.writeToDisk(paths);
 		} else {
-			throw new Error("not a nodejs enviroment");
+			throw new Error('not a nodejs enviroment');
 		}
 	}
 }
@@ -194,7 +244,7 @@ class Modloader {
 		} else if (this.type === ModloaderType.Forge) {
 			const metadata = await axios.get('http://localhost:6502/api/proxy/forge-metadata');
 			const versionBase = metadata.data[this.gameVersion].reverse()[0];
-			console.log(metadata.data)
+			console.log(metadata.data);
 			this.modloaderVersion = versionBase.replace(this.gameVersion + '-', '');
 			this.url = `https://maven.minecraftforge.net/net/minecraftforge/forge/${versionBase}/forge-${versionBase}-installer.jar`;
 			const shaRes = await axios.get(this.url + '.sha256');
@@ -216,7 +266,9 @@ class Modloader {
 			});
 			this.modloaderVersion = compatibleNeoforgeVersions.reverse()[0];
 			this.url = `https://maven.neoforged.net/releases/net/neoforged/neoforge/${this.modloaderVersion}/neoforge-${this.modloaderVersion}-installer.jar`;
-			const shaRes = await axios.get("http://localhost:6502/api/proxy/neoforge-maven/sha256/" + this.modloaderVersion);
+			const shaRes = await axios.get(
+				'http://localhost:6502/api/proxy/neoforge-maven/sha256/' + this.modloaderVersion
+			);
 			this.sha256sum = shaRes.data;
 		} else if (this.type === ModloaderType.Fabric) {
 			this.modloaderVersion = 'latest';
@@ -225,7 +277,7 @@ class Modloader {
 			const shaRes = await axios.get(this.url + '.sha256');
 			this.sha256sum = shaRes.data;
 		} else {
-			this.url = "/"
+			this.url = '/';
 		}
 	}
 
@@ -284,7 +336,7 @@ class Modloader {
 		} else if (type === ModloaderType.Forge) {
 			const metadata = await axios.get('http://localhost:6502/api/proxy/forge-metadata');
 			let versions = Object.keys(metadata.data);
-			const reallyOldVersions = /^1\.[1-4](\.[0-9])?$/m
+			const reallyOldVersions = /^1\.[1-4](\.[0-9])?$/m;
 			versions = versions.map((v) => {
 				if (!v.includes('_') && !reallyOldVersions.test(v)) {
 					return v;

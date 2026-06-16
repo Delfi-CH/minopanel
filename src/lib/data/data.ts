@@ -159,9 +159,7 @@ export function deleteServerFile(paths: ApplicatonPaths, name: string) {
 			retryDelay: 100
 		});
 	} catch (err) {
-		console.error(
-			`Failed to delete file ${paths.mcServerMetadataDirectory}/${name}.json: ${err}`
-		);
+		console.error(`Failed to delete file ${paths.mcServerMetadataDirectory}/${name}.json: ${err}`);
 		return false;
 	}
 	try {

@@ -18,7 +18,7 @@ import { MCServer } from '../lib/servers/servers.ts';
 import { DownloadManager } from '../lib/download/downloader.ts';
 import { ActiveServerInstance, ServerManager } from '../lib/servers/manager.ts';
 export const downloadManager = new DownloadManager();
-export const serverManager = new ServerManager()
+export const serverManager = new ServerManager();
 
 const app = express();
 app.use(express.json());
@@ -124,11 +124,13 @@ app.get('/api/proxy/forge-metadata', async (req, res) => {
 	res.send(proxyRes.data);
 });
 
-app.get("/api/proxy/neoforge-maven/sha256/:neoforgeVersion", async (req, res)=>{
-	const neoforgeVersion = req.params.neoforgeVersion
-	const proxyRes = await axios.get(`https://maven.neoforged.net/releases/net/neoforged/neoforge/${neoforgeVersion}/neoforge-${neoforgeVersion}-installer.jar.sha256`)
-	res.send(proxyRes.data)
-})
+app.get('/api/proxy/neoforge-maven/sha256/:neoforgeVersion', async (req, res) => {
+	const neoforgeVersion = req.params.neoforgeVersion;
+	const proxyRes = await axios.get(
+		`https://maven.neoforged.net/releases/net/neoforged/neoforge/${neoforgeVersion}/neoforge-${neoforgeVersion}-installer.jar.sha256`
+	);
+	res.send(proxyRes.data);
+});
 
 app.get('/api/server/static', (req, res) => {
 	res.send(loadServerFiles(config.paths));
@@ -136,29 +138,29 @@ app.get('/api/server/static', (req, res) => {
 
 app.get('/api/server/static/:name', (req, res) => {
 	const name = req.params.name;
-	const srv = loadServerFile(config.paths, name)
+	const srv = loadServerFile(config.paths, name);
 	if (!srv) {
-		res.sendStatus(404)
-		return
+		res.sendStatus(404);
+		return;
 	}
 	res.send(srv);
 });
 
 app.get('/api/server/static/:name/start', (req, res) => {
 	const name = req.params.name;
-	const srv = loadServerFile(config.paths, name)
+	const srv = loadServerFile(config.paths, name);
 	if (!srv) {
-		res.sendStatus(404)
-		return
+		res.sendStatus(404);
+		return;
 	}
-	const java = loadJavaFile(config.paths, srv.preferedJavaVersion)
+	const java = loadJavaFile(config.paths, srv.preferedJavaVersion);
 	if (!java) {
-		res.sendStatus(404)
-		return
+		res.sendStatus(404);
+		return;
 	}
-	const srvInstance = new ActiveServerInstance(srv, java)
-	serverManager.addInstance(srvInstance.base.name, srvInstance)
-	serverManager.startInstance(srvInstance.base.name)
+	const srvInstance = new ActiveServerInstance(srv, java);
+	serverManager.addInstance(srvInstance.base.name, srvInstance);
+	serverManager.startInstance(srvInstance.base.name);
 });
 
 app.delete('/api/server/static/:name', async (req, res) => {
@@ -187,33 +189,33 @@ app.post('/api/server/static', async (req, res) => {
 
 app.post('/api/server/static/:name/setup', async (req, res) => {
 	const name = req.params.name;
-	const jdks = loadJavaFiles(config.paths)
-	const srv = loadServerFile(config.paths, name)
+	const jdks = loadJavaFiles(config.paths);
+	const srv = loadServerFile(config.paths, name);
 	if (!srv || !jdks) {
-		res.sendStatus(404)
-		return
+		res.sendStatus(404);
+		return;
 	}
-	let selectedJDK = jdks.find((jdk)=> jdk.version === JavaVersion.OpenJdk26)
+	let selectedJDK = jdks.find((jdk) => jdk.version === JavaVersion.OpenJdk26);
 	if (!selectedJDK) {
-		selectedJDK = jdks.find((jdk)=> jdk.version === JavaVersion.OpenJdk25)
-	}
-	if (!selectedJDK) {
-		selectedJDK = jdks.find((jdk)=> jdk.version === JavaVersion.OpenJdk21)
+		selectedJDK = jdks.find((jdk) => jdk.version === JavaVersion.OpenJdk25);
 	}
 	if (!selectedJDK) {
-		res.sendStatus(404)
-		return
+		selectedJDK = jdks.find((jdk) => jdk.version === JavaVersion.OpenJdk21);
+	}
+	if (!selectedJDK) {
+		res.sendStatus(404);
+		return;
 	}
 	try {
-		await srv.runSetup(config.paths, selectedJDK)
-		res.sendStatus(201)
-		return
+		await srv.runSetup(config.paths, selectedJDK);
+		res.sendStatus(201);
+		return;
 	} catch (err) {
-		console.error("An error occured during server setup: " + err)
-		res.sendStatus(500)
-		return
+		console.error('An error occured during server setup: ' + err);
+		res.sendStatus(500);
+		return;
 	}
-})
+});
 
 app.get('/api/downloads/static', (req, res) => {
 	res.send(downloadManager.getAll());
