@@ -114,9 +114,13 @@ class MCServer {
 					java.system === OperatingSystem.Windows
 						? paths.mcServerDirectory + '/' + this.name + '/run.bat'
 						: paths.mcServerDirectory + '/' + this.name + '/run.sh';
-				const userJvmArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`]
-				const seperator = java.system === OperatingSystem.Windows ? "\r\n" : "\n"
-				await writeFile(paths.mcServerDirectory + '/' + this.name + '/user_jvm_args.txt', userJvmArgs.join(seperator), 'utf-8')
+				const userJvmArgs = [`-Xmx${this.memoryMax}`, `-Xms${this.memoryMin}`];
+				const seperator = java.system === OperatingSystem.Windows ? '\r\n' : '\n';
+				await writeFile(
+					paths.mcServerDirectory + '/' + this.name + '/user_jvm_args.txt',
+					userJvmArgs.join(seperator),
+					'utf-8'
+				);
 				this.serverExecutableArgs = ['nogui'];
 			} else if (this.modloader.type === ModloaderType.NeoForge) {
 				const installer = spawn(
@@ -140,25 +144,33 @@ class MCServer {
 					java.system === OperatingSystem.Windows
 						? paths.mcServerDirectory + '/' + this.name + '/run.bat'
 						: paths.mcServerDirectory + '/' + this.name + '/run.sh';
-				const userJvmArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`]
-				const seperator = java.system === OperatingSystem.Windows ? "\r\n" : "\n"
-				await writeFile(paths.mcServerDirectory + '/' + this.name + '/user_jvm_args.txt', userJvmArgs.join(seperator), 'utf-8')
+				const userJvmArgs = [`-Xmx${this.memoryMax}`, `-Xms${this.memoryMin}`];
+				const seperator = java.system === OperatingSystem.Windows ? '\r\n' : '\n';
+				await writeFile(
+					paths.mcServerDirectory + '/' + this.name + '/user_jvm_args.txt',
+					userJvmArgs.join(seperator),
+					'utf-8'
+				);
 				this.serverExecutableArgs = ['nogui'];
 
 				// Patching neoforge run.sh to actually show stdout/stderr
-				let runsh = await readFile(paths.mcServerDirectory + '/' + this.name + '/run.sh', "utf8")
-				runsh = 	runsh.replace("exec", "")
-				await writeFile(paths.mcServerDirectory + '/' + this.name + '/run.sh', runsh, "utf-8")
+				let runsh = await readFile(paths.mcServerDirectory + '/' + this.name + '/run.sh', 'utf8');
+				runsh = runsh.replace('exec', '');
+				await writeFile(paths.mcServerDirectory + '/' + this.name + '/run.sh', runsh, 'utf-8');
 			} else if (this.modloader.type === ModloaderType.Fabric) {
-				const installer = spawn(java.pathOnDisk + '/bin/java', [
-					'-jar',
-					paths.mcServerDirectory + '/' + this.name + '/fabric-installer.jar',
-					'server',
-					'-mcversion',
-					this.mcVersion,
-					'-dir',
-					paths.mcServerDirectory + '/' + this.name
-				], { stdio: ['ignore', 'ignore', 'ignore']});
+				const installer = spawn(
+					java.pathOnDisk + '/bin/java',
+					[
+						'-jar',
+						paths.mcServerDirectory + '/' + this.name + '/fabric-installer.jar',
+						'server',
+						'-mcversion',
+						this.mcVersion,
+						'-dir',
+						paths.mcServerDirectory + '/' + this.name
+					],
+					{ stdio: ['ignore', 'ignore', 'ignore'] }
+				);
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
 					throw new Error('installation failed!');

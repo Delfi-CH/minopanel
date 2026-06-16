@@ -9,7 +9,7 @@ package as:
 - docker
 - deb
 - rpm
-- tar.*
+- tar.\*
 - pacman
 - exe?
 
