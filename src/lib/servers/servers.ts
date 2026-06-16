@@ -43,7 +43,7 @@ class MCServer {
 		const srv = new MCServer(json.name, json.mcVersion, json.modloader, json.preferedJavaVersion);
 		srv.serverExecutableFilePath = json.serverExecutableFilePath;
 		srv.serverDirectory = json.serverDirectory;
-		srv.serverExecutableFilePath = json.serverPropertiesFilePath;
+		srv.serverPropertiesFilePath = json.serverPropertiesFilePath;
 		srv.memoryMin = json.memoryMin;
 		srv.memoryMax = json.memoryMax;
 		srv.running = json.running;
@@ -86,7 +86,7 @@ class MCServer {
 
 	async runSetup(paths: ApplicatonPaths, java: CorretoOpenJDK) {
 		if (isNode) {
-			const { writeFile } = await import('node:fs/promises');
+			const { writeFile, readFile } = await import('node:fs/promises');
 			const { spawn } = await import('node:child_process');
 			const { once } = await import('node:events');
 			const eulaPath = paths.mcServerDirectory + '/' + this.name + '/eula.txt';
@@ -100,7 +100,8 @@ class MCServer {
 						'--installServer'
 					],
 					{
-						cwd: paths.mcServerDirectory + '/' + this.name
+						cwd: paths.mcServerDirectory + '/' + this.name,
+						stdio: ['ignore', 'ignore', 'ignore']
 					}
 				);
 				const [code] = await once(installer, 'close');
@@ -113,7 +114,10 @@ class MCServer {
 					java.system === OperatingSystem.Windows
 						? paths.mcServerDirectory + '/' + this.name + '/run.bat'
 						: paths.mcServerDirectory + '/' + this.name + '/run.sh';
-				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`, `-Xms${this.memoryMin}`, 'nogui'];
+				const userJvmArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`]
+				const seperator = java.system === OperatingSystem.Windows ? "\r\n" : "\n"
+				await writeFile(paths.mcServerDirectory + '/' + this.name + '/user_jvm_args.txt', userJvmArgs.join(seperator), 'utf-8')
+				this.serverExecutableArgs = ['nogui'];
 			} else if (this.modloader.type === ModloaderType.NeoForge) {
 				const installer = spawn(
 					java.pathOnDisk + '/bin/java',
@@ -123,8 +127,9 @@ class MCServer {
 						'--installServer',
 						paths.mcServerDirectory + '/' + this.name
 					],
-					{ cwd: paths.mcServerDirectory + '/' + this.name }
+					{ cwd: paths.mcServerDirectory + '/' + this.name, stdio: ['ignore', 'ignore', 'ignore'] }
 				);
+
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
 					throw new Error('installation failed!');
@@ -135,7 +140,15 @@ class MCServer {
 					java.system === OperatingSystem.Windows
 						? paths.mcServerDirectory + '/' + this.name + '/run.bat'
 						: paths.mcServerDirectory + '/' + this.name + '/run.sh';
-				this.serverExecutableArgs = [`-Xmx${this.memoryMax}`, `-Xms${this.memoryMin}`, 'nogui'];
+				const userJvmArgs = [`-Xmx${this.memoryMax}`,`-Xms${this.memoryMin}`]
+				const seperator = java.system === OperatingSystem.Windows ? "\r\n" : "\n"
+				await writeFile(paths.mcServerDirectory + '/' + this.name + '/user_jvm_args.txt', userJvmArgs.join(seperator), 'utf-8')
+				this.serverExecutableArgs = ['nogui'];
+
+				// Patching neoforge run.sh to actually show stdout/stderr
+				let runsh = await readFile(paths.mcServerDirectory + '/' + this.name + '/run.sh', "utf8")
+				runsh = 	runsh.replace("exec", "")
+				await writeFile(paths.mcServerDirectory + '/' + this.name + '/run.sh', runsh, "utf-8")
 			} else if (this.modloader.type === ModloaderType.Fabric) {
 				const installer = spawn(java.pathOnDisk + '/bin/java', [
 					'-jar',
@@ -145,7 +158,7 @@ class MCServer {
 					this.mcVersion,
 					'-dir',
 					paths.mcServerDirectory + '/' + this.name
-				]);
+				], { stdio: ['ignore', 'ignore', 'ignore']});
 				const [code] = await once(installer, 'close');
 				if (code !== 0) {
 					throw new Error('installation failed!');

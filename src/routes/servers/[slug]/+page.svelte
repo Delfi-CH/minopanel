@@ -62,7 +62,6 @@
 				}}>Restart</Button
 			>
 			<Button
-				disabled={data.post.installed}
 				onclick={async () => {
 					await axios.post('http://localhost:6502/api/server/static/' + data.post.name + '/setup');
 					await isRunning();
