@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import { createServer } from 'node:http';
-import { WebSocketServer } from 'ws';
 import { downloadWss } from './sockets/downloadSocket.ts';
+import { mcWss } from './sockets/serverSocket.ts';
 import {
 	loadConfig,
 	loadJavaFiles,
@@ -28,8 +28,6 @@ const config = loadConfig();
 const port = config.backend.port;
 
 const server = createServer(app);
-const mcWss = new WebSocketServer({ noServer: true });
-const mcStreams = new Map();
 
 server.on('upgrade', (req, socket, head) => {
 	if (!req.url) {
@@ -37,7 +35,7 @@ server.on('upgrade', (req, socket, head) => {
 	}
 
 	const { pathname } = new URL(req.url, `http://${req.headers.host}`);
-	const mcPathRegex = /^\/api\/server\/stream\/\d+$/;
+	const mcPathRegex = /^\/api\/server\/stream\/([A-Za-z0-9_-]+)$/;
 	const downloadPathRegex = /^\/api\/download\/stream\/\d+$/;
 
 	if (mcPathRegex.test(pathname)) {
@@ -51,32 +49,6 @@ server.on('upgrade', (req, socket, head) => {
 	} else {
 		socket.destroy();
 	}
-});
-
-mcWss.on('connection', (ws, req) => {
-	if (!req.url) {
-		throw new Error('no url');
-	}
-	const { pathname } = new URL(req.url, `http://${req.headers.host}`);
-	const match = pathname.match(/^\/api\/server\/stream\/(\d+)$/);
-
-	if (!match) {
-		ws.close();
-		return;
-	}
-
-	const serverId = Number(match[1]);
-	console.log('Client is requesting server ' + serverId);
-
-	if (!mcStreams.has(serverId)) {
-		mcStreams.set(serverId, new Set());
-	}
-
-	mcStreams.get(serverId).add(ws);
-
-	ws.on('close', () => {
-		mcStreams.get(serverId)?.delete(ws);
-	});
 });
 
 app.get('/', (req, res) => {
@@ -161,6 +133,40 @@ app.get('/api/server/static/:name/start', (req, res) => {
 	const srvInstance = new ActiveServerInstance(srv, java);
 	serverManager.addInstance(srvInstance.base.name, srvInstance);
 	serverManager.startInstance(srvInstance.base.name);
+	res.send(201);
+});
+
+app.get('/api/server/static/:name/stop', (req, res) => {
+	const name = req.params.name;
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404);
+		return;
+	}
+
+	serverManager.stopInstance(name);
+	res.send(204);
+});
+app.get('/api/server/static/:name/restart', (req, res) => {
+	const name = req.params.name;
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404);
+		return;
+	}
+
+	serverManager.restartInstance(name);
+	res.send(200);
+});
+
+app.get('/api/server/static/:name/running', (req, res) => {
+	const name = req.params.name;
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404);
+		return;
+	}
+	res.send(serverManager.isInstanceRunning(name));
 });
 
 app.delete('/api/server/static/:name', async (req, res) => {

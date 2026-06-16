@@ -10,16 +10,58 @@ export class ServerManager {
 	addInstance(id: string, instance: ActiveServerInstance) {
 		this.serverList.set(id, instance);
 	}
+
 	startInstance(id: string) {
 		const srv = this.serverList.get(id);
 		if (!srv) {
 			throw new Error('Server ' + id + ' not found!');
 		}
 		if (!srv.pty && !this.ptyList.get(id)) {
+			console.log("Starting server " + id)
 			const pty = srv.spawn();
 			this.ptyList.set(id, pty);
+			return pty;
 		} else {
-			throw new Error('Server ' + id + 'is already running!');
+			return this.getPty(id);
+		}
+	}
+
+	getPty(id: string) {
+		const pty = this.ptyList.get(id);
+		if (!pty) {
+			throw new Error('No pty available for server ' + id + '!');
+		}
+		return pty;
+	}
+
+	stopInstance(id: string) {
+		const pty = this.ptyList.get(id);
+		if (!pty) {
+			return;
+		}
+		pty.write('stop\r');
+		pty.kill()
+		this.ptyList.delete(id);
+		console.log("Stopped server " + id)
+	}
+
+	restartInstance(id: string) {
+		const pty = this.ptyList.get(id);
+		if (!pty) {
+			throw new Error('Server ' + id + 'is not running!');
+		}
+		pty.write('stop\r');
+		pty.kill()
+		this.ptyList.delete(id);
+		this.startInstance(id);
+	}
+
+	isInstanceRunning(id: string): boolean {
+		const pty = this.ptyList.get(id);
+		if (!pty) {
+			return false
+		} else {
+			return true
 		}
 	}
 }
@@ -59,7 +101,6 @@ export class ActiveServerInstance {
 		} else if (!this.base.serverExecutableArgs) {
 			throw new Error('Arguments are undefined!');
 		}
-		console.log('args: ' + this.base.serverExecutableArgs);
 		this.pty = pty.spawn(bin, this.base.serverExecutableArgs, {
 			name: 'xterm-color',
 			cols: 80,
@@ -70,6 +111,13 @@ export class ActiveServerInstance {
 				PATH: `${this.java.pathOnDisk}/bin:${process.env.PATH}`
 			}
 		});
+		return this.pty;
+	}
+
+	getPty() {
+		if (!this.pty) {
+			throw new Error('No pty available!');
+		}
 		return this.pty;
 	}
 }

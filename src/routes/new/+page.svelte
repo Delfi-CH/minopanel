@@ -84,6 +84,7 @@
 					valid={newServerName !== ''}
 					required
 					invalid={newServerName === ''}
+					pattern="[A-Za-z0-9_-]+"
 				/>
 				{#if newServerName === ''}
 					<p class="text-danger">Enter a name!</p>
