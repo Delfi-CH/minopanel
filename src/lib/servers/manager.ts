@@ -17,7 +17,7 @@ export class ServerManager {
 			throw new Error('Server ' + id + ' not found!');
 		}
 		if (!srv.pty && !this.ptyList.get(id)) {
-			console.log("Starting server " + id)
+			console.log('Starting server ' + id);
 			const pty = srv.spawn();
 			this.ptyList.set(id, pty);
 			return pty;
@@ -40,9 +40,9 @@ export class ServerManager {
 			return;
 		}
 		pty.write('stop\r');
-		pty.kill()
+		pty.kill();
 		this.ptyList.delete(id);
-		console.log("Stopped server " + id)
+		console.log('Stopped server ' + id);
 	}
 
 	restartInstance(id: string) {
@@ -51,7 +51,7 @@ export class ServerManager {
 			throw new Error('Server ' + id + 'is not running!');
 		}
 		pty.write('stop\r');
-		pty.kill()
+		pty.kill();
 		this.ptyList.delete(id);
 		this.startInstance(id);
 	}
@@ -59,9 +59,9 @@ export class ServerManager {
 	isInstanceRunning(id: string): boolean {
 		const pty = this.ptyList.get(id);
 		if (!pty) {
-			return false
+			return false;
 		} else {
-			return true
+			return true;
 		}
 	}
 }

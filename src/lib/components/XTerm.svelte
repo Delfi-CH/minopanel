@@ -37,7 +37,7 @@
 				})
 			);
 			term.clear();
-			term.writeln(`Connected to server "${serverID}".`)
+			term.writeln(`Connected to server "${serverID}".`);
 		});
 
 		ws.addEventListener('message', (e) => {

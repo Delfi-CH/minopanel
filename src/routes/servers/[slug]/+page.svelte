@@ -5,7 +5,7 @@
 	import { Container, Row, Col, Button } from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 	import XTerm from '$lib/components/XTerm.svelte';
-	import {  ModloaderType } from '$lib/servers/servers.js';
+	import { ModloaderType } from '$lib/servers/servers.js';
 	import { onMount } from 'svelte';
 
 	let xterm;
@@ -16,21 +16,23 @@
 	let { data } = $props();
 
 	let showDeleteModal = $state(false);
-	let running = $state(false)
+	let running = $state(false);
 
-	onMount(async()=>{
-		await isRunning()
-	})
+	onMount(async () => {
+		await isRunning();
+	});
 
 	async function isRunning() {
-		const tmpRunning = await axios.get('http://localhost:6502/api/server/static/' + data.post.name + '/running')
-		running = tmpRunning.data
+		const tmpRunning = await axios.get(
+			'http://localhost:6502/api/server/static/' + data.post.name + '/running'
+		);
+		running = tmpRunning.data;
 	}
 </script>
 
 <Container>
 	<h1>{data.post.name}</h1>
-	<Row>	
+	<Row>
 		<Col>
 			<Button
 				disabled={!data.post.installed || running}
@@ -38,7 +40,7 @@
 				onclick={async () => {
 					await axios.get('http://localhost:6502/api/server/static/' + data.post.name + '/start');
 					restart();
-					await isRunning()
+					await isRunning();
 				}}>Start</Button
 			>
 			<Button
@@ -47,7 +49,7 @@
 				onclick={async () => {
 					await axios.get('http://localhost:6502/api/server/static/' + data.post.name + '/stop');
 					restart();
-					await isRunning()
+					await isRunning();
 				}}>Stop</Button
 			>
 			<Button
@@ -56,14 +58,14 @@
 				onclick={async () => {
 					await axios.get('http://localhost:6502/api/server/static/' + data.post.name + '/restart');
 					restart();
-					await isRunning()
+					await isRunning();
 				}}>Restart</Button
 			>
 			<Button
 				disabled={data.post.installed}
 				onclick={async () => {
 					await axios.post('http://localhost:6502/api/server/static/' + data.post.name + '/setup');
-					await isRunning()
+					await isRunning();
 				}}>Run Setup</Button
 			>
 			<Button
@@ -72,13 +74,18 @@
 				}}
 				color="danger">Delete</Button
 			>
-		</Col> 
+		</Col>
 	</Row>
 	<Row>
 		<h2>Info</h2>
 		<Col>
 			<p>Game Version: {data.post.mcVersion}</p>
-			<p>Modloader: {data.post.modloader.type} {data.post.modloader.type !== ModloaderType.Vanilla ? data.post.modloader.modloaderVersion : ""}</p>
+			<p>
+				Modloader: {data.post.modloader.type}
+				{data.post.modloader.type !== ModloaderType.Vanilla
+					? data.post.modloader.modloaderVersion
+					: ''}
+			</p>
 		</Col>
 	</Row>
 	<Row>
