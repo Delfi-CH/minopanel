@@ -29,7 +29,7 @@ export class ApplicatonPaths {
 			this.jdkDirectory = `/var/lib/minopanel/bin/java`;
 			this.jdkMetadataDirectory = `/var/lib/minopanel/data/java`;
 			this.jdkSelfTestCodePath = `/var/lib/minopanel/data/java`;
-			this.cliBinaryPath = `/opt/minopanel/minopanelctl`;
+			this.cliBinaryPath = `/opt/minopanel/minoctl`;
 			this.serverBinaryPath = `/opt/minopanel/minopaneld`;
 			this.frontendDirectory = `/var/www/minopanel`;
 			this.systemdServicePath = `/usr/lib/systemd/system/minopanel.service`;

@@ -59,7 +59,7 @@
 
 					await ml.buildURL();
 
-					const server = new MCServer(newServerName, selectedVersion, ml, selectedJavaVersion);
+					const server = new MCServer(newServerName, selectedVersion, ml, selectedJavaVersion as JavaVersion);
 					console.log(server);
 					if (!paths) {
 						throw new Error('Paths not loaded!');

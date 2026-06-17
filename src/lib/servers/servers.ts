@@ -3,7 +3,7 @@ import axios from 'axios';
 import isNode from 'is-node';
 import { CorretoOpenJDK, JavaVersion } from '../jvm/java';
 import { ApplicatonPaths } from '../config/paths';
-import { webDownloadManager } from '$lib/download/downloader';
+import { DownloadManager, webDownloadManager } from '$lib/download/downloader';
 import { DownloaderHelper } from 'node-downloader-helper';
 import { OperatingSystem } from '$lib/system';
 
@@ -25,7 +25,6 @@ class MCServer {
 		mcVersion: string,
 		modloader: Modloader,
 		preferedJavaVersion: JavaVersion,
-		port?: number,
 		memoryMin?: string,
 		memoryMax?: string
 	) {
@@ -82,6 +81,30 @@ class MCServer {
 			filename: filename
 		});
 		webDownloadManager.startDownloadSilent(id);
+	}
+
+	async installFilesNode(paths: ApplicatonPaths, manager: DownloadManager) {
+		const { mkdir } = await import("node:fs/promises")
+		const id = 'Server ' + this.name;
+		if (!this.modloader.url) {
+			throw new Error('no url!');
+		}
+		let filename = 'server.jar';
+		if (this.modloader.type === ModloaderType.Forge) {
+			filename = 'forge-installer.jar';
+		} else if (this.modloader.type === ModloaderType.NeoForge) {
+			filename = 'neoforge-installer.jar';
+		} else if (this.modloader.type === ModloaderType.Fabric) {
+			filename = 'fabric-installer.jar';
+		}
+		await mkdir(paths.mcServerDirectory + '/' + this.name, {recursive: true})
+		manager.addDownload({
+			id: id,
+			url: this.modloader.url,
+			path: paths.mcServerDirectory + '/' + this.name,
+			filename: filename
+		});
+		await manager.startDownload(id);
 	}
 
 	async runSetup(paths: ApplicatonPaths, java: CorretoOpenJDK) {
@@ -269,7 +292,6 @@ class Modloader {
 		} else if (this.type === ModloaderType.Forge) {
 			const metadata = await axios.get('http://localhost:6502/api/proxy/forge-metadata');
 			const versionBase = metadata.data[this.gameVersion].reverse()[0];
-			console.log(metadata.data);
 			this.modloaderVersion = versionBase.replace(this.gameVersion + '-', '');
 			this.url = `https://maven.minecraftforge.net/net/minecraftforge/forge/${versionBase}/forge-${versionBase}-installer.jar`;
 			const shaRes = await axios.get(this.url + '.sha256');
@@ -373,7 +395,7 @@ class Modloader {
 			if (versions.includes('')) {
 				versions = versions.toSpliced(versions.indexOf(''), 1);
 			}
-			return versions;
+				return versions;
 		} else if (type === ModloaderType.NeoForge) {
 			const metadata = await axios.get(
 				'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge'

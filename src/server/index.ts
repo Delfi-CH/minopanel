@@ -14,7 +14,7 @@ import {
 } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
-import { MCServer } from '../lib/servers/servers.ts';
+import { MCServer, Modloader, ModloaderType } from '../lib/servers/servers.ts';
 import { DownloadManager } from '../lib/download/downloader.ts';
 import { ActiveServerInstance, ServerManager } from '../lib/servers/manager.ts';
 export const downloadManager = new DownloadManager();
@@ -133,7 +133,7 @@ app.get('/api/server/static/:name/start', (req, res) => {
 	const srvInstance = new ActiveServerInstance(srv, java);
 	serverManager.addInstance(srvInstance.base.name, srvInstance);
 	serverManager.startInstance(srvInstance.base.name);
-	res.send(201);
+	res.sendStatus(201);
 });
 
 app.get('/api/server/static/:name/stop', (req, res) => {
@@ -145,7 +145,7 @@ app.get('/api/server/static/:name/stop', (req, res) => {
 	}
 
 	serverManager.stopInstance(name);
-	res.send(204);
+	res.sendStatus(204);
 });
 app.get('/api/server/static/:name/restart', (req, res) => {
 	const name = req.params.name;
@@ -156,7 +156,7 @@ app.get('/api/server/static/:name/restart', (req, res) => {
 	}
 
 	serverManager.restartInstance(name);
-	res.send(200);
+	res.sendStatus(200);
 });
 
 app.get('/api/server/static/:name/running', (req, res) => {
@@ -188,6 +188,36 @@ app.post('/api/server/static', async (req, res) => {
 		res.sendStatus(409);
 		return;
 	}
+	srv.writeToDisk(config.paths);
+	res.sendStatus(201);
+	return;
+});
+
+app.post('/api/server/static/simple', async (req, res) => {
+	const body = req.body;
+	const mltype = body.type as ModloaderType
+	const ml = new Modloader(mltype, body.version)
+	const supportedVersions = await Modloader.getSupportedMCVersions(mltype)
+	if (!supportedVersions.includes(body.version)) {
+		res.sendStatus(418)
+		return
+	}
+	await ml.buildURL();
+	const java = body.java as JavaVersion
+	const srv = new MCServer(body.name, body.version, ml, java)
+
+	const existingServers = loadServerFiles(config.paths);
+	let send409 = false;
+	existingServers.forEach((existingSrv) => {
+		if (existingSrv.name === srv.name) {
+			send409 = true;
+		}
+	});
+	if (send409) {
+		res.sendStatus(409);
+		return;
+	}
+	await srv.installFilesNode(config.paths, downloadManager)
 	srv.writeToDisk(config.paths);
 	res.sendStatus(201);
 	return;

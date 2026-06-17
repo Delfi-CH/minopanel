@@ -8,8 +8,8 @@
 		"frontend:build": "vite build",
 		"server:dev": "tsx --watch src/server/index.ts",
 		"server:build": "echo not implemented",
-		"cli:dev": "cargo run",
-		"cli:build": "cargo build --release",
+		"cli:dev": "tsx src/cli/main.ts",
+		"cli:build": "echo not implemented",
 		"prepare": "svelte-kit sync || echo ''",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
