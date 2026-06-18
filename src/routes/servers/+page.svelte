@@ -33,8 +33,24 @@
 			{#each activeList as srv (srv.name)}
 				<Card class="m-1">
 					<CardHeader>
-						<CardTitle>{srv.name}</CardTitle>
+						<CardTitle
+							><a href={resolve('/servers/[slug]', { slug: srv.name })}>{srv.name}</a></CardTitle
+						>
 					</CardHeader>
+					<CardBody>
+						<p>Minecraft {srv.mcVersion}</p>
+						{#if srv.modloader.type !== ModloaderType.Vanilla}
+							<p>{srv.modloader.type} {srv.modloader.modloaderVersion}</p>
+						{:else}
+							<p>{srv.modloader.type}</p>
+						{/if}
+						<p>Java Version: {srv.preferedJavaVersion}</p>
+						<p>Allocated RAM: {srv.memoryMin} - {srv.memoryMax}</p>
+						<p>Installed: {srv.installed ? 'Yes' : 'No'}</p>
+					</CardBody>
+					<CardFooter>
+						<Button href={resolve('/servers/[slug]', { slug: srv.name })}>View</Button>
+					</CardFooter>
 				</Card>
 			{/each}
 		</Col>
