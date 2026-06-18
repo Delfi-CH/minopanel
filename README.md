@@ -11,9 +11,12 @@ package as:
 - rpm
 - tar.\*
 - pacman
+- homebrew
 - exe?
 
 ### Frontend
+
+set backend url
 
 server.properties editing
 
