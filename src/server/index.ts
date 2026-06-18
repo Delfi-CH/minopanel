@@ -133,6 +133,8 @@ app.get('/api/server/static/:name/start', (req, res) => {
 	const srvInstance = new ActiveServerInstance(srv, java);
 	serverManager.addInstance(srvInstance.base.name, srvInstance);
 	serverManager.startInstance(srvInstance.base.name);
+	srv.running = true
+	srv.writeToDisk(config.paths)
 	res.sendStatus(201);
 });
 
@@ -143,7 +145,8 @@ app.get('/api/server/static/:name/stop', (req, res) => {
 		res.sendStatus(404);
 		return;
 	}
-
+	srv.running = false
+	srv.writeToDisk(config.paths)
 	serverManager.stopInstance(name);
 	res.sendStatus(204);
 });
