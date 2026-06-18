@@ -14,7 +14,7 @@
 
 	export function startup() {
 		cleanup();
-		const ws = new WebSocket('ws://localhost:6502/api/server/stream/' + serverID);
+		const ws = new WebSocket(`ws://${window.location.hostname}:6502/api/server/stream/` + serverID);
 		const term = new Terminal({
 			cursorBlink: true,
 			cursorStyle: 'bar'

@@ -8,7 +8,7 @@
 	let config: Config = $state(Config.blank());
 
 	onMount(async () => {
-		const tmpConfig = await axios.get('http://localhost:6502/api/config');
+		const tmpConfig = await axios.get(`http://${window.location.hostname}:6502/api/config`);
 		config = tmpConfig.data;
 	});
 </script>

@@ -20,10 +20,10 @@
 	onMount(async () => {
 		await getAvailableVersions();
 
-		const tmpJavaVersions = await axios.get('http://localhost:6502/api/jvm');
+		const tmpJavaVersions = await axios.get(`http://${window.location.hostname}:6502/api/jvm`);
 		avialableJavaVersions = tmpJavaVersions.data;
 
-		const config = await axios.get('http://localhost:6502/api/config');
+		const config = await axios.get(`http://${window.location.hostname}:6502/api/config`);
 		paths = config.data.paths;
 	});
 
@@ -70,9 +70,9 @@
 						throw new Error('Paths not loaded!');
 					}
 					try {
-						await axios.post('http://localhost:6502/api/server/static', server);
+						await axios.post(`http://${window.location.hostname}:6502/api/server/static`, server);
 						server.installFiles(paths);
-						await axios.post('http://localhost:6502/api/server/static/' + server.name + '/setup');
+						await axios.post(`http://${window.location.hostname}:6502/api/server/static/` + server.name + '/setup');
 					} catch (err) {
 						if (err.status === 409) {
 							errorMessage = `Duplicate name: "${server.name}"! Each Server must have a unique name!`;

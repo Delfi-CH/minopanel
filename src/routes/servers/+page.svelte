@@ -19,7 +19,7 @@
 	let inactiveList: MCServer[] = $state([]);
 
 	onMount(async () => {
-		const tmpList = await axios.get('http://localhost:6502/api/server/static');
+		const tmpList = await axios.get(`http://${window.location.hostname}:6502/api/server/static`);
 		activeList = tmpList.data.filter((srv) => srv.running === true);
 		inactiveList = tmpList.data.filter((srv) => srv.running === false);
 	});

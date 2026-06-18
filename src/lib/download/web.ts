@@ -50,7 +50,7 @@ export class WebDownloadManager {
 		const downloadID = Math.floor(Math.random() * 100);
 
 		const ws = new WebSocket(
-			'ws://localhost:6502/api/download/stream/' + downloadID
+			`ws://${window.location.hostname}:6502/api/download/stream/` + downloadID
 		);
 
 		ws.addEventListener('open', () => {
@@ -76,7 +76,7 @@ export class WebDownloadManager {
 		const downloadID = Math.floor(Math.random() * 100);
 
 		const ws = new WebSocket(
-			'ws://localhost:6502/api/download/stream/' + downloadID
+			`ws://${window.location.hostname}:6502/api/download/stream/` + downloadID
 		);
 
 		ws.addEventListener('open', () => {

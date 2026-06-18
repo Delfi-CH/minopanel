@@ -9,7 +9,7 @@
 	});
 
 	onMount(async () => {
-		const res = await axios.get('http://localhost:6502/api/config');
+		const res = await axios.get(`http://${window.location.hostname}:6502/api/config`);
 		config = res.data;
 	});
 </script>

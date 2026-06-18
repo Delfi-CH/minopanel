@@ -24,7 +24,7 @@
 
 	async function isRunning() {
 		const tmpRunning = await axios.get(
-			'http://localhost:6502/api/server/static/' + data.post.name + '/running'
+			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/running'
 		);
 		running = tmpRunning.data;
 	}
@@ -38,7 +38,7 @@
 				disabled={!data.post.installed || running}
 				color="success"
 				onclick={async () => {
-					await axios.get('http://localhost:6502/api/server/static/' + data.post.name + '/start');
+					await axios.get(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/start');
 					restart();
 					await isRunning();
 				}}>Start</Button
@@ -47,7 +47,7 @@
 				disabled={!data.post.installed || !running}
 				color="warning"
 				onclick={async () => {
-					await axios.get('http://localhost:6502/api/server/static/' + data.post.name + '/stop');
+					await axios.get(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/stop');
 					restart();
 					await isRunning();
 				}}>Stop</Button
@@ -56,14 +56,14 @@
 				disabled={!data.post.installed || !running}
 				color="info"
 				onclick={async () => {
-					await axios.get('http://localhost:6502/api/server/static/' + data.post.name + '/restart');
+					await axios.get(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/restart');
 					restart();
 					await isRunning();
 				}}>Restart</Button
 			>
 			<Button
 				onclick={async () => {
-					await axios.post('http://localhost:6502/api/server/static/' + data.post.name + '/setup');
+					await axios.post(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/setup');
 					await isRunning();
 				}}>Run Setup</Button
 			>
@@ -101,7 +101,7 @@
 		message={'Server ' + data.post.name}
 		onClose={() => (showDeleteModal = false)}
 		onDelete={async () => {
-			await axios.delete('http://localhost:6502/api/server/static/' + data.post.name + '');
+			await axios.delete(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '');
 			goto(resolve('/servers'));
 		}}
 	></DeleteModal>
