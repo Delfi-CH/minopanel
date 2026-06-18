@@ -33,59 +33,83 @@ serverCommand
 		}
 	});
 
-serverCommand.command("attach <name>").description("attach the server console to your console").action((name)=>{
-    const opts = program.opts();
-    const ws = new WebSocket(`ws://${opts.hostname}:${opts.port}/api/server/stream/${name}`)
-    const stdin = process.stdin
-    const stdout = process.stdout
-    ws.on("open", ()=>{
-        console.log("Connected to server " + name +".")
-        console.log("Press CTRL+D to exit.")
-        console.log("Type 'help' to get a list of commands.")
-    })
+serverCommand
+	.command('attach <name>')
+	.description('attach the server console to your console')
+	.action((name) => {
+		const opts = program.opts();
+		const ws = new WebSocket(`ws://${opts.hostname}:${opts.port}/api/server/stream/${name}`);
+		const stdin = process.stdin;
+		const stdout = process.stdout;
+		ws.on('open', () => {
+			console.log('Connected to server ' + name + '.');
+			console.log('Press CTRL+D to exit.');
+			console.log("Type 'help' to get a list of commands.");
+		});
 
-    ws.on("message", (data)=>{
-        stdout.write(data.toString())
-    })
+		ws.on('message', (data) => {
+			stdout.write(data.toString());
+		});
 
-    stdin.on("end", ()=>{
-        ws.close()
-    })
+		stdin.on('end', () => {
+			ws.close();
+		});
 
-    stdin.on("data", (data)=> {
-        ws.send(data)
-    })
-})
+		stdin.on('data', (data) => {
+			ws.send(data);
+		});
+	});
 
-serverCommand.command("info <name>").description("get info on a specific server").action(async(name)=>{
-    await getSpecificServer(name)
-})
+serverCommand
+	.command('info <name>')
+	.description('get info on a specific server')
+	.action(async (name) => {
+		await getSpecificServer(name);
+	});
 
-serverCommand.command("create <name> <version> <type> <java>").description("get info on a specific server").action(async(name, version, type, java)=>{
-    await createNewServer(name, version, type, java)
-})
+serverCommand
+	.command('create <name> <version> <type> <java>')
+	.description('get info on a specific server')
+	.action(async (name, version, type, java) => {
+		await createNewServer(name, version, type, java);
+	});
 
-serverCommand.command("start <name>").description("start a server").action(async(name)=>{
-    await startServer(name)
-})
+serverCommand
+	.command('start <name>')
+	.description('start a server')
+	.action(async (name) => {
+		await startServer(name);
+	});
 
-serverCommand.command("stop <name>").description("stop a server").action(async(name)=>{
-    await stopServer(name)
-})
+serverCommand
+	.command('stop <name>')
+	.description('stop a server')
+	.action(async (name) => {
+		await stopServer(name);
+	});
 
-serverCommand.command("restart <name>").description("restart a server").action(async(name)=>{
-    await restartServer(name)
-})
+serverCommand
+	.command('restart <name>')
+	.description('restart a server')
+	.action(async (name) => {
+		await restartServer(name);
+	});
 
-serverCommand.command("delete <name>").description("restart a server").action(async(name)=>{
-    await deleteServer(name)
-})
+serverCommand
+	.command('delete <name>')
+	.description('restart a server')
+	.action(async (name) => {
+		await deleteServer(name);
+	});
 
-const javaCommand = program.command("java")
+const javaCommand = program.command('java');
 
-javaCommand.command("get").description("get all installed java versions").action(async()=>{
-    await getLocalJavaVerions()
-})
+javaCommand
+	.command('get')
+	.description('get all installed java versions')
+	.action(async () => {
+		await getLocalJavaVerions();
+	});
 
 await program.parseAsync();
 
@@ -126,131 +150,140 @@ async function getAllServers() {
 }
 
 async function startServer(name: string) {
-    try {
-        await axios.get(getBaseUrl() + "/api/server/static/" + name + "/start")
-        console.log("Started server "+ name)
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
+	try {
+		await axios.get(getBaseUrl() + '/api/server/static/' + name + '/start');
+		console.log('Started server ' + name);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
 			console.error(colors.red('Could not connect to server: ' + err));
 		} else {
 			console.error(colors.red('An error occured: ' + err));
 		}
-    }
+	}
 }
 
 async function stopServer(name: string) {
-    try {
-        await axios.get(getBaseUrl() + "/api/server/static/" + name + "/stop")
-        console.log("Stopped server "+ name)
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
+	try {
+		await axios.get(getBaseUrl() + '/api/server/static/' + name + '/stop');
+		console.log('Stopped server ' + name);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
 			console.error(colors.red('Could not connect to server: ' + err));
 		} else {
 			console.error(colors.red('An error occured: ' + err));
 		}
-    }
+	}
 }
 
 async function deleteServer(name: string) {
-    try {
-        await axios.delete(getBaseUrl() + "/api/server/static/" + name)
-        console.log("Deleted server "+ name)
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
-            if (err.response?.status === 404) {
-                console.error(colors.red("Server " + name + " doesnt exist!"))
-            } else {
-			    console.error(colors.red('Could not connect to server: ' + err));
-            }
+	try {
+		await axios.delete(getBaseUrl() + '/api/server/static/' + name);
+		console.log('Deleted server ' + name);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			if (err.response?.status === 404) {
+				console.error(colors.red('Server ' + name + ' doesnt exist!'));
+			} else {
+				console.error(colors.red('Could not connect to server: ' + err));
+			}
 		} else {
 			console.error(colors.red('An error occured: ' + err));
 		}
-    }
+	}
 }
 
 async function restartServer(name: string) {
-    try {
-        await axios.get(getBaseUrl() + "/api/server/static/" + name + "/restart")
-        console.log("Restarted server "+ name)
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
+	try {
+		await axios.get(getBaseUrl() + '/api/server/static/' + name + '/restart');
+		console.log('Restarted server ' + name);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
 			console.error(colors.red('Could not connect to server: ' + err));
 		} else {
 			console.error(colors.red('An error occured: ' + err));
 		}
-    }
+	}
 }
 
 async function getSpecificServer(name: string) {
-    try {
-        const res = await axios.get(getBaseUrl() + '/api/server/static/' + name);
+	try {
+		const res = await axios.get(getBaseUrl() + '/api/server/static/' + name);
 		const data = res.data;
-        console.log(colors.bold(`Server ${colors.green("'"+data.name+"'")}`))
-        console.log("Game Version: "+ colors.green(data.mcVersion))
-        console.log("Modloader: "+ colors.green(data.modloader.type))
-        console.log("Modloader Version: "+ colors.green(data.modloader.modloaderVersion))
-        console.log("Java Version: "+ colors.green(data.preferedJavaVersion))
-        console.log("RAM Minumum: "+ colors.green(data.memoryMin))
-        console.log("RAM Maximum: "+ colors.green(data.memoryMax))
-        console.log("Executable: " +colors.green(data.serverExecutableFilePath))
-        console.log("Arguments: " +colors.green(data.serverExecutableArgs.join(" ")))
-        console.log("server.properties path: " +colors.green(data.serverPropertiesFilePath))
-        console.log("Running: "+ colors.green(data.running ? "Yes" : "No"))
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
+		console.log(colors.bold(`Server ${colors.green("'" + data.name + "'")}`));
+		console.log('Game Version: ' + colors.green(data.mcVersion));
+		console.log('Modloader: ' + colors.green(data.modloader.type));
+		console.log('Modloader Version: ' + colors.green(data.modloader.modloaderVersion));
+		console.log('Java Version: ' + colors.green(data.preferedJavaVersion));
+		console.log('RAM Minumum: ' + colors.green(data.memoryMin));
+		console.log('RAM Maximum: ' + colors.green(data.memoryMax));
+		console.log('Executable: ' + colors.green(data.serverExecutableFilePath));
+		console.log('Arguments: ' + colors.green(data.serverExecutableArgs.join(' ')));
+		console.log('server.properties path: ' + colors.green(data.serverPropertiesFilePath));
+		console.log('Running: ' + colors.green(data.running ? 'Yes' : 'No'));
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
 			console.error(colors.red('Could not connect to server: ' + err));
 		} else {
 			console.error(colors.red('An error occured: ' + err));
 		}
-    }
+	}
 }
 
-async function createNewServer(name: string, version: string, type: ModloaderType, java: JavaVersion) {
-    try {
-        await axios.post(getBaseUrl() + "/api/server/static/simple", {
-            name: name,
-            version: version,
-            type: type,
-            java: java
-        })
-        await axios.post(getBaseUrl() + "/api/server/static/" + name + "/setup")
-        console.log("Server was created.")
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
-            if (err.response?.status === 409) {
-                console.error(colors.red("A Server with the name " + name + " already exists!"))
-            } else if (err.response?.status === 400 || err.response?.status === 418 || err.response?.status === 500 ) {
-                console.error(colors.red("Invalid Input!"))
-            } else {
-                console.error(colors.red("Network Error: " +err))
-            }
-        } else {
-            console.error(colors.red("error: " + err))
-        }        
-    }
+async function createNewServer(
+	name: string,
+	version: string,
+	type: ModloaderType,
+	java: JavaVersion
+) {
+	try {
+		await axios.post(getBaseUrl() + '/api/server/static/simple', {
+			name: name,
+			version: version,
+			type: type,
+			java: java
+		});
+		await axios.post(getBaseUrl() + '/api/server/static/' + name + '/setup');
+		console.log('Server was created.');
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			if (err.response?.status === 409) {
+				console.error(colors.red('A Server with the name ' + name + ' already exists!'));
+			} else if (
+				err.response?.status === 400 ||
+				err.response?.status === 418 ||
+				err.response?.status === 500
+			) {
+				console.error(colors.red('Invalid Input!'));
+			} else {
+				console.error(colors.red('Network Error: ' + err));
+			}
+		} else {
+			console.error(colors.red('error: ' + err));
+		}
+	}
 }
 
 async function getLocalJavaVerions() {
-    try {
-        const res = await axios.get(getBaseUrl() + "/api/jvm")
-        const data = res.data
-        const table = new EasyTable()
-        data.forEach((jvm)=>{
-            table.cell("Name", jvm.name)  
-            table.cell("Version", jvm.version)  
-            table.cell("Path", jvm.pathOnDisk)
-            table.cell("Operating System", jvm.system)  
-            table.cell("CPU Architecture", jvm.arch)    
-            table.newRow()
-        })
-        console.log(table.toString())
-    } catch (err) {
-        if (axios.isAxiosError(err)) {
+	try {
+		const res = await axios.get(getBaseUrl() + '/api/jvm');
+		const data = res.data;
+		const table = new EasyTable();
+		data.forEach((jvm) => {
+			table.cell('Name', jvm.name);
+			table.cell('Version', jvm.version);
+			table.cell('Path', jvm.pathOnDisk);
+			table.cell('Operating System', jvm.system);
+			table.cell('CPU Architecture', jvm.arch);
+			table.newRow();
+		});
+		console.log(table.toString());
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
 			console.error(colors.red('Could not connect to server: ' + err));
 		} else {
 			console.error(colors.red('An error occured: ' + err));
 		}
-    }
+	}
 }
 
 function getBaseUrl() {

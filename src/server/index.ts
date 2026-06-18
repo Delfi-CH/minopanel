@@ -133,8 +133,8 @@ app.get('/api/server/static/:name/start', (req, res) => {
 	const srvInstance = new ActiveServerInstance(srv, java);
 	serverManager.addInstance(srvInstance.base.name, srvInstance);
 	serverManager.startInstance(srvInstance.base.name);
-	srv.running = true
-	srv.writeToDisk(config.paths)
+	srv.running = true;
+	srv.writeToDisk(config.paths);
 	res.sendStatus(201);
 });
 
@@ -145,8 +145,8 @@ app.get('/api/server/static/:name/stop', (req, res) => {
 		res.sendStatus(404);
 		return;
 	}
-	srv.running = false
-	srv.writeToDisk(config.paths)
+	srv.running = false;
+	srv.writeToDisk(config.paths);
 	serverManager.stopInstance(name);
 	res.sendStatus(204);
 });
@@ -176,18 +176,18 @@ app.delete('/api/server/static/:name', async (req, res) => {
 	const name = req.params.name;
 	const srv = loadServerFile(config.paths, name);
 	if (!srv) {
-		res.sendStatus(404)
-		return
+		res.sendStatus(404);
+		return;
 	}
 	if (srv.running) {
-		serverManager.stopInstance(name)
+		serverManager.stopInstance(name);
 	}
 	if (deleteServerFile(config.paths, name)) {
-		res.sendStatus(204)
-		return
+		res.sendStatus(204);
+		return;
 	} else {
-		res.sendStatus(500) 
-		return
+		res.sendStatus(500);
+		return;
 	}
 });
 
@@ -212,16 +212,16 @@ app.post('/api/server/static', async (req, res) => {
 
 app.post('/api/server/static/simple', async (req, res) => {
 	const body = req.body;
-	const mltype = body.type as ModloaderType
-	const ml = new Modloader(mltype, body.version)
-	const supportedVersions = await Modloader.getSupportedMCVersions(mltype)
+	const mltype = body.type as ModloaderType;
+	const ml = new Modloader(mltype, body.version);
+	const supportedVersions = await Modloader.getSupportedMCVersions(mltype);
 	if (!supportedVersions.includes(body.version)) {
-		res.sendStatus(418)
-		return
+		res.sendStatus(418);
+		return;
 	}
 	await ml.buildURL();
-	const java = body.java as JavaVersion
-	const srv = new MCServer(body.name, body.version, ml, java)
+	const java = body.java as JavaVersion;
+	const srv = new MCServer(body.name, body.version, ml, java);
 
 	const existingServers = loadServerFiles(config.paths);
 	let send409 = false;
@@ -234,7 +234,7 @@ app.post('/api/server/static/simple', async (req, res) => {
 		res.sendStatus(409);
 		return;
 	}
-	await srv.installFilesNode(config.paths, downloadManager)
+	await srv.installFilesNode(config.paths, downloadManager);
 	srv.writeToDisk(config.paths);
 	res.sendStatus(201);
 	return;

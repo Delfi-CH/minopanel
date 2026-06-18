@@ -84,7 +84,7 @@ class MCServer {
 	}
 
 	async installFilesNode(paths: ApplicatonPaths, manager: DownloadManager) {
-		const { mkdir } = await import("node:fs/promises")
+		const { mkdir } = await import('node:fs/promises');
 		const id = 'Server ' + this.name;
 		if (!this.modloader.url) {
 			throw new Error('no url!');
@@ -97,7 +97,7 @@ class MCServer {
 		} else if (this.modloader.type === ModloaderType.Fabric) {
 			filename = 'fabric-installer.jar';
 		}
-		await mkdir(paths.mcServerDirectory + '/' + this.name, {recursive: true})
+		await mkdir(paths.mcServerDirectory + '/' + this.name, { recursive: true });
 		manager.addDownload({
 			id: id,
 			url: this.modloader.url,
@@ -395,7 +395,7 @@ class Modloader {
 			if (versions.includes('')) {
 				versions = versions.toSpliced(versions.indexOf(''), 1);
 			}
-				return versions;
+			return versions;
 		} else if (type === ModloaderType.NeoForge) {
 			const metadata = await axios.get(
 				'https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge'
