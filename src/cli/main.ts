@@ -1,10 +1,13 @@
-import type { JavaVersion } from '$lib/jvm/java';
-import type { ModloaderType } from '$lib/servers/servers';
+import { DownloadDTO, DownloadDTOType } from '../lib/download/dataTransferObjects.ts';
+import { JavaVersion } from '../lib/jvm/java.ts';
+import type { ModloaderType } from '../lib/servers/servers.ts';
 import axios from 'axios';
-import colors from 'colors/safe.js';
+import colors from 'ansi-colors';
 import { Command } from 'commander';
 import EasyTable from 'easy-table';
 import WebSocket from 'ws';
+import cliProgress from 'cli-progress';
+
 const program = new Command();
 
 program.name('minoctl');
@@ -106,9 +109,57 @@ const javaCommand = program.command('java');
 
 javaCommand
 	.command('get')
-	.description('get all installed java versions')
+	.description('get java versions')
 	.action(async () => {
 		await getLocalJavaVerions();
+	});
+
+javaCommand
+	.command('install <version>')
+	.description('install a java version')
+	.action((version) => {
+		if (Object.keys(JavaVersion).includes(version)) {
+			try {
+				const opts = program.opts();
+				const rand = Math.floor(Math.random() * 100);
+				const ws = new WebSocket(
+					'ws://' + opts.hostname + ':' + opts.port + '/api/download/stream/' + rand
+				);
+				const initDTO = new DownloadDTO(DownloadDTOType.openjdk, null, version);
+				const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+				ws.on('open', () => {
+					ws.send(JSON.stringify(initDTO));
+					bar.start(100, 0);
+				});
+				ws.on('message', (data) => {
+					const json = JSON.parse(data.toString());
+					if (json.type === DownloadDTOType.status && json.data !== null) {
+						bar.update(Math.floor(json.data.progress));
+					}
+				});
+				ws.on('close', () => {
+					bar.stop();
+				});
+			} catch (err) {
+				console.error(colors.red('An error ocurred: ' + err));
+			}
+		} else {
+			console.error(colors.red('Not a java version!'));
+		}
+	});
+
+javaCommand
+	.command('test <version>')
+	.description("run java self check")
+	.action(async(version)=>{
+		await testJavaVersion(version)
+	})
+
+javaCommand
+	.command('delete <version>')
+	.description('delete a java version')
+	.action(async (version) => {
+		await deleteJavaVersion(version);
 	});
 
 await program.parseAsync();
@@ -280,6 +331,36 @@ async function getLocalJavaVerions() {
 	} catch (err) {
 		if (axios.isAxiosError(err)) {
 			console.error(colors.red('Could not connect to server: ' + err));
+		} else {
+			console.error(colors.red('An error occured: ' + err));
+		}
+	}
+}
+
+async function testJavaVersion(version) {
+	if (!Object.keys(JavaVersion).includes(version)) {
+		console.error(colors.red("Self test failed!"))
+		process.exit(1)
+	}
+	try {
+		await axios.post(getBaseUrl() + "/api/jvm/" + JavaVersion[version] + "/test")
+		console.log(colors.green("Self test successfull!"))
+	} catch {
+		console.error(colors.red("Self test failed!"))
+	}
+}
+
+async function deleteJavaVersion(version) {
+	try {
+		await axios.delete(getBaseUrl() + '/api/jvm/' + JavaVersion[version]);
+		console.log('Deleted java ' + JavaVersion[version]);
+	} catch (err) {
+		if (axios.isAxiosError(err)) {
+			if (err.response?.status === 404) {
+				console.error(colors.red('Java ' + JavaVersion[version] + ' doesnt exist!'));
+			} else {
+				console.error(colors.red('Could not connect to server: ' + err));
+			}
 		} else {
 			console.error(colors.red('An error occured: ' + err));
 		}

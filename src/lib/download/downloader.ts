@@ -319,8 +319,9 @@ export class WebDownloadManager {
 			const json: DownloadDTO = JSON.parse(e.data);
 			callback(json);
 			if (!json.data) {
-				// @ts-expect-error womp womp
+				//
 			} else if (
+				// @ts-expect-error womp womp
 				json.data.status === DownloadState.Finished ||
 				json.type === DownloadDTOType.openjdkFinished
 			) {
