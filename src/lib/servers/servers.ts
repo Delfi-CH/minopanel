@@ -3,7 +3,8 @@ import axios from 'axios';
 import isNode from 'is-node';
 import { CorretoOpenJDK, JavaVersion } from '../jvm/java';
 import { ApplicatonPaths } from '../config/paths';
-import { DownloadManager, webDownloadManager } from '$lib/download/downloader';
+import { webDownloadManager } from '$lib/download/web';
+import { DownloadManager } from '$lib/download/server';
 import { DownloaderHelper } from 'node-downloader-helper';
 import { OperatingSystem } from '$lib/system';
 

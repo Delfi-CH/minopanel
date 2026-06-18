@@ -15,7 +15,7 @@ import {
 import { JavaVersion } from '../lib/jvm/java.ts';
 import axios from 'axios';
 import { MCServer, Modloader, ModloaderType } from '../lib/servers/servers.ts';
-import { DownloadManager } from '../lib/download/downloader.ts';
+import { DownloadManager } from '../lib/download/server.ts';
 import { ActiveServerInstance, ServerManager } from '../lib/servers/manager.ts';
 export const downloadManager = new DownloadManager();
 export const serverManager = new ServerManager();

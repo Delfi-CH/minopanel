@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { webDownloadManager } from '$lib/download/downloader';
+	import { webDownloadManager } from '$lib/download/web';
 	import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
 	import { Card, CardBody, CardHeader, CardTitle, Col, Button } from '@sveltestrap/sveltestrap';
 	import DeleteModal from './DeleteModal.svelte';

@@ -1,5 +1,5 @@
 import { CorretoOpenJDK, JavaVersion } from '../../lib/jvm/java.ts';
-import { DownloadCallback } from './downloader.ts';
+import { DownloadCallback } from './shared.ts';
 
 export class DownloadDTO {
 	type: DownloadDTOType;

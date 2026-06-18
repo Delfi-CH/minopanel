@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws';
-import { DownloadCallback, DownloadState } from '../../lib/download/downloader.ts';
+import { DownloadCallback, DownloadState } from '../../lib/download/shared.ts';
 import { DownloadDTO, DownloadDTOType } from '../../lib/download/dataTransferObjects.ts';
 import { CorretoOpenJDK, JavaVersion } from '../../lib/jvm/java.ts';
 import os from 'node:os';
