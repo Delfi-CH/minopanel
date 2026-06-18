@@ -14,6 +14,8 @@ package as:
 - homebrew
 - exe?
 
+make installer
+
 ### Frontend
 
 set backend url
