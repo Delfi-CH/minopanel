@@ -174,7 +174,21 @@ app.get('/api/server/static/:name/running', (req, res) => {
 
 app.delete('/api/server/static/:name', async (req, res) => {
 	const name = req.params.name;
-	res.send(deleteServerFile(config.paths, name));
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404)
+		return
+	}
+	if (srv.running) {
+		serverManager.stopInstance(name)
+	}
+	if (deleteServerFile(config.paths, name)) {
+		res.sendStatus(204)
+		return
+	} else {
+		res.sendStatus(500) 
+		return
+	}
 });
 
 app.post('/api/server/static', async (req, res) => {
