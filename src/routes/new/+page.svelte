@@ -67,6 +67,7 @@
 					try {
 						await axios.post('http://localhost:6502/api/server/static', server);
 						server.installFiles(paths);
+						await axios.post('http://localhost:6502/api/server/static/' + server.name + '/setup');
 					} catch (err) {
 						if (err.status === 409) {
 							errorMessage = `Duplicate name: "${server.name}"! Each Server must have a unique name!`;
