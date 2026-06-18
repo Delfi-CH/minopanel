@@ -8,6 +8,8 @@ import EasyTable from 'easy-table';
 import WebSocket from 'ws';
 import cliProgress from 'cli-progress';
 
+async function main() {
+	
 const program = new Command();
 
 program.name('minoctl');
@@ -385,3 +387,5 @@ function drawServerTable(data: Array<any>) {
 	});
 	console.log(table.toString());
 }
+}
+main()
