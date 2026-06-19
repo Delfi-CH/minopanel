@@ -5,7 +5,6 @@ import { CorretoOpenJDK, JavaVersion } from '../jvm/java';
 import { ApplicatonPaths } from '../config/paths';
 import { webDownloadManager } from '$lib/download/web';
 import { DownloadManager } from '$lib/download/server';
-import { DownloaderHelper } from 'node-downloader-helper';
 import { OperatingSystem } from '$lib/system';
 
 class MCServer {
@@ -113,6 +112,7 @@ class MCServer {
 			const { writeFile, readFile } = await import('node:fs/promises');
 			const { spawn } = await import('node:child_process');
 			const { once } = await import('node:events');
+			const { DownloaderHelper } = await import("node-downloader-helper")
 			const eulaPath = paths.mcServerDirectory + '/' + this.name + '/eula.txt';
 			await writeFile(eulaPath, 'eula=true', 'utf8');
 			if (this.modloader.type === ModloaderType.Forge) {
