@@ -16,6 +16,7 @@ class MCServer {
 	serverExecutableArgs?: string[] = [];
 	serverPropertiesFilePath?: string = '';
 	serverDirectory?: string = '';
+	properties?: object;
 	memoryMin: string;
 	memoryMax: string;
 	running: boolean;
@@ -112,7 +113,7 @@ class MCServer {
 			const { writeFile, readFile } = await import('node:fs/promises');
 			const { spawn } = await import('node:child_process');
 			const { once } = await import('node:events');
-			const { DownloaderHelper } = await import("node-downloader-helper")
+			const { DownloaderHelper } = await import('node-downloader-helper');
 			const eulaPath = paths.mcServerDirectory + '/' + this.name + '/eula.txt';
 			await writeFile(eulaPath, 'eula=true', 'utf8');
 			if (this.modloader.type === ModloaderType.Forge) {
@@ -245,6 +246,22 @@ class MCServer {
 			throw new Error('not a nodejs enviroment');
 		}
 	}
+	async readProperties() {
+		try {
+			const { readIni } = await import('@delfi-ch/ini.js/fs');
+			if (!this.serverPropertiesFilePath) {
+				this.properties = {}
+				return;
+			}
+			const props = await readIni(this.serverPropertiesFilePath);
+			this.properties = props;
+			return;
+		} catch (err) {
+			console.error('Could not read ini file: ' + err);
+			this.properties = {}
+			return;
+		}
+	}
 }
 
 class Modloader {
@@ -291,7 +308,9 @@ class Modloader {
 			this.url = latestBuild.downloads['server:default'].url;
 			this.sha256sum = latestBuild.downloads['server:default'].checksums.sha256;
 		} else if (this.type === ModloaderType.Forge) {
-			const metadata = await axios.get(`http://${window.location.hostname}:6502/api/proxy/forge-metadata`);
+			const metadata = await axios.get(
+				`http://${window.location.hostname}:6502/api/proxy/forge-metadata`
+			);
 			const versionBase = metadata.data[this.gameVersion].reverse()[0];
 			this.modloaderVersion = versionBase.replace(this.gameVersion + '-', '');
 			this.url = `https://maven.minecraftforge.net/net/minecraftforge/forge/${versionBase}/forge-${versionBase}-installer.jar`;
@@ -315,7 +334,8 @@ class Modloader {
 			this.modloaderVersion = compatibleNeoforgeVersions.reverse()[0];
 			this.url = `https://maven.neoforged.net/releases/net/neoforged/neoforge/${this.modloaderVersion}/neoforge-${this.modloaderVersion}-installer.jar`;
 			const shaRes = await axios.get(
-				`http://${window.location.hostname}:6502/api/proxy/neoforge-maven/sha256/` + this.modloaderVersion
+				`http://${window.location.hostname}:6502/api/proxy/neoforge-maven/sha256/` +
+					this.modloaderVersion
 			);
 			this.sha256sum = shaRes.data;
 		} else if (this.type === ModloaderType.Fabric) {
@@ -382,7 +402,9 @@ class Modloader {
 			}
 			return versions;
 		} else if (type === ModloaderType.Forge) {
-			const metadata = await axios.get(`http://${window.location.hostname}:6502/api/proxy/forge-metadata`);
+			const metadata = await axios.get(
+				`http://${window.location.hostname}:6502/api/proxy/forge-metadata`
+			);
 			let versions = Object.keys(metadata.data);
 			const reallyOldVersions = /^1\.[1-4](\.[0-9])?$/m;
 			versions = versions.map((v) => {

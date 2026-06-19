@@ -108,13 +108,15 @@ app.get('/api/server/static', (req, res) => {
 	res.send(loadServerFiles(config.paths));
 });
 
-app.get('/api/server/static/:name', (req, res) => {
+app.get('/api/server/static/:name', async (req, res) => {
 	const name = req.params.name;
 	const srv = loadServerFile(config.paths, name);
 	if (!srv) {
 		res.sendStatus(404);
 		return;
 	}
+	await srv.readProperties()
+	console.log(srv.properties)
 	res.send(srv);
 });
 
