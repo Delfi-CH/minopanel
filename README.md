@@ -2,10 +2,4 @@
 
 selfhostable minecraft server management panel
 
-## Installation
-
-todo
-
-## Build from Source
-
-todo
+[Documentation](https://github.com/Delfi-CH/minopanel/blob/main/docs/index.md)

@@ -1,5 +1,9 @@
 # TODO
 
+## Docs
+
+write docs
+
 ## Packaging
 
 - Debian (deb)
@@ -28,6 +32,8 @@ do player management (kick, ban, whitelist, admin, etc)
 
 install mods via modrinth api
 
+add some sort of eula confirm
+
 ### Frontend-only
 
 set backend url
@@ -41,3 +47,5 @@ authentication
 ### CLI-only
 
 cli config
+
+shell autocompletion (bash, zsh, fish, nu)
