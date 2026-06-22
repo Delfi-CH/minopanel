@@ -41,6 +41,9 @@ importers:
       axios:
         specifier: ^1.17.0
         version: 1.17.0
+      bootstrap-icons:
+        specifier: ^1.13.1
+        version: 1.13.1
       bootswatch:
         specifier: ^5.3.8
         version: 5.3.8
@@ -935,6 +938,9 @@ packages:
   body-parser@2.2.2:
     resolution: {integrity: sha512-oP5VkATKlNwcgvxi0vM0p/D3n2C3EReYVX+DNYs5TjZFn/oQt2j+4sVJtSMr18pdRr8wjTcBl6LoV+FUwzPmNA==}
     engines: {node: '>=18'}
+
+  bootstrap-icons@1.13.1:
+    resolution: {integrity: sha512-ijombt4v6bv5CLeXvRWKy7CuM3TRTuPEuGaGKvTV5cz65rQSY8RQ2JcHt6b90cBBAC7s8fsf2EkQDldzCoXUjw==}
 
   bootswatch@5.3.8:
     resolution: {integrity: sha512-88mnH9tv+x6DV+scBxYFOpM4YSDVhyfEgbhqaEfvkHNctKI9qRcACxIP9nmBZ5mSeLXtsgax1VsRkUs1eWjlAQ==}
@@ -2639,6 +2645,8 @@ snapshots:
       type-is: 2.1.0
     transitivePeerDependencies:
       - supports-color
+
+  bootstrap-icons@1.13.1: {}
 
   bootswatch@5.3.8: {}
 

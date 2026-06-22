@@ -2,11 +2,12 @@
 	import DeleteModal from '$lib/components/DeleteModal.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import { Container, Row, Col, Button, Table, Input } from '@sveltestrap/sveltestrap';
+	import { Container, Row, Col, Button, Table, Input, Icon } from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 	import XTerm from '$lib/components/XTerm.svelte';
 	import { ModloaderType } from '$lib/servers/servers.js';
 	import { onMount } from 'svelte';
+	import FsTree from '$lib/components/FsTree.svelte';
 
 	let xterm;
 	function restart() {
@@ -22,9 +23,12 @@
 
 	let logData = $state([]);
 
+	let fsData = $state([]);
+
 	onMount(async () => {
 		await isRunning();
 		await getProps();
+		await getFS();
 	});
 
 	onMount(() => {
@@ -57,6 +61,14 @@
 		);
 
 		serverProps = tmpProps.data;
+	}
+
+	async function getFS() {
+		const tmpFS = await axios.get(
+			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/fs',
+			serverProps
+		);
+		fsData = tmpFS.data;
 	}
 </script>
 
@@ -271,6 +283,14 @@
 					</tr>
 				</tbody>
 			</Table>
+		</Col>
+	</Row>
+	<Row>
+		<h2>Filesystem</h2>
+		<Col>
+			{#each fsData as entry, index (index)}
+				<FsTree {entry}></FsTree>
+			{/each}
 		</Col>
 	</Row>
 	<Row>

@@ -2,6 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import 'bootswatch/dist/solar/bootstrap.min.css';
+	import 'bootstrap-icons/font/bootstrap-icons.css';
 	let { children } = $props();
 </script>
 
