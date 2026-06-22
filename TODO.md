@@ -20,11 +20,7 @@ Write an Installer
 
 ### General
 
-server.properties editing
-
 edit server filesystem (upload worlds, mods, etc)
-
-stream logs
 
 add [Minecraft Server Management Protocol](https://minecraft.wiki/w/Minecraft_Server_Management_Protocol) for supported versions
 
@@ -47,5 +43,9 @@ authentication
 ### CLI-only
 
 cli config
+
+stream logs
+
+server.properties editing
 
 shell autocompletion (bash, zsh, fish, nu)

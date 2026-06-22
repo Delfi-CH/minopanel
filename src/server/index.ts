@@ -19,6 +19,10 @@ import { DownloadManager } from '../lib/download/server.ts';
 import { ActiveServerInstance, ServerManager } from '../lib/servers/manager.ts';
 export const downloadManager = new DownloadManager();
 export const serverManager = new ServerManager();
+import TailFile from '@logdna/tail-file';
+import * as fs from "node:fs"
+import * as readline from 'node:readline/promises';
+
 
 const app = express();
 app.use(express.json());
@@ -117,6 +121,58 @@ app.get('/api/server/static/:name', async (req, res) => {
 	}
 	await srv.readProperties()
 	res.send(srv);
+});
+
+app.get('/api/server/static/:name/logs', async (req, res) => {
+	const name = req.params.name;
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404);
+		return;
+	}
+	res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+	const logfile = fs.createReadStream(srv.serverDirectory + "/logs/latest.log", "utf-8")
+	const rl = readline.createInterface({
+		input: logfile,
+		crlfDelay: Infinity	
+	})
+
+	rl.on("line", (line)=>{
+		res.write(`data: ${line}\n\n`);
+	})
+	
+	const tail = new TailFile(srv.serverDirectory + "/logs/latest.log", {encoding: "utf-8"})
+		.on('data', (chunk)=>{
+			const lines = chunk.toString().split('\n');
+
+    		for (const line of lines) {
+        		res.write(`data: ${line}\n\n`);
+    		}
+		})
+		.on('tail_error', (err) => {
+    		console.error('TailFile had an error!', err)
+			res.end()
+ 		})
+  		.on('error', (err) => {
+    		console.error('A TailFile stream error was likely encountered', err)
+			res.end()
+  		})
+
+	tail.start()
+  		.catch((err) => {
+   			console.error('Cannot start.  Does the file exist?', err)
+			res.end()
+  		})
+
+	res.on("close", ()=>{
+		tail.quit()
+		res.end()
+	})
 });
 
 app.get('/api/server/static/:name/props', async (req, res) => {

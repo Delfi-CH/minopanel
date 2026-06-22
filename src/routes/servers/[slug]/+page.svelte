@@ -20,11 +20,19 @@
 
 	let serverProps = $state({})
 
+	let logData = $state([])
+
 	onMount(async () => {
 		await isRunning();
 		await getProps()
-		console.log(serverProps)
 	});
+
+	onMount(()=>{
+		const logEvents = new EventSource(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/logs')
+		logEvents.addEventListener("message", (e)=>{
+			logData = [...logData, e.data]
+		})
+	})
 
 	async function isRunning() {
 		const tmpRunning = await axios.get(
@@ -223,6 +231,14 @@
 					</tr>
 				</tbody>
 			</Table>
+		</Col>
+	</Row>
+	<Row>
+		<h2>Server Logs</h2>
+		<Col>	
+			{#each logData as log, index (index)}
+				<span>{log}</span><br>
+			{/each}
 		</Col>
 	</Row>
 </Container>
