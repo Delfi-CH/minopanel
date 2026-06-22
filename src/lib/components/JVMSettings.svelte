@@ -49,7 +49,9 @@
 					onclick={async () => {
 						try {
 							await axios.post(
-								`http://${window.location.hostname}:6502/api/jvm` + JavaVersion[jversion.version] + '/test'
+								`http://${window.location.hostname}:6502/api/jvm` +
+									JavaVersion[jversion.version] +
+									'/test'
 							);
 							jversion.selfTestState = 'Self Test was sucessfull';
 						} catch {
@@ -119,7 +121,9 @@
 			onDelete={async () => {
 				showDeleteModal = false;
 				// @ts-expect-error womp womp
-				await axios.delete(`http://${window.location.hostname}:6502/api/jvm` + JavaVersion[deletedJavaVersion]);
+				await axios.delete(
+					`http://${window.location.hostname}:6502/api/jvm` + JavaVersion[deletedJavaVersion]
+				);
 				await fetchLocalJavaVersions();
 			}}
 		></DeleteModal>

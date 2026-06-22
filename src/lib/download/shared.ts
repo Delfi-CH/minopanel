@@ -1,4 +1,4 @@
-import type { JavaVersion } from "$lib/jvm/java";
+import type { JavaVersion } from '$lib/jvm/java';
 
 export enum DownloadState {
 	Inactive,

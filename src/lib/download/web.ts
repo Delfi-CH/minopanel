@@ -1,7 +1,6 @@
 import { DownloadState } from './shared';
-import type {  WebDownloadTask } from './shared';
+import type { WebDownloadTask } from './shared';
 import { DownloadDTO, DownloadDTOType } from './dataTransferObjects';
-
 
 export class WebDownloadManager {
 	private downloads = new Map<string, WebDownloadTask>();
@@ -88,11 +87,7 @@ export class WebDownloadManager {
 				});
 				ws.send(JSON.stringify(initDTO));
 			} else {
-				const initDTO = new DownloadDTO(
-					DownloadDTOType.openjdk,
-					null,
-					task.openJDK
-				);
+				const initDTO = new DownloadDTO(DownloadDTOType.openjdk, null, task.openJDK);
 				ws.send(JSON.stringify(initDTO));
 			}
 		});

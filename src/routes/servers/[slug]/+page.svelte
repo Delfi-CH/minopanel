@@ -18,21 +18,23 @@
 	let showDeleteModal = $state(false);
 	let running = $state(false);
 
-	let serverProps = $state({})
+	let serverProps = $state({});
 
-	let logData = $state([])
+	let logData = $state([]);
 
 	onMount(async () => {
 		await isRunning();
-		await getProps()
+		await getProps();
 	});
 
-	onMount(()=>{
-		const logEvents = new EventSource(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/logs')
-		logEvents.addEventListener("message", (e)=>{
-			logData = [...logData, e.data]
-		})
-	})
+	onMount(() => {
+		const logEvents = new EventSource(
+			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/logs'
+		);
+		logEvents.addEventListener('message', (e) => {
+			logData = [...logData, e.data];
+		});
+	});
 
 	async function isRunning() {
 		const tmpRunning = await axios.get(
@@ -44,16 +46,17 @@
 	async function getProps() {
 		const tmpProps = await axios.get(
 			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/props'
-		)
-		serverProps = tmpProps.data
+		);
+		serverProps = tmpProps.data;
 	}
 
 	async function saveProps() {
 		const tmpProps = await axios.post(
-			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/props', serverProps
-		)
-		
-		serverProps = tmpProps.data
+			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/props',
+			serverProps
+		);
+
+		serverProps = tmpProps.data;
 	}
 </script>
 
@@ -65,7 +68,9 @@
 				disabled={!data.post.installed || running}
 				color="success"
 				onclick={async () => {
-					await axios.get(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/start');
+					await axios.get(
+						`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/start'
+					);
 					restart();
 					await isRunning();
 				}}>Start</Button
@@ -74,7 +79,9 @@
 				disabled={!data.post.installed || !running}
 				color="warning"
 				onclick={async () => {
-					await axios.get(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/stop');
+					await axios.get(
+						`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/stop'
+					);
 					restart();
 					await isRunning();
 				}}>Stop</Button
@@ -83,14 +90,20 @@
 				disabled={!data.post.installed || !running}
 				color="info"
 				onclick={async () => {
-					await axios.get(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/restart');
+					await axios.get(
+						`http://${window.location.hostname}:6502/api/server/static/` +
+							data.post.name +
+							'/restart'
+					);
 					restart();
 					await isRunning();
 				}}>Restart</Button
 			>
 			<Button
 				onclick={async () => {
-					await axios.post(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/setup');
+					await axios.post(
+						`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/setup'
+					);
 					await isRunning();
 				}}>Run Setup</Button
 			>
@@ -153,27 +166,30 @@
 					</tr>
 					<tr>
 						<td>Hardcore</td>
-						<td><Input type="switch" bind:checked={serverProps["hardcore"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['hardcore']}></Input></td>
 					</tr>
 					<tr>
 						<td>Allow Flight</td>
-						<td><Input type="switch" bind:checked={serverProps["allow-flight"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['allow-flight']}></Input></td>
 					</tr>
 					<tr>
 						<td>Enforce Gamemode</td>
-						<td><Input type="switch" bind:checked={serverProps["force-gamemode"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['force-gamemode']}></Input></td>
 					</tr>
 					<tr>
 						<td>Use Whitelist</td>
-						<td><Input type="switch" bind:checked={serverProps["white-list"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['white-list']}></Input></td>
 					</tr>
 					<tr>
 						<td>Enforce Whitelist Changes</td>
-						<td><Input type="switch" bind:checked={serverProps["enforce-whitelist"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['enforce-whitelist']}></Input></td>
 					</tr>
 					<tr>
 						<td>Max. Players</td>
-						<td><Input bind:value={serverProps["max-players"]} type="number" min="0" max="99"></Input></td>
+						<td
+							><Input bind:value={serverProps['max-players']} type="number" min="0" max="99"
+							></Input></td
+						>
 					</tr>
 					<tr>
 						<td><h3>World Settings</h3></td>
@@ -181,27 +197,43 @@
 					</tr>
 					<tr>
 						<td>Max. Render Distance</td>
-						<td><Input bind:value={serverProps["view-distance"]} type="number" min="3" max="32"></Input></td>
+						<td
+							><Input bind:value={serverProps['view-distance']} type="number" min="3" max="32"
+							></Input></td
+						>
 					</tr>
 					<tr>
 						<td>Max. Simulation Distance</td>
-						<td><Input bind:value={serverProps["simulation-distance"]} type="number" min="3" max="32"></Input></td>
+						<td
+							><Input bind:value={serverProps['simulation-distance']} type="number" min="3" max="32"
+							></Input></td
+						>
 					</tr>
 					<tr>
 						<td>Seed</td>
-						<td><Input type="switch" bind:checked={serverProps["level-seed"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['level-seed']}></Input></td>
 					</tr>
 					<tr>
 						<td>Spawn Protection Size</td>
-						<td><Input bind:value={serverProps["spawn-protection"]} type="number" min="0"></Input></td>
+						<td
+							><Input bind:value={serverProps['spawn-protection']} type="number" min="0"
+							></Input></td
+						>
 					</tr>
 					<tr>
 						<td>Generate Structures</td>
-						<td><Input type="switch" bind:checked={serverProps["generate-structures"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['generate-structures']}></Input></td>
 					</tr>
 					<tr>
 						<td>World Size</td>
-						<td><Input bind:value={serverProps["max-world-size"]}  type="number" min="1" max="29999984"></Input></td>
+						<td
+							><Input
+								bind:value={serverProps['max-world-size']}
+								type="number"
+								min="1"
+								max="29999984"
+							></Input></td
+						>
 					</tr>
 					<tr>
 						<td><h3>Other Settings</h3></td>
@@ -213,20 +245,28 @@
 					</tr>
 					<tr>
 						<td>Enable Chat Reporting</td>
-						<td><Input type="switch" bind:checked={serverProps["enforce-secure-profile"]}></Input></td>
+						<td
+							><Input type="switch" bind:checked={serverProps['enforce-secure-profile']}
+							></Input></td
+						>
 					</tr>
 					<tr>
 						<td>Enable Query</td>
-						<td><Input type="switch" bind:checked={serverProps["enable-query"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['enable-query']}></Input></td>
 					</tr>
 					<tr>
 						<td>Online Mode</td>
-						<td><Input type="switch" bind:checked={serverProps["online-mode"]}></Input></td>
+						<td><Input type="switch" bind:checked={serverProps['online-mode']}></Input></td>
 					</tr>
 					<tr>
-						<td><Button color="success" onclick={async()=>{
-							await saveProps()
-						}}>Save</Button></td>
+						<td
+							><Button
+								color="success"
+								onclick={async () => {
+									await saveProps();
+								}}>Save</Button
+							></td
+						>
 						<td></td>
 					</tr>
 				</tbody>
@@ -235,9 +275,9 @@
 	</Row>
 	<Row>
 		<h2>Server Logs</h2>
-		<Col>	
+		<Col>
 			{#each logData as log, index (index)}
-				<span>{log}</span><br>
+				<span>{log}</span><br />
 			{/each}
 		</Col>
 	</Row>
@@ -249,7 +289,9 @@
 		message={'Server ' + data.post.name}
 		onClose={() => (showDeleteModal = false)}
 		onDelete={async () => {
-			await axios.delete(`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '');
+			await axios.delete(
+				`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + ''
+			);
 			goto(resolve('/servers'));
 		}}
 	></DeleteModal>

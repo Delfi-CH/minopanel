@@ -1,6 +1,6 @@
 import { DownloaderHelper } from 'node-downloader-helper';
 import { DownloadCallback, DownloadState } from './shared';
-import type { DownloadTaskOptions } from "./shared"
+import type { DownloadTaskOptions } from './shared';
 
 export class DownloadTask {
 	public readonly id: string;
@@ -48,13 +48,7 @@ export class DownloadTask {
 
 		this.downloader.on('end', (stats) => {
 			this.emit(
-				new DownloadCallback(
-					'Finished',
-					DownloadState.Finished,
-					100,
-					0,
-					stats.totalSize ?? 0
-				)
+				new DownloadCallback('Finished', DownloadState.Finished, 100, 0, stats.totalSize ?? 0)
 			);
 		});
 

@@ -159,24 +159,24 @@ Contributions are always welcome as long as you follow the contribution rules.
 
 1. Dont be a jerk.
 
-    Be nice and respectful to other people. Dont harass, shame or insult anyone.
+   Be nice and respectful to other people. Dont harass, shame or insult anyone.
 
 2. Understand your code.
 
-    You must understand the code you are submitting. If you cant explain what your code does, dont submit it.
+   You must understand the code you are submitting. If you cant explain what your code does, dont submit it.
 
 3. Be human.
 
-    We dont want fully AI-generated Contributions. The usage of AI/LLMs is still allowed to assist with coding as long as you, a human, understands the code and opens the pull-request.
+   We dont want fully AI-generated Contributions. The usage of AI/LLMs is still allowed to assist with coding as long as you, a human, understands the code and opens the pull-request.
 
-    Fully AI generated pull-request descriptions are not allowed.
+   Fully AI generated pull-request descriptions are not allowed.
 
 4. Use english
 
-    All Contributions (code, docs, Commit/PR descriptions, etc.) and Communication must be in english. You may use AI/LLM's to translate from/to your native language.
+   All Contributions (code, docs, Commit/PR descriptions, etc.) and Communication must be in english. You may use AI/LLM's to translate from/to your native language.
 
 5. Test your code
 
-    Make sure your code builds and runs on your Machine without any major issues before opening a pull-request.
+   Make sure your code builds and runs on your Machine without any major issues before opening a pull-request.
 
 To make a contributon, fork the repository, add your code and open a pull-request.

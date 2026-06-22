@@ -7,7 +7,7 @@
 		DropdownMenu
 	} from '@sveltestrap/sveltestrap';
 	import { webDownloadManager } from '$lib/download/web';
-	import {DownloadCallback, DownloadState } from "$lib/download/shared"
+	import { DownloadCallback, DownloadState } from '$lib/download/shared';
 	import { DownloadDTOType } from '$lib/download/dataTransferObjects';
 	import { onMount } from 'svelte';
 	import { SvelteMap } from 'svelte/reactivity';
