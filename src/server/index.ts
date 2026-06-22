@@ -116,8 +116,30 @@ app.get('/api/server/static/:name', async (req, res) => {
 		return;
 	}
 	await srv.readProperties()
-	console.log(srv.properties)
 	res.send(srv);
+});
+
+app.get('/api/server/static/:name/props', async (req, res) => {
+	const name = req.params.name;
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404);
+		return;
+	}
+	await srv.readProperties()
+	res.send(srv.properties);
+});
+
+app.post('/api/server/static/:name/props', async (req, res) => {
+	const name = req.params.name;
+	const props = req.body;
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404);
+		return;
+	}
+	await srv.updateProperties(props)
+	res.send(props);
 });
 
 app.get('/api/server/static/:name/start', (req, res) => {

@@ -49,6 +49,7 @@ class MCServer {
 		srv.running = json.running;
 		srv.serverExecutableArgs = json.serverExecutableArgs;
 		srv.installed = json.installed;
+		srv.properties = json.properties
 		return srv;
 	}
 
@@ -258,6 +259,22 @@ class MCServer {
 			return;
 		} catch (err) {
 			console.error('Could not read ini file: ' + err);
+			this.properties = {}
+			return;
+		}
+	}
+
+	async updateProperties(props: object) {
+		try {
+			const { writeIni } = await import('@delfi-ch/ini.js/fs')
+			if (!this.serverPropertiesFilePath) {
+				this.properties = {}
+				return;
+			}
+			this.properties = props
+			await writeIni(this.serverPropertiesFilePath, props)
+		} catch (err) {
+			console.error('Could not write ini file: ' + err);
 			this.properties = {}
 			return;
 		}

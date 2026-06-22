@@ -74,7 +74,7 @@ export class ActiveServerInstance {
 	constructor(base: MCServer, java: CorretoOpenJDK, port?: number) {
 		this.base = base;
 		this.java = java;
-		if (port) {
+		if (port !== undefined) {
 			this.port = port;
 		} else {
 			getPort({ port: portNumbers(25565, 25599) })
