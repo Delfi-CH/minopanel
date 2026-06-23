@@ -9,7 +9,7 @@
 
 	let showLogs = $state(false);
 
-    let button;
+	let button;
 
 	onMount(() => {
 		const logEvents = new EventSource(
@@ -20,21 +20,20 @@
 		});
 	});
 
-    function toggleLogs() {
-        showLogs = !showLogs
-        let count = 0;
-        setInterval(()=>{
-            if (showLogs && count < 5) {
-                window.scrollTo(0, document.body.scrollHeight)
-                count++
-            }
-        }, 100)
-        
-    }
+	function toggleLogs() {
+		showLogs = !showLogs;
+		let count = 0;
+		setInterval(() => {
+			if (showLogs && count < 5) {
+				window.scrollTo(0, document.body.scrollHeight);
+				count++;
+			}
+		}, 100);
+	}
 </script>
 
 <Button onclick={toggleLogs} class="m-1" bind:this={button}>
-    {showLogs ? 'Hide' : 'Show'} Logs
+	{showLogs ? 'Hide' : 'Show'} Logs
 </Button>
 
 {#if showLogs}
@@ -43,5 +42,5 @@
 			<span class={log.includes('\t') ? 'ms-3' : ''}>{log}</span><br />
 		{/each}
 	</div>
-    <Button onclick={toggleLogs} class="m-1">Hide Logs</Button>
+	<Button onclick={toggleLogs} class="m-1">Hide Logs</Button>
 {/if}

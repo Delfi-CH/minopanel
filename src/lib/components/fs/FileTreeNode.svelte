@@ -11,11 +11,9 @@
 
 	let showChildren = $state(false);
 	let showUpload = $state(false);
-	let showDelete = $state(false)
+	let showDelete = $state(false);
 
-	const fullPath = $derived(parentPath
-		? `${parentPath}/${entry.path}`
-		: entry.path);
+	const fullPath = $derived(parentPath ? `${parentPath}/${entry.path}` : entry.path);
 
 	function determineFileIcon() {
 		if (entry.path.endsWith('.txt') || entry.path.endsWith('.log')) {
@@ -49,25 +47,29 @@
 			);
 			onChange();
 		} catch (err) {
-			console.error("Deletion Error: " + err);
+			console.error('Deletion Error: ' + err);
 		}
 	}
 
 	function downloadFile() {
 		try {
-			window.open(`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download?path=${encodeURIComponent(fullPath)}`)
+			window.open(
+				`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download?path=${encodeURIComponent(fullPath)}`
+			);
 			onChange();
 		} catch (err) {
-			console.error("Download Error: " + err);
+			console.error('Download Error: ' + err);
 		}
 	}
 
 	function downloadFolder() {
 		try {
-			window.open(`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download/folder?path=${encodeURIComponent(fullPath)}`)
+			window.open(
+				`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download/folder?path=${encodeURIComponent(fullPath)}`
+			);
 			onChange();
 		} catch (err) {
-			console.error("Download Error: " + err);
+			console.error('Download Error: ' + err);
 		}
 	}
 
@@ -79,7 +81,13 @@
 <div class="tree-node">
 	{#if entry.directory && entry.children.length > 0}
 		<h5>
-			<Badge onclick={() => (showChildren = !showChildren)} color="success" indicator pill class="m-1">
+			<Badge
+				onclick={() => (showChildren = !showChildren)}
+				color="success"
+				indicator
+				pill
+				class="m-1"
+			>
 				<Icon name="folder"></Icon>
 				<span>{entry.path}</span>
 			</Badge>
@@ -95,13 +103,7 @@
 		{#if showChildren}
 			<div class="children" transition:slide>
 				{#each entry.children as child, index (index)}
-					<FileTreeNode
-						entry={child}
-						name={name}
-						onChange={onChange}
-						parentPath={fullPath}
-						rootNode={false}
-					/>
+					<FileTreeNode entry={child} {name} {onChange} parentPath={fullPath} rootNode={false} />
 				{/each}
 			</div>
 		{/if}
@@ -118,11 +120,22 @@
 	{/if}
 
 	{#if showUpload}
-		<UploadModal open={showUpload} name={name} fullPath={fullPath} onChange={onChange} onClose={()=> showUpload = !showUpload}></UploadModal>
+		<UploadModal
+			open={showUpload}
+			{name}
+			{fullPath}
+			{onChange}
+			onClose={() => (showUpload = !showUpload)}
+		></UploadModal>
 	{/if}
 
-	{#if showDelete} 
-		<DeleteModal open={showDelete} message={entry.path} onDelete={async() => await deleteFile()} onClose={()=> showDelete = !showDelete}></DeleteModal>
+	{#if showDelete}
+		<DeleteModal
+			open={showDelete}
+			message={entry.path}
+			onDelete={async () => await deleteFile()}
+			onClose={() => (showDelete = !showDelete)}
+		></DeleteModal>
 	{/if}
 </div>
 

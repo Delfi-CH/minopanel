@@ -1,6 +1,14 @@
 <script lang="ts">
-	import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Label, Input } from '@sveltestrap/sveltestrap';
-    import axios from 'axios';
+	import {
+		Button,
+		Modal,
+		ModalBody,
+		ModalFooter,
+		ModalHeader,
+		Label,
+		Input
+	} from '@sveltestrap/sveltestrap';
+	import axios from 'axios';
 
 	let { open, name, fullPath, onClose, onChange } = $props();
 
@@ -8,19 +16,19 @@
 		onClose();
 	}
 
-    async function uploadFiles(e: Event) {
+	async function uploadFiles(e: Event) {
 		const input = e.currentTarget as HTMLInputElement;
 		const files = input.files;
 		if (!files) return;
 
 		const form = new FormData();
-		form.append("targetPath", fullPath);
+		form.append('targetPath', fullPath);
 
 		for (const file of files) {
-			form.append("files", file);
+			form.append('files', file);
 		}
 
-        console.log(form)
+		console.log(form);
 		try {
 			await axios.post(
 				`http://${window.location.hostname}:6502/api/server/static/${name}/fs`,
@@ -28,7 +36,7 @@
 			);
 			onChange();
 		} catch (err) {
-			console.error("Upload Error: " + err);
+			console.error('Upload Error: ' + err);
 		}
 	}
 
@@ -39,7 +47,7 @@
 
 		const form = new FormData();
 		for (const file of files) {
-			form.append("files", file);
+			form.append('files', file);
 		}
 	}
 </script>

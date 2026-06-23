@@ -33,7 +33,6 @@
 		);
 		running = tmpRunning.data;
 	}
-
 </script>
 
 <Container>

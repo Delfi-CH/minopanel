@@ -1,16 +1,16 @@
 <script lang="ts">
-    import FileTreeNode from "$lib/components/fs/FileTreeNode.svelte";
-	import { onMount } from "svelte";
-    import axios from "axios";
-    const { name } = $props()
-    let fsData = $state([]);
+	import FileTreeNode from '$lib/components/fs/FileTreeNode.svelte';
+	import { onMount } from 'svelte';
+	import axios from 'axios';
+	const { name } = $props();
+	let fsData = $state([]);
 
-    onMount(async()=>{
-        await getFS()
-        setInterval(async ()=> await getFS(), 1000)
-    })
+	onMount(async () => {
+		await getFS();
+		setInterval(async () => await getFS(), 1000);
+	});
 
-    async function getFS() {
+	async function getFS() {
 		const tmpFS = await axios.get(
 			`http://${window.location.hostname}:6502/api/server/static/` + name + '/fs'
 		);
@@ -19,7 +19,8 @@
 </script>
 
 <div>
-    {#each fsData as entry, index (index)}
-	    <FileTreeNode entry={entry} name={name} onChange={async ()=> await getFS()} parentPath="" rootNode={true}></FileTreeNode>
+	{#each fsData as entry, index (index)}
+		<FileTreeNode {entry} {name} onChange={async () => await getFS()} parentPath="" rootNode={true}
+		></FileTreeNode>
 	{/each}
 </div>

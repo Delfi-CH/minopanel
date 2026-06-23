@@ -273,8 +273,8 @@ app.get('/api/server/static/:name/fs/download/folder', validateServerFs, (req, r
 		res.sendStatus(400);
 		return;
 	}
-	
-	const outpath = path.join(config.paths.tmpPath, path.basename(resolved)+".zip");
+
+	const outpath = path.join(config.paths.tmpPath, path.basename(resolved) + '.zip');
 	const output = fs.createWriteStream(outpath);
 	const archive = new ZipArchive({
 		zlib: { level: 6 }
@@ -291,24 +291,24 @@ app.get('/api/server/static/:name/fs/download/folder', validateServerFs, (req, r
 
 	archive.on('warning', function (err) {
 		if (err.code === 'ENOENT') {
-			console.log("ENOET")
+			console.log('ENOET');
 		} else {
-			console.error("warn: " + err)
-			res.sendStatus(500)
-			return
+			console.error('warn: ' + err);
+			res.sendStatus(500);
+			return;
 		}
 	});
 
 	// good practice to catch this error explicitly
 	archive.on('error', function (err) {
-		res.sendStatus(500)
-		console.error("zip error: " + err)
-		return
+		res.sendStatus(500);
+		console.error('zip error: ' + err);
+		return;
 	});
 
 	archive.pipe(output);
-	archive.directory(resolved, false)
-	archive.finalize()
+	archive.directory(resolved, false);
+	archive.finalize();
 });
 
 app.get('/api/server/static/:name/props', async (req, res) => {

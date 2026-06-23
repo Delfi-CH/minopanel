@@ -4,7 +4,7 @@
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
-	import NavigationDownload from '$lib/components/nav/NavigationDownload.svelte'
+	import NavigationDownload from '$lib/components/nav/NavigationDownload.svelte';
 
 	let branding = $state('Minopanel');
 

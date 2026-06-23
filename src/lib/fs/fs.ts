@@ -16,18 +16,8 @@ export async function readDirectory(dirPath: string): Promise<fsDTO> {
 			grandChildren = subtree.children;
 		}
 
-		children.push(
-			new fsDTO(
-				dirent.name,
-				dirent.isDirectory(),
-				grandChildren
-			)
-		);
+		children.push(new fsDTO(dirent.name, dirent.isDirectory(), grandChildren));
 	}
 
-	return new fsDTO(
-		path.basename(dirPath) || dirPath,
-		true,
-		children
-	);
+	return new fsDTO(path.basename(dirPath) || dirPath, true, children);
 }
