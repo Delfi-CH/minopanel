@@ -57,7 +57,7 @@
 			<DropdownItem divider></DropdownItem>
 			<DropdownItem>{download[0]} | {download[1].message}</DropdownItem>
 			<DropdownItem
-				><Progress striped bar={true} value={download[1].progress} color="info"
+				><Progress value={download[1].progress} color="info" animated={true}
 					>{Math.floor(download[1].progress ?? 0)}%
 				</Progress></DropdownItem
 			>
