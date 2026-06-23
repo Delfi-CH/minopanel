@@ -37,6 +37,7 @@
 
 	function checkIfJavaVersionIsEnabled(version: JavaVersion) {
 		const list = Modloader.getSupportedJavaVersions(selectedVersion);
+		console.log(list.includes(JavaVersion.OpenJdk26))
 		return list.includes(version);
 	}
 
@@ -47,6 +48,7 @@
 			checkIfJavaVersionIsEnabled(selectedJavaVersion)
 		);
 	}
+
 </script>
 
 <Container>

@@ -475,21 +475,21 @@ class Modloader {
 		const java25Regex = /^((1\.[0-9]+(\.[0-9]+)?)|([2-9][0-9]\.[1-9](\.[1-9])?))$/;
 		const java26Regex = /^((1\.[0-9]+(\.[0-9]+)?)|([2-9][0-9]\.[1-9](\.[1-9])?))$/;
 
-		let jdkList: JavaVersion[] = [];
+		const jdkList: JavaVersion[] = [];
 		if (java8Regex.test(version)) {
-			jdkList = [...jdkList, JavaVersion.OpenJdk8];
+			jdkList.push(JavaVersion.OpenJdk8);
 		}
 		if (java17Regex.test(version)) {
-			jdkList = [...jdkList, JavaVersion.OpenJdk17];
+			jdkList.push(JavaVersion.OpenJdk17);
 		}
 		if (java21Regex.test(version)) {
-			jdkList = [...jdkList, JavaVersion.OpenJdk21];
+			jdkList.push(JavaVersion.OpenJdk21);
 		}
 		if (java25Regex.test(version)) {
-			jdkList = [...jdkList, JavaVersion.OpenJdk25];
+			jdkList.push(JavaVersion.OpenJdk25);
 		}
 		if (java26Regex.test(version)) {
-			jdkList = [...jdkList, JavaVersion.OpenJdk26];
+			jdkList.push(JavaVersion.OpenJdk26);
 		}
 		return jdkList;
 	}
