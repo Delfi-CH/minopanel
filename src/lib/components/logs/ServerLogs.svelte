@@ -1,11 +1,17 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+	import { onMount } from 'svelte';
+	import { Button } from '@sveltestrap/sveltestrap';
+	import { slide } from 'svelte/transition';
 
-    let { name } = $props();
+	let { name } = $props();
 
-    let logData: string[] = $state([]);
+	let logData: string[] = $state([]);
 
-    onMount(() => {
+	let showLogs = $state(false);
+
+    let button;
+
+	onMount(() => {
 		const logEvents = new EventSource(
 			`http://${window.location.hostname}:6502/api/server/static/` + name + '/logs'
 		);
@@ -13,8 +19,32 @@
 			logData = [...logData, e.data];
 		});
 	});
+
+    function toggleLogs() {
+        showLogs = !showLogs
+        let count = 0;
+        setInterval(()=>{
+            if (showLogs && count < 5) {
+                window.scrollTo(0, document.body.scrollHeight)
+                count++
+            } else {
+                button.scrollIntoView()
+                count++
+            }
+        }, 100)
+        
+    }
 </script>
 
-{#each logData as log, index (index)}
-    <span>{log}</span><br />
-{/each}
+<Button onclick={toggleLogs} class="m-1" bind:this={button}>
+    {showLogs ? 'Hide' : 'Show'} Logs
+</Button>
+
+{#if showLogs}
+	<div class="bg-black text-white p-3 m-1" transition:slide>
+		{#each logData as log, index (index)}
+			<span class={log.includes('\t') ? 'ms-3' : ''}>{log}</span><br />
+		{/each}
+	</div>
+    <Button onclick={toggleLogs} class="m-1">Hide Logs</Button>
+{/if}
