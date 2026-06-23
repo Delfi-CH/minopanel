@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Icon, Badge, Button } from '@sveltestrap/sveltestrap';
-	import FileTreeNode from './FileTreeNode.svelte';
+	import { Icon, Badge } from '@sveltestrap/sveltestrap';
+	import FileTreeNode from '$lib/components/fs/FileTreeNode.svelte';
 	import { slide } from 'svelte/transition';
 
 	const { entry } = $props();

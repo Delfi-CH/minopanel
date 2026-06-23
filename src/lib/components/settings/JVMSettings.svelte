@@ -2,7 +2,7 @@
 	import { webDownloadManager } from '$lib/download/web';
 	import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
 	import { Card, CardBody, CardHeader, CardTitle, Col, Button } from '@sveltestrap/sveltestrap';
-	import DeleteModal from './DeleteModal.svelte';
+	import DeleteModal from '$lib/components/DeleteModal.svelte';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
@@ -120,7 +120,6 @@
 			}}
 			onDelete={async () => {
 				showDeleteModal = false;
-				// @ts-expect-error womp womp
 				await axios.delete(
 					`http://${window.location.hostname}:6502/api/jvm` + JavaVersion[deletedJavaVersion]
 				);

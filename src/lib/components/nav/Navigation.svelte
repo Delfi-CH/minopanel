@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Navbar, Nav, NavbarToggler, Collapse, NavbarBrand } from '@sveltestrap/sveltestrap';
-	import NavigationLink from '$lib/components/NavigationLink.svelte';
+	import NavigationLink from '$lib/components/nav/NavigationLink.svelte';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
-	import NavigationDownload from './NavigationDownload.svelte';
+	import NavigationDownload from '$lib/components/nav/NavigationDownload.svelte'
 
 	let branding = $state('Minopanel');
 

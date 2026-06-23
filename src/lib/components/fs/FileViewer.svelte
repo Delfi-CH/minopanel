@@ -1,5 +1,5 @@
 <script lang="ts">
-    import FileTreeNode from "./FileTreeNode.svelte";
+    import FileTreeNode from "$lib/components/fs/FileTreeNode.svelte";
     const { fsData } = $props()
 </script>
 

@@ -21,11 +21,8 @@ export const downloadManager = new DownloadManager();
 export const serverManager = new ServerManager();
 import TailFile from '@logdna/tail-file';
 import * as fs from 'node:fs';
-import * as fsPromises from 'node:fs/promises';
 import * as readline from 'node:readline/promises';
-import * as path from "node:path"
-import { fsDTO } from '../lib/fs/dataTransferObjects.ts';
-import { readDirectory } from '$lib/fs/fs.ts';
+import { readDirectory } from '../lib/fs/fs.ts';
 
 const app = express();
 app.use(express.json());

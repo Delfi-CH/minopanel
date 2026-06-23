@@ -1,7 +1,7 @@
 <script lang="ts">
-	import JVMSettings from '$lib/components/JVMSettings.svelte';
+	import JVMSettings from '$lib/components/settings/JVMSettings.svelte';
 	import { Container, Row } from '@sveltestrap/sveltestrap';
-	import InstanceSettings from '$lib/components/InstanceSettings.svelte';
+	import InstanceSettings from '$lib/components/settings/InstanceSettings.svelte';
 </script>
 
 <Container>
