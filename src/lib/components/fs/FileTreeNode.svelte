@@ -79,7 +79,7 @@
 </script>
 
 <div class="tree-node">
-	{#if entry.directory && entry.children.length > 0}
+	{#if entry.directory}
 		<h5>
 			<Badge
 				onclick={() => (showChildren = !showChildren)}
@@ -100,11 +100,15 @@
 			{/if}
 		</h5>
 
-		{#if showChildren}
+		{#if showChildren && entry.children.length > 0}
 			<div class="children" transition:slide>
 				{#each entry.children as child, index (index)}
 					<FileTreeNode entry={child} {name} {onChange} parentPath={fullPath} rootNode={false} />
 				{/each}
+			</div>
+		{:else if showChildren && entry.children.length <= 0}
+			<div class="children" transition:slide>
+				<p>Folder is emtpy...</p>
 			</div>
 		{/if}
 	{:else}
