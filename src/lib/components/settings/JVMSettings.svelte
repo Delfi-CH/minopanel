@@ -49,7 +49,7 @@
 					onclick={async () => {
 						try {
 							await axios.post(
-								`http://${window.location.hostname}:6502/api/jvm` +
+								`http://${window.location.hostname}:6502/api/jvm/` +
 									JavaVersion[jversion.version] +
 									'/test'
 							);
@@ -121,7 +121,7 @@
 			onDelete={async () => {
 				showDeleteModal = false;
 				await axios.delete(
-					`http://${window.location.hostname}:6502/api/jvm` + JavaVersion[deletedJavaVersion]
+					`http://${window.location.hostname}:6502/api/jvm/` + JavaVersion[deletedJavaVersion]
 				);
 				await fetchLocalJavaVersions();
 			}}
