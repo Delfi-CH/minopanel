@@ -20,8 +20,6 @@ Write an Installer
 
 ### General
 
-edit server filesystem (upload worlds, mods, etc)
-
 add [Minecraft Server Management Protocol](https://minecraft.wiki/w/Minecraft_Server_Management_Protocol) for supported versions
 
 do player management (kick, ban, whitelist, admin, etc)
@@ -43,6 +41,8 @@ authentication
 ### CLI-only
 
 cli config
+
+edit server filesystem (upload worlds, mods, etc)
 
 stream logs
 
