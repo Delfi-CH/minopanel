@@ -2,27 +2,32 @@ import * as fsPromises from 'node:fs/promises';
 import { fsDTO } from './dataTransferObjects';
 import * as path from 'node:path';
 
-export async function readDirectory(dirPath: string): Promise<fsDTO[]> {
+export async function readDirectory(dirPath: string): Promise<fsDTO> {
 	const dir = await fsPromises.opendir(dirPath);
-	const fsList: fsDTO[] = [];
+	const children: fsDTO[] = [];
 
 	for await (const dirent of dir) {
 		const fullPath = path.join(dirPath, dirent.name);
 
-		let children: fsDTO[] = [];
+		let grandChildren: fsDTO[] = [];
 
 		if (dirent.isDirectory()) {
-			children = await readDirectory(fullPath);
+			const subtree = await readDirectory(fullPath);
+			grandChildren = subtree.children;
 		}
 
-		fsList.push(
+		children.push(
 			new fsDTO(
-				dirent.name, // or fullPath if you want the complete path
+				dirent.name,
 				dirent.isDirectory(),
-				children
+				grandChildren
 			)
 		);
 	}
 
-	return fsList;
+	return new fsDTO(
+		path.basename(dirPath) || dirPath,
+		true,
+		children
+	);
 }

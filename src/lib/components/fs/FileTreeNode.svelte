@@ -1,11 +1,21 @@
 <script lang="ts">
-	import { Icon, Badge } from '@sveltestrap/sveltestrap';
+	import { Icon, Badge, Button } from '@sveltestrap/sveltestrap';
 	import FileTreeNode from '$lib/components/fs/FileTreeNode.svelte';
 	import { slide } from 'svelte/transition';
+	import axios from 'axios';
+	import { onMount } from 'svelte';
+	import UploadModal from './UploadModal.svelte';
+	import DeleteModal from '../DeleteModal.svelte';
 
-	const { entry } = $props();
+	const { entry, name, parentPath, onChange, rootNode } = $props();
 
 	let showChildren = $state(false);
+	let showUpload = $state(false);
+	let showDelete = $state(false)
+
+	const fullPath = $derived(parentPath
+		? `${parentPath}/${entry.path}`
+		: entry.path);
 
 	function determineFileIcon() {
 		if (entry.path.endsWith('.txt') || entry.path.endsWith('.log')) {
@@ -31,6 +41,39 @@
 			return 'file-earmark';
 		}
 	}
+
+	async function deleteFile() {
+		try {
+			await axios.delete(
+				`http://${window.location.hostname}:6502/api/server/static/${name}/fs?path=${encodeURIComponent(fullPath)}`
+			);
+			onChange();
+		} catch (err) {
+			console.error("Deletion Error: " + err);
+		}
+	}
+
+	function downloadFile() {
+		try {
+			window.open(`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download?path=${encodeURIComponent(fullPath)}`)
+			onChange();
+		} catch (err) {
+			console.error("Download Error: " + err);
+		}
+	}
+
+	function downloadFolder() {
+		try {
+			window.open(`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download/folder?path=${encodeURIComponent(fullPath)}`)
+			onChange();
+		} catch (err) {
+			console.error("Download Error: " + err);
+		}
+	}
+
+	onMount(() => {
+		showChildren = rootNode;
+	});
 </script>
 
 <div class="tree-node">
@@ -40,11 +83,25 @@
 				<Icon name="folder"></Icon>
 				<span>{entry.path}</span>
 			</Badge>
+
+			<Button onclick={() => (showUpload = !showUpload)} color="primary">Upload</Button>
+			<Button onclick={downloadFolder} color="primary">Download</Button>
+
+			{#if !rootNode}
+				<Button onclick={() => (showDelete = !showDelete)} color="warning">Delete</Button>
+			{/if}
 		</h5>
+
 		{#if showChildren}
 			<div class="children" transition:slide>
 				{#each entry.children as child, index (index)}
-					<FileTreeNode entry={child} />
+					<FileTreeNode
+						entry={child}
+						name={name}
+						onChange={onChange}
+						parentPath={fullPath}
+						rootNode={false}
+					/>
 				{/each}
 			</div>
 		{/if}
@@ -54,7 +111,18 @@
 				<Icon name={determineFileIcon()}></Icon>
 				<span>{entry.path}</span>
 			</Badge>
+
+			<Button onclick={downloadFile} color="primary">Download</Button>
+			<Button onclick={() => (showDelete = !showDelete)} color="warning">Delete</Button>
 		</h5>
+	{/if}
+
+	{#if showUpload}
+		<UploadModal open={showUpload} name={name} fullPath={fullPath} onChange={onChange} onClose={()=> showUpload = !showUpload}></UploadModal>
+	{/if}
+
+	{#if showDelete} 
+		<DeleteModal open={showDelete} message={entry.path} onDelete={async() => await deleteFile()} onClose={()=> showDelete = !showDelete}></DeleteModal>
 	{/if}
 </div>
 

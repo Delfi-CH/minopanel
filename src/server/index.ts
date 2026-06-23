@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import cors from 'cors';
 import { createServer } from 'node:http';
 import { downloadWss } from './sockets/downloadSocket.ts';
@@ -21,12 +21,34 @@ export const downloadManager = new DownloadManager();
 export const serverManager = new ServerManager();
 import TailFile from '@logdna/tail-file';
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 import * as readline from 'node:readline/promises';
 import { readDirectory } from '../lib/fs/fs.ts';
+import multer from 'multer';
+import { ZipArchive } from 'archiver';
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+const storage = multer.diskStorage({
+	destination(req, file, cb) {
+		const targetPath = req.body.targetPath;
+		const safePath = path.normalize(targetPath).replace(/^(\.\.(\/|\\|$))+/, '');
+
+		const uploadDir = path.join(config.paths.mcServerDirectory, safePath);
+
+		fs.mkdirSync(uploadDir, { recursive: true });
+
+		cb(null, uploadDir);
+	},
+
+	filename(req, file, cb) {
+		cb(null, file.originalname);
+	}
+});
+
+const upload = multer({ storage });
 
 const config = loadConfig();
 const port = config.backend.port;
@@ -54,6 +76,23 @@ server.on('upgrade', (req, socket, head) => {
 		socket.destroy();
 	}
 });
+
+function validateServerFs(req: Request, res: Response, next: () => void) {
+	const name = req.params.name;
+	//@ts-expect-error womp womp
+	const srv = loadServerFile(config.paths, name);
+	if (!srv) {
+		res.sendStatus(404);
+		return;
+	}
+	if (!srv.serverDirectory) {
+		res.sendStatus(404);
+		return;
+	}
+	//@ts-expect-error womp womp
+	req.server = srv;
+	next();
+}
 
 app.get('/', (req, res) => {
 	res.send('hello world');
@@ -136,57 +175,140 @@ app.get('/api/server/static/:name/logs', async (req, res) => {
 	res.setHeader('Connection', 'keep-alive');
 	res.flushHeaders();
 
-	const logfile = fs.createReadStream(srv.serverDirectory + '/logs/latest.log', 'utf-8');
-	const rl = readline.createInterface({
-		input: logfile,
-		crlfDelay: Infinity
-	});
-
-	rl.on('line', (line) => {
-		res.write(`data: ${line}\n\n`);
-	});
-
-	const tail = new TailFile(srv.serverDirectory + '/logs/latest.log', { encoding: 'utf-8' })
-		.on('data', (chunk) => {
-			const lines = chunk.toString().split('\n');
-
-			for (const line of lines) {
-				res.write(`data: ${line}\n\n`);
-			}
-		})
-		.on('tail_error', (err) => {
-			console.error('TailFile had an error!', err);
-			res.end();
-		})
-		.on('error', (err) => {
-			console.error('A TailFile stream error was likely encountered', err);
-			res.end();
+	try {
+		fs.accessSync(srv.serverDirectory + '/logs/latest.log');
+		const logfile = fs.createReadStream(srv.serverDirectory + '/logs/latest.log', 'utf-8');
+		const rl = readline.createInterface({
+			input: logfile,
+			crlfDelay: Infinity
 		});
 
-	tail.start().catch((err) => {
-		console.error('Cannot start.  Does the file exist?', err);
-		res.end();
-	});
+		rl.on('line', (line) => {
+			res.write(`data: ${line}\n\n`);
+		});
 
-	res.on('close', () => {
-		tail.quit();
+		const tail = new TailFile(srv.serverDirectory + '/logs/latest.log', { encoding: 'utf-8' })
+			.on('data', (chunk) => {
+				const lines = chunk.toString().split('\n');
+
+				for (const line of lines) {
+					res.write(`data: ${line}\n\n`);
+				}
+			})
+			.on('tail_error', (err) => {
+				console.error('TailFile had an error!', err);
+				res.end();
+			})
+			.on('error', (err) => {
+				console.error('A TailFile stream error was likely encountered', err);
+				res.end();
+			});
+
+		tail.start().catch((err) => {
+			console.error('Cannot start.  Does the file exist?', err);
+			res.end();
+		});
+		res.on('close', () => {
+			tail.quit();
+			res.end();
+		});
+	} catch {
 		res.end();
-	});
+	}
 });
 
-app.get('/api/server/static/:name/fs', async (req, res) => {
-	const name = req.params.name;
-	const srv = loadServerFile(config.paths, name);
-	if (!srv) {
-		res.sendStatus(404);
+app.get('/api/server/static/:name/fs', validateServerFs, async (req, res) => {
+	//@ts-expect-error womp womp
+	const srv = req.server;
+	const fsList = await readDirectory(srv.serverDirectory);
+	res.send([fsList]);
+});
+
+app.post('/api/server/static/:name/fs', validateServerFs, upload.array('files'), (req, res) => {
+	res.send(201);
+});
+
+app.delete('/api/server/static/:name/fs', validateServerFs, (req, res) => {
+	const filepath = req.query.path;
+	//@ts-expect-error womp womp
+	const resolved = path.resolve(config.paths.mcServerDirectory, filepath);
+	if (!resolved.startsWith(config.paths.mcServerDirectory)) {
+		res.sendStatus(400);
 		return;
 	}
-	if (!srv.serverDirectory) {
-		res.sendStatus(404);
+	try {
+		fs.rmSync(resolved, { recursive: true, force: false });
+		res.sendStatus(204);
+		return;
+	} catch (err) {
+		console.error('Could not delete ' + resolved + ': ' + err);
+		res.sendStatus(500);
 		return;
 	}
-	const fsList = await readDirectory(srv.serverDirectory)
-	res.send(fsList)
+});
+
+app.get('/api/server/static/:name/fs/download', validateServerFs, (req, res) => {
+	const filepath = req.query.path;
+	//@ts-expect-error womp womp
+	const resolved = path.resolve(config.paths.mcServerDirectory, filepath);
+	if (!resolved.startsWith(config.paths.mcServerDirectory)) {
+		res.sendStatus(400);
+		return;
+	}
+	try {
+		res.download(resolved);
+		return;
+	} catch (err) {
+		console.error('Could not delete ' + resolved + ': ' + err);
+		res.sendStatus(500);
+		return;
+	}
+});
+
+app.get('/api/server/static/:name/fs/download/folder', validateServerFs, (req, res) => {
+	const filepath = req.query.path;
+	//@ts-expect-error womp womp
+	const resolved = path.resolve(config.paths.mcServerDirectory, filepath);
+	if (!resolved.startsWith(config.paths.mcServerDirectory)) {
+		res.sendStatus(400);
+		return;
+	}
+	
+	const outpath = path.join(config.paths.tmpPath, path.basename(resolved)+".zip");
+	const output = fs.createWriteStream(outpath);
+	const archive = new ZipArchive({
+		zlib: { level: 6 }
+	});
+
+	output.on('close', () => {
+		res.download(outpath);
+		return;
+	});
+
+	output.on('drain', () => {
+		console.log('zip stream has been drained');
+	});
+
+	archive.on('warning', function (err) {
+		if (err.code === 'ENOENT') {
+			console.log("ENOET")
+		} else {
+			console.error("warn: " + err)
+			res.sendStatus(500)
+			return
+		}
+	});
+
+	// good practice to catch this error explicitly
+	archive.on('error', function (err) {
+		res.sendStatus(500)
+		console.error("zip error: " + err)
+		return
+	});
+
+	archive.pipe(output);
+	archive.directory(resolved, false)
+	archive.finalize()
 });
 
 app.get('/api/server/static/:name/props', async (req, res) => {

@@ -11,8 +11,10 @@
 	import ServerSettings from '$lib/components/settings/ServerSettings.svelte';
 	import ServerLogs from '$lib/components/logs/ServerLogs.svelte';
 
+	//@ts-expect-error womp womp
 	let xterm;
 	function restart() {
+		//@ts-expect-error womp womp
 		xterm.startup();
 	}
 
@@ -21,11 +23,8 @@
 	let showDeleteModal = $state(false);
 	let running = $state(false);
 
-	let fsData = $state([]);
-
 	onMount(async () => {
 		await isRunning();
-		await getFS();
 	});
 
 	async function isRunning() {
@@ -35,12 +34,6 @@
 		running = tmpRunning.data;
 	}
 
-	async function getFS() {
-		const tmpFS = await axios.get(
-			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/fs'
-		);
-		fsData = tmpFS.data;
-	}
 </script>
 
 <Container>
@@ -125,7 +118,7 @@
 	<Row>
 		<h2>Filesystem</h2>
 		<Col>
-			<FileViewer fsData={fsData}></FileViewer>
+			<FileViewer name={data.post.name}></FileViewer>
 		</Col>
 	</Row>
 	<Row>

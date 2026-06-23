@@ -27,9 +27,6 @@
             if (showLogs && count < 5) {
                 window.scrollTo(0, document.body.scrollHeight)
                 count++
-            } else {
-                button.scrollIntoView()
-                count++
             }
         }, 100)
         
