@@ -37,7 +37,7 @@
 
 	function checkIfJavaVersionIsEnabled(version: JavaVersion) {
 		const list = Modloader.getSupportedJavaVersions(selectedVersion);
-		console.log(list.includes(JavaVersion.OpenJdk26))
+		console.log(list.includes(JavaVersion.OpenJdk26));
 		return list.includes(version);
 	}
 
@@ -48,7 +48,6 @@
 			checkIfJavaVersionIsEnabled(selectedJavaVersion)
 		);
 	}
-
 </script>
 
 <Container>
@@ -74,11 +73,13 @@
 					try {
 						await axios.post(`http://${window.location.hostname}:6502/api/server/static`, server);
 						server.installFiles(paths);
-						setTimeout(async()=>{
+						setTimeout(async () => {
 							await axios.post(
-								`http://${window.location.hostname}:6502/api/server/static/` + server.name + '/setup'
+								`http://${window.location.hostname}:6502/api/server/static/` +
+									server.name +
+									'/setup'
 							);
-						}, 2000)
+						}, 2000);
 					} catch (err) {
 						if (err.status === 409) {
 							errorMessage = `Duplicate name: "${server.name}"! Each Server must have a unique name!`;

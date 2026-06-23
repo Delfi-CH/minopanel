@@ -1,13 +1,9 @@
 import express from 'express';
-import {
-	loadJavaFiles,
-	loadJavaFile,
-	deleteJavaFile
-} from '../lib/data/data.ts';
+import { loadJavaFiles, loadJavaFile, deleteJavaFile } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java';
 import { config } from './index.ts';
 
-const router = express.Router()
+const router = express.Router();
 
 router.get('/', (req, res) => {
 	res.send(loadJavaFiles(config.paths));
@@ -39,4 +35,4 @@ router.delete('/:version', (req, res) => {
 	}
 });
 
-export { router as JvmRouter }
+export { router as JvmRouter };

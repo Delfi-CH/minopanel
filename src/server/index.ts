@@ -3,9 +3,7 @@ import cors from 'cors';
 import { createServer } from 'node:http';
 import { downloadWss } from './sockets/downloadSocket.ts';
 import { mcWss } from './sockets/serverSocket.ts';
-import {
-	loadConfig,
-} from '../lib/data/data.ts';
+import { loadConfig } from '../lib/data/data.ts';
 import axios from 'axios';
 import { DownloadManager } from '../lib/download/server.ts';
 import { ServerManager } from '../lib/servers/manager.ts';
@@ -17,7 +15,6 @@ import { ServerRouter } from './mcRouter.ts';
 const app = express();
 app.use(express.json());
 app.use(cors());
-
 
 export const config = loadConfig();
 const port = config.backend.port;
@@ -69,9 +66,8 @@ app.get('/api/proxy/neoforge-maven/sha256/:neoforgeVersion', async (req, res) =>
 	res.send(proxyRes.data);
 });
 
-app.use("/api/jvm", JvmRouter)
-app.use("/api/server/static", ServerRouter)
-
+app.use('/api/jvm', JvmRouter);
+app.use('/api/server/static', ServerRouter);
 
 app.get('/api/downloads/static', (req, res) => {
 	res.send(downloadManager.getAll());

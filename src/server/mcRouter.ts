@@ -1,10 +1,10 @@
-import express, { type Request, type Response} from 'express';
+import express, { type Request, type Response } from 'express';
 import {
-    loadJavaFiles,
-    loadJavaFile,
-    loadServerFiles,
-    loadServerFile,
-    deleteServerFile
+	loadJavaFiles,
+	loadJavaFile,
+	loadServerFiles,
+	loadServerFile,
+	deleteServerFile
 } from '../lib/data/data.ts';
 import { JavaVersion } from '../lib/jvm/java.ts';
 import { MCServer, Modloader, ModloaderType } from '../lib/servers/servers.ts';
@@ -18,23 +18,23 @@ import { readDirectory } from '../lib/fs/fs.ts';
 import { ZipArchive } from 'archiver';
 import { config, serverManager, downloadManager } from './index.ts';
 
-const router = express.Router()
+const router = express.Router();
 
 const storage = multer.diskStorage({
-    destination(req, file, cb) {
-        const targetPath = req.body.targetPath;
-        const safePath = path.normalize(targetPath).replace(/^(\.\.(\/|\\|$))+/, '');
+	destination(req, file, cb) {
+		const targetPath = req.body.targetPath;
+		const safePath = path.normalize(targetPath).replace(/^(\.\.(\/|\\|$))+/, '');
 
-        const uploadDir = path.join(config.paths.mcServerDirectory, safePath);
+		const uploadDir = path.join(config.paths.mcServerDirectory, safePath);
 
-        fs.mkdirSync(uploadDir, { recursive: true });
+		fs.mkdirSync(uploadDir, { recursive: true });
 
-        cb(null, uploadDir);
-    },
+		cb(null, uploadDir);
+	},
 
-    filename(req, file, cb) {
-        cb(null, file.originalname);
-    }
+	filename(req, file, cb) {
+		cb(null, file.originalname);
+	}
 });
 
 const upload = multer({ storage });
@@ -55,7 +55,6 @@ function validateServerFs(req: Request, res: Response, next: () => void) {
 	req.server = srv;
 	next();
 }
-
 
 router.get('/', (req, res) => {
 	res.send(loadServerFiles(config.paths));
@@ -396,4 +395,4 @@ router.post('/:name/setup', async (req, res) => {
 	}
 });
 
-export { router as ServerRouter }
+export { router as ServerRouter };
