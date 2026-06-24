@@ -4,10 +4,6 @@
 	import {
 		Label,
 		Input,
-		Card,
-		CardBody,
-		CardHeader,
-		CardTitle,
 		Col,
 		Row,
 		Pagination,
@@ -16,6 +12,7 @@
 	} from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
+	import ModSearchItem from '$lib/components/mods/ModSearchItem.svelte';
 
 	let modList = $state([]);
 	let queryString = $state('');
@@ -25,7 +22,7 @@
 	let paginationLength = $state(1);
 	let paginationList: SvelteSet<number> = new SvelteSet<number>();
 
-	let { gameVersion, modloader } = $props();
+	let { gameVersion, modloader, serverName } = $props();
 
 	onMount(async () => {
 		await queryModrinth();
@@ -61,7 +58,11 @@
 				: 'Plugins'}
 		</h2>
 		<Col>
-			<h3>Search</h3>
+			<h3>Search & Install {modloader === ModloaderType.Forge ||
+			modloader === ModloaderType.Fabric ||
+			modloader === ModloaderType.NeoForge
+				? 'Mods'
+				: 'Plugins'} from Modrinth</h3>
 
 			<Label>Name</Label>
 			<Input bind:value={queryString} type="text" onchange={async () => await queryModrinth()}
@@ -79,34 +80,7 @@
 	</Row>
 	<Row cols={1}>
 		{#each modList as mod, index (index)}
-			<Col>
-				<Card class="m-1">
-					<CardHeader>
-						<div class="d-flex gap-2 align-items-center">
-							<img
-								src={mod.icon_url}
-								alt="ModIcon"
-								width="48px"
-								style="border: 5px solid transparent; border-radius: 25%;"
-							/>
-							<CardTitle>{mod.title} by {mod.author}</CardTitle>
-						</div>
-					</CardHeader>
-					<CardBody>
-						<p>{mod.description}</p>
-						<p>{mod.downloads} Downloads</p>
-						<p>
-							Versions: {mod.versions[0]}-{mod.versions[mod.versions.length - 1]}
-							|
-							<span class={mod.versions.includes(gameVersion) ? 'text-success' : 'text-danger'}
-								>{mod.versions.includes(gameVersion)
-									? `Runs on Version ${gameVersion}`
-									: `Does not run on Version ${gameVersion}!`}</span
-							>
-						</p>
-					</CardBody>
-				</Card>
-			</Col>
+			<ModSearchItem mod={mod} gameVersion={gameVersion} modloader={modloader} serverName={serverName}></ModSearchItem>
 		{/each}
 		<Col>
 			<Pagination>
