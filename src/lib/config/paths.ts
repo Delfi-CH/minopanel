@@ -13,10 +13,14 @@ export class ApplicatonPaths {
 	jdkSelfTestCodePath: string = '.';
 
 	cliBinaryPath: string = '.';
+	cliScriptPath: string = '.';
 	serverBinaryPath: string = '.';
+	serverScriptPath: string = '.';
 	frontendDirectory: string = '.';
-
-	systemdServicePath: string = '.';
+	frontendBinaryPath: string = '.';
+	frontendScriptPath: string = '.';
+	webSystemdServicePath: string = '.';
+	serverSystemdServicePath: string = '.';
 
 	tmpPath: string = '.';
 
@@ -29,10 +33,15 @@ export class ApplicatonPaths {
 			this.jdkDirectory = `/var/lib/minopanel/bin/java`;
 			this.jdkMetadataDirectory = `/var/lib/minopanel/data/java`;
 			this.jdkSelfTestCodePath = `/var/lib/minopanel/data/java`;
-			this.cliBinaryPath = `/opt/minopanel/minoctl`;
-			this.serverBinaryPath = `/opt/minopanel/minopaneld`;
-			this.frontendDirectory = `/var/www/minopanel`;
-			this.systemdServicePath = `/usr/lib/systemd/system/minopanel.service`;
+			this.cliBinaryPath = `/usr/bin/minoctl`;
+			this.cliScriptPath = `/var/lib/minopanel/bin/minoctl.cjs`
+			this.serverBinaryPath = `/usr/bin/minopaneld`;
+			this.serverScriptPath = `/var/lib/minopanel/bin/minopaneld.cjs`
+			this.frontendBinaryPath = '/usr/bin/minowebd';
+			this.frontendScriptPath = '/var/lib/minopanel/bin/minowebd.cjs';
+			this.frontendDirectory = `/var/lib/minopanel/web`;
+			this.webSystemdServicePath = `/usr/lib/systemd/system/minoweb.service`;
+			this.serverSystemdServicePath = `/usr/lib/systemd/system/minopanel.service`;
 			this.tmpPath = '/tmp';
 		} else if (system === OperatingSystem.Windows) {
 			this.serverConfigPath = '.';
@@ -43,7 +52,11 @@ export class ApplicatonPaths {
 			this.jdkMetadataDirectory = '.';
 			this.jdkSelfTestCodePath = '.';
 			this.cliBinaryPath = '.';
+			this.cliScriptPath = '.';
 			this.serverBinaryPath = '.';
+			this.serverScriptPath = '.';
+			this.frontendBinaryPath = '.';
+			this.frontendScriptPath = '.';
 			this.frontendDirectory = '.';
 			this.tmpPath = '.';
 		} else {
@@ -55,7 +68,11 @@ export class ApplicatonPaths {
 			this.jdkMetadataDirectory = '.';
 			this.jdkSelfTestCodePath = '.';
 			this.cliBinaryPath = '.';
+			this.cliScriptPath = '.';
 			this.serverBinaryPath = '.';
+			this.serverScriptPath = '.';
+			this.frontendBinaryPath = '.';
+			this.frontendScriptPath = '.';
 			this.frontendDirectory = '.';
 			this.tmpPath = '.';
 		}

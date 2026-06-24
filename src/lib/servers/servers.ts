@@ -4,7 +4,7 @@ import isNode from 'is-node';
 import { CorretoOpenJDK, JavaVersion } from '../jvm/java';
 import { ApplicatonPaths } from '../config/paths';
 import { webDownloadManager } from '$lib/download/web';
-import { DownloadManager } from '$lib/download/server';
+import type { DownloadManager } from '$lib/download/server';
 import { OperatingSystem } from '$lib/system';
 
 class MCServer {
