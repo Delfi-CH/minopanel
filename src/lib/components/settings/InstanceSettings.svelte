@@ -21,6 +21,7 @@
 	<p>{config.branding === 'Minopanel' ? '' : 'Minopanel '}Version {config.version}</p>
 	<p>Host Operating System: {config.system}</p>
 	<p>Host Architecture: {config.arch}</p>
+	<p>Total Memory: ~{Math.floor(config.memory / 1000)}GB</p>
 </Col>
 
 <h3>Paths</h3>
