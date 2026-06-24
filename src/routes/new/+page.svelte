@@ -13,6 +13,7 @@
 	let availableModloaders = $state(Object.values(ModloaderType));
 	let selectedJavaVersion: JavaVersion = $state(JavaVersion.OpenJdk26);
 	let avialableJavaVersions: CorretoOpenJDK[] = $state([]);
+	let agreedToEula = $state(false)
 	let errorMessage = $state('');
 
 	let paths: ApplicatonPaths | undefined = $state();
@@ -45,7 +46,8 @@
 		return (
 			newServerName !== '' &&
 			selectedVersion !== '' &&
-			checkIfJavaVersionIsEnabled(selectedJavaVersion)
+			checkIfJavaVersionIsEnabled(selectedJavaVersion) &&
+			agreedToEula
 		);
 	}
 </script>
@@ -159,6 +161,11 @@
 						No Java Versions installed! Please install one from the Settings Page.
 					</p>
 				{/if}
+				<div class="d-flex gap-2 align-items-center">
+					<Label for="eula">I agree to the Minecraft EULA <a href="https://www.minecraft.net/eula" target="_blank">(minecraft.net/eula)</a></Label>
+					<Input type="checkbox" bind:checked={agreedToEula} id="eula" required></Input>
+				</div>
+				<br />
 				<Button
 					type="submit"
 					disabled={!validateEmAll()}
