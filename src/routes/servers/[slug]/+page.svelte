@@ -10,6 +10,7 @@
 	import FileViewer from '$lib/components/fs/FileViewer.svelte';
 	import ServerSettings from '$lib/components/settings/ServerSettings.svelte';
 	import ServerLogs from '$lib/components/logs/ServerLogs.svelte';
+	import ModSearch from '$lib/components/mods/ModSearch.svelte';
 
 	//@ts-expect-error womp womp
 	let xterm;
@@ -114,6 +115,7 @@
 			<ServerSettings name={data.post.name}></ServerSettings>
 		</Col>
 	</Row>
+	<ModSearch gameVersion={data.post.mcVersion} modloader={data.post.modloader.type}></ModSearch>
 	<Row>
 		<h2>Filesystem</h2>
 		<Col>

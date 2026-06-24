@@ -7,7 +7,7 @@
 
 	onMount(async () => {
 		await getFS();
-		setInterval(async () => await getFS(), 1000);
+		setInterval(async () => await getFS(), 5000);
 	});
 
 	async function getFS() {
