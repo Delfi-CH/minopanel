@@ -5,12 +5,15 @@
 	"type": "module",
 	"scripts": {
 		"frontend:dev": "vite dev",
-		"frontend:build": "vite build && rm -rf /var/lib/minopanel/web/* && cp -r build/* /var/lib/minopanel/web/ && esbuild src/web/index.ts --bundle --platform=node --format=cjs --outfile=dist/minowebd.cjs",
+		"frontend:build": "vite build && esbuild src/web/index.ts --bundle --platform=node --format=cjs --outfile=dist/minowebd.cjs",
+		"frontend:copy": "rm -rf /var/lib/minopanel/web/* && cp -r build/* /var/lib/minopanel/web/ && rm -f /var/lib/minopanel/bin/minowebd.cjs && cp dist/minowebd.cjs /var/lib/minopanel/bin/minowebd.cjs",
 		"frontend:serve": "tsx src/web/index.ts",
 		"server:dev": "tsx --watch src/server/index.ts",
 		"server:build": "esbuild src/server/index.ts --bundle --platform=node --format=cjs --outfile=dist/minopaneld.cjs --external:node-pty --external:node-downloader-helper",
+		"server:copy": "rm -f /var/lib/minopanel/bin/minopaneld.cjs && cp dist/minopaneld.cjs /var/lib/minopanel/bin/minopaneld.cjs",
 		"cli:dev": "tsx src/cli/main.ts",
 		"cli:build": "esbuild src/cli/main.ts --bundle --platform=node --format=cjs --outfile=dist/minoctl.cjs --external:node-downloader-helper",
+		"cli:copy": "rm -f /var/lib/minopanel/bin/minoctl.cjs && cp dist/minoctl.cjs /var/lib/minopanel/bin/minoctl.cjs",
 		"prepare": "svelte-kit sync || echo ''",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."

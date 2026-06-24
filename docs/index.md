@@ -58,6 +58,18 @@ none
 
 Not Implemented
 
+#### Requirements
+
+##### Windows
+
+- [NodeJS 22](https://nodejs.org/en/download) (or later)
+
+##### Unix
+
+- [NodeJS 22](https://nodejs.org/en/download) (or later)
+
+- [GNU Bash](https://www.gnu.org/software/bash/)
+
 ### Configuration
 
 #### Server
@@ -133,7 +145,7 @@ pnpm install
 pnpm frontend:build
 ```
 
-Output: `/build`
+Output: `/build` & `/dist/minowebd.cjs`
 
 **Backend**
 

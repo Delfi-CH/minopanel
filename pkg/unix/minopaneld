@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+type node &> /dev/null
+status=$?
+
+if [ "$status" != 0 ]; then
+    echo "NodeJS wasnt found in \$PATH!"
+    echo "Aborting..."
+    exit 1
+fi
+
+node /var/lib/minopanel/bin/minopaneld.cjs "$@"
