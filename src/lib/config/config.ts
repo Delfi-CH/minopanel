@@ -9,7 +9,7 @@ export class Config {
 	arch: MachineArchitecture;
 	paths: ApplicatonPaths;
 	backend: BackendOptions;
-	memory: number = 0
+	memory: number = 0;
 
 	constructor(
 		system: OperatingSystem,
@@ -33,7 +33,7 @@ export class Config {
 
 		const { writeFile } = await import('node:fs/promises');
 		const { totalmem } = await import('node:os');
-		this.memory = totalmem() / 1000000
+		this.memory = totalmem() / 1000000;
 
 		await writeFile(this.paths.serverConfigPath, JSON.stringify(this, null, 2), 'utf-8');
 	}
@@ -41,11 +41,11 @@ export class Config {
 	static fromJSON(json: any) {
 		const cfg = new Config(json.system, json.arch, json.backend, json.version, json.branding);
 		if (isNode) {
-			import("node:os").then(({ totalmem })=> {
-				cfg.memory = totalmem() / 1000000
-			})
+			import('node:os').then(({ totalmem }) => {
+				cfg.memory = totalmem() / 1000000;
+			});
 		}
-		return cfg
+		return cfg;
 	}
 
 	static blank() {

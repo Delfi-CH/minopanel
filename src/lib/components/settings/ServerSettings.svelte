@@ -5,14 +5,14 @@
 
 	const { name } = $props();
 	let serverProps = $state({});
-	let showWarn = $state(false)
+	let showWarn = $state(false);
 
 	onMount(async () => {
 		await getProps();
 		if (showWarn) {
-			setInterval(async ()=>{
-				await getProps()
-			}, 3000)
+			setInterval(async () => {
+				await getProps();
+			}, 3000);
 		}
 	});
 
@@ -23,7 +23,7 @@
 		);
 
 		serverProps = tmpProps.data;
-		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({})
+		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({});
 	}
 
 	async function getProps() {
@@ -31,11 +31,13 @@
 			`http://${window.location.hostname}:6502/api/server/static/` + name + '/props'
 		);
 		serverProps = tmpProps.data;
-		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({})
+		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({});
 	}
 </script>
 
-{#if showWarn}<p class="text-danger">"server.properties" doesnt exist! Please start the server once to generate "server.properties".</p>{/if}
+{#if showWarn}<p class="text-danger">
+		"server.properties" doesnt exist! Please start the server once to generate "server.properties".
+	</p>{/if}
 <Table>
 	<tbody>
 		<tr>
@@ -153,8 +155,7 @@
 					onclick={async () => {
 						await saveProps();
 					}}
-					disabled={showWarn}
-					>Save</Button
+					disabled={showWarn}>Save</Button
 				></td
 			>
 			<td></td>

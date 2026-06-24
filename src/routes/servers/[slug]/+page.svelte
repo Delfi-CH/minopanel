@@ -115,7 +115,11 @@
 			<ServerSettings name={data.post.name}></ServerSettings>
 		</Col>
 	</Row>
-	<ModSearch gameVersion={data.post.mcVersion} modloader={data.post.modloader.type} serverName={data.post.name}></ModSearch>
+	<ModSearch
+		gameVersion={data.post.mcVersion}
+		modloader={data.post.modloader.type}
+		serverName={data.post.name}
+	></ModSearch>
 	<Row>
 		<h2>Filesystem</h2>
 		<Col>

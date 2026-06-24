@@ -58,11 +58,13 @@
 				: 'Plugins'}
 		</h2>
 		<Col>
-			<h3>Search & Install {modloader === ModloaderType.Forge ||
-			modloader === ModloaderType.Fabric ||
-			modloader === ModloaderType.NeoForge
-				? 'Mods'
-				: 'Plugins'} from Modrinth</h3>
+			<h3>
+				Search & Install {modloader === ModloaderType.Forge ||
+				modloader === ModloaderType.Fabric ||
+				modloader === ModloaderType.NeoForge
+					? 'Mods'
+					: 'Plugins'} from Modrinth
+			</h3>
 
 			<Label>Name</Label>
 			<Input bind:value={queryString} type="text" onchange={async () => await queryModrinth()}
@@ -80,7 +82,7 @@
 	</Row>
 	<Row cols={1}>
 		{#each modList as mod, index (index)}
-			<ModSearchItem mod={mod} gameVersion={gameVersion} modloader={modloader} serverName={serverName}></ModSearchItem>
+			<ModSearchItem {mod} {gameVersion} {modloader} {serverName}></ModSearchItem>
 		{/each}
 		<Col>
 			<Pagination>

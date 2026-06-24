@@ -12,7 +12,7 @@
 	let showChildren = $state(false);
 	let showUpload = $state(false);
 	let showDelete = $state(false);
-	let showButtons = $state(false)
+	let showButtons = $state(false);
 
 	const fullPath = $derived(parentPath ? `${parentPath}/${entry.path}` : entry.path);
 
@@ -81,7 +81,11 @@
 
 <div class="tree-node">
 	{#if entry.directory}
-		<h5 onmouseenter={() => (showButtons = true)} onmouseleave={() => (showButtons = false)} style="width: fit-content;">
+		<h5
+			onmouseenter={() => (showButtons = true)}
+			onmouseleave={() => (showButtons = false)}
+			style="width: fit-content;"
+		>
 			<Badge
 				onclick={() => (showChildren = !showChildren)}
 				color="success"
@@ -94,12 +98,18 @@
 			</Badge>
 
 			{#if showButtons}
-				<span transition:fly><Button onclick={() => (showUpload = !showUpload)} color="primary">Upload</Button></span>
-				<span transition:fly><Button onclick={downloadFolder} color="primary">Download</Button></span>
+				<span transition:fly
+					><Button onclick={() => (showUpload = !showUpload)} color="primary">Upload</Button></span
+				>
+				<span transition:fly
+					><Button onclick={downloadFolder} color="primary">Download</Button></span
+				>
 			{/if}
 
 			{#if !rootNode && showButtons}
-				<span transition:fly><Button onclick={() => (showDelete = !showDelete)} color="warning">Delete</Button></span>
+				<span transition:fly
+					><Button onclick={() => (showDelete = !showDelete)} color="warning">Delete</Button></span
+				>
 			{/if}
 		</h5>
 
@@ -115,15 +125,30 @@
 			</div>
 		{/if}
 	{:else}
-		<h5 onmouseenter={() => (showButtons = true)} onmouseleave={() => (showButtons = false)} style="width:fit-content">
-			<Badge color="info" class="m-1" indicator pill onfocus={()=> {console.log("focus"); showButtons =! showButtons}}>
+		<h5
+			onmouseenter={() => (showButtons = true)}
+			onmouseleave={() => (showButtons = false)}
+			style="width:fit-content"
+		>
+			<Badge
+				color="info"
+				class="m-1"
+				indicator
+				pill
+				onfocus={() => {
+					console.log('focus');
+					showButtons = !showButtons;
+				}}
+			>
 				<Icon name={determineFileIcon()}></Icon>
 				<span>{entry.path}</span>
 			</Badge>
 
 			{#if showButtons}
 				<span transition:fly><Button onclick={downloadFile} color="primary">Download</Button></span>
-				<span transition:fly><Button onclick={() => (showDelete = !showDelete)} color="warning">Delete</Button></span>
+				<span transition:fly
+					><Button onclick={() => (showDelete = !showDelete)} color="warning">Delete</Button></span
+				>
 			{/if}
 		</h5>
 	{/if}

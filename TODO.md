@@ -24,10 +24,6 @@ add [Minecraft Server Management Protocol](https://minecraft.wiki/w/Minecraft_Se
 
 do player management (kick, ban, whitelist, admin, etc)
 
-install mods via modrinth api
-
-add some sort of eula confirm
-
 ### Frontend-only
 
 set backend url
@@ -47,5 +43,9 @@ edit server filesystem (upload worlds, mods, etc)
 stream logs
 
 server.properties editing
+
+install mods via modrinth api
+
+add some sort of eula confirm
 
 shell autocompletion (bash, zsh, fish, nu)

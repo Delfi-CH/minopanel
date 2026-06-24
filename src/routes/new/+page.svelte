@@ -13,7 +13,7 @@
 	let availableModloaders = $state(Object.values(ModloaderType));
 	let selectedJavaVersion: JavaVersion = $state(JavaVersion.OpenJdk26);
 	let avialableJavaVersions: CorretoOpenJDK[] = $state([]);
-	let agreedToEula = $state(false)
+	let agreedToEula = $state(false);
 	let errorMessage = $state('');
 
 	let paths: ApplicatonPaths | undefined = $state();
@@ -162,7 +162,11 @@
 					</p>
 				{/if}
 				<div class="d-flex gap-2 align-items-center">
-					<Label for="eula">I agree to the Minecraft EULA <a href="https://www.minecraft.net/eula" target="_blank">(minecraft.net/eula)</a></Label>
+					<Label for="eula"
+						>I agree to the Minecraft EULA <a href="https://www.minecraft.net/eula" target="_blank"
+							>(minecraft.net/eula)</a
+						></Label
+					>
 					<Input type="checkbox" bind:checked={agreedToEula} id="eula" required></Input>
 				</div>
 				<br />
