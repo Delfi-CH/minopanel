@@ -5,9 +5,15 @@
 
 	const { name } = $props();
 	let serverProps = $state({});
+	let showWarn = $state(false)
 
 	onMount(async () => {
 		await getProps();
+		if (showWarn) {
+			setInterval(async ()=>{
+				await getProps()
+			}, 3000)
+		}
 	});
 
 	async function saveProps() {
@@ -17,6 +23,7 @@
 		);
 
 		serverProps = tmpProps.data;
+		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({})
 	}
 
 	async function getProps() {
@@ -24,9 +31,11 @@
 			`http://${window.location.hostname}:6502/api/server/static/` + name + '/props'
 		);
 		serverProps = tmpProps.data;
+		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({})
 	}
 </script>
 
+{#if showWarn}<p class="text-danger">"server.properties" doesnt exist! Please start the server once to generate "server.properties".</p>{/if}
 <Table>
 	<tbody>
 		<tr>
@@ -37,10 +46,10 @@
 			<td>Difficulty</td>
 			<td>
 				<Input type="select" bind:value={serverProps.difficulty}>
-					<option value="peaceful">Peaceful</option>
-					<option value="easy">Easy</option>
-					<option value="normal">Normal</option>
-					<option value="hard">Hard</option>
+					<option value="0">Peaceful</option>
+					<option value="1">Easy</option>
+					<option value="2">Normal</option>
+					<option value="3">Hard</option>
 				</Input>
 			</td>
 		</tr>
@@ -48,10 +57,10 @@
 			<td>Gamemode</td>
 			<td>
 				<Input type="select" bind:value={serverProps.gamemode}>
-					<option value="survival">Survival</option>
-					<option value="creative">Creative</option>
-					<option value="adventure">Adventure</option>
-					<option value="spectator">Spectator</option>
+					<option value="0">Survival</option>
+					<option value="1">Creative</option>
+					<option value="2">Adventure</option>
+					<option value="3">Spectator</option>
 				</Input>
 			</td>
 		</tr>
@@ -143,7 +152,9 @@
 					color="success"
 					onclick={async () => {
 						await saveProps();
-					}}>Save</Button
+					}}
+					disabled={showWarn}
+					>Save</Button
 				></td
 			>
 			<td></td>
