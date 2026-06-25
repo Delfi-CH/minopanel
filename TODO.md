@@ -26,7 +26,7 @@ do player management (kick, ban, whitelist, admin, etc)
 
 ### Frontend-only
 
-nothing
+improve homepage
 
 ### Backend-only
 
