@@ -1,23 +1,23 @@
-pkgname=minoctl-bin
+pkgname=minopaneld-bin
 pkgver=0.0.1
 pkgrel=1
-pkgdesc="minoctl binary"
+pkgdesc="minopaneld binary"
 arch=('x86_64')
 url="https://github.com/Delfi-CH/minopanel"
 license=('AGPL-3.0-or-later')
 depends=('nodejs')
 
 options=(!debug)
-provides=('minoctl')
-conflicts=('minoctl')
+provides=('minopaneld')
+conflicts=('minopaneld')
 
-source=("https://github.com/Delfi-CH/minopanel/releases/download/latest/minoctl-amd64.deb")
+source=("https://github.com/Delfi-CH/minopanel/releases/download/latest/minopaneld-amd64.deb")
 sha256sums=('SKIP')
 
 package() {
     cd "$srcdir"
 
-    bsdtar -xf "minoctl-amd64.deb"
+    bsdtar -xf "minopaneld-amd64.deb"
 
     # Extract data.tar.* from the deb
     bsdtar -xf data.tar.xz -C "$pkgdir"

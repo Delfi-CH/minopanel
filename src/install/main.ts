@@ -1,6 +1,6 @@
 import { ApplicatonPaths } from '$lib/config/paths';
 import { LinuxDistribution, OperatingSystem } from '$lib/system';
-import { intro, outro, confirm, log, isCancel, cancel, select } from '@clack/prompts';
+import { intro, outro, confirm, log, isCancel, cancel, select, multiselect } from '@clack/prompts';
 import linuxOsInfo from '@delfi-ch/linux-os-info-esmodule';
 import * as os from "node:os"
 
@@ -60,6 +60,48 @@ async function main() {
 
 	const paths = new ApplicatonPaths(system)
 	paths.tmpPath = os.tmpdir()
+
+	const selectedOptions = await multiselect({
+		message: "Select the components you want to install",
+		options: [
+			{value: "minoctl", label: "Command-Line interface (minoctl)" },
+			{value: "minopaneld", label: "Server (minopaneld)"},
+			{value: "minowebd", label: "Web-Interface (minowebd)", hint: "Reccomended for most users"}
+		]
+	})
+
+	let installMinoctl = false
+	let installMinopaneld = false
+	let installMinowebd = false
+
+	handleCancel(selectedOptions);
+	selectedOptions.forEach((component) => {
+		if (component === "minoctl") {
+			installMinoctl = true
+		} else if (component === "minopaneld") {
+			installMinopaneld = true
+		} else if (component === "minowebd") {
+			installMinowebd = true
+		}
+	});
+
+	if (installMinoctl) {
+		if (finalOS === LinuxDistribution.archlinux) {
+			log.info("installing minoctl archlinux")
+		}
+	}
+
+	if (installMinopaneld) {
+		if (finalOS === LinuxDistribution.archlinux) {
+			log.info("installing minopaneld archlinux")
+		}
+	}
+
+	if (installMinowebd) {
+		if (finalOS === LinuxDistribution.archlinux) {
+			log.info("installing minowebd archlinux")
+		}
+	}
 
 	outro('minopanel was installed successfully');
 }

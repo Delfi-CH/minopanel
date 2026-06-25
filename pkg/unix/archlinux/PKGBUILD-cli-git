@@ -4,7 +4,7 @@ pkgrel=1
 pkgdesc="minoctl git build"
 arch=('x86_64')
 url="https://github.com/Delfi-CH/minopanel"
-license=('custom')
+license=('AGPL-3.0-or-later')
 depends=('nodejs')
 makedepends=('pnpm')
 

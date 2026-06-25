@@ -23,10 +23,24 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 dist
+*.class
+
+# Debian Packaging
 
 pkg/unix/dpkg/cli/usr
 pkg/unix/dpkg/cli/etc
 pkg/unix/dpkg/cli/var
 
+pkg/unix/dpkg/server/usr
+pkg/unix/dpkg/server/etc
+pkg/unix/dpkg/server/var
+
+pkg/unix/dpkg/web/usr
+pkg/unix/dpkg/web/etc
+pkg/unix/dpkg/web/var
+
 *.deb
+
+
+
 *.rpm

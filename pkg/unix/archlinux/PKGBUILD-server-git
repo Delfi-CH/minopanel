@@ -1,0 +1,36 @@
+pkgname=minopaneld-git
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="minopaneld git build"
+arch=('x86_64')
+url="https://github.com/Delfi-CH/minopanel"
+license=('AGPL-3.0-or-later')
+depends=('nodejs')
+makedepends=('pnpm' 'jdk8-openjdk')
+
+options=(!debug)
+provides=('minopaneld')
+conflicts=('minopaneld')
+
+source=("git+https://github.com/Delfi-CH/minopanel.git")
+sha256sums=('SKIP')
+
+prepare() {
+    cd $srcdir/minopanel
+    pnpm install
+    pnpm server:build
+}
+
+package() {
+    cd $srcdir/minopanel
+    install -Dm755 pkg/unix/minopaneld -t "$pkgdir/usr/bin/"
+    install -Dm755 dist/minopaneld.cjs -t "$pkgdir/var/lib/minopanel/bin/"
+    cp -r node_modules $pkgdir/var/lib/minopanel/bin
+    mkdir -p "$pkgdir/etc/minopanel.d"
+    mkdir -p "$pkgdir/var/lib/minopanel/bin/java"
+    mkdir -p "$pkgdir/var/lib/minopanel/bin/servers"
+    mkdir -p "$pkgdir/var/lib/minopanel/data/java"
+    mkdir -p "$pkgdir/var/lib/minopanel/data/servers"
+    javac src/lib/jvm/SelfTest.java
+    cp src/lib/jvm/SelfTest.class "$pkgdir/var/lib/minopanel/data/java"
+}
