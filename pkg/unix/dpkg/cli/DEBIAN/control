@@ -1,0 +1,8 @@
+Package: minoctl
+Version: 0.0.1-1
+Section: utils
+Priority: optional
+Architecture: all
+Depends: nodejs (>= 20)
+Maintainer: Delfi-CH <delfi@delfi.dev>
+Description: minopanel command line utility
