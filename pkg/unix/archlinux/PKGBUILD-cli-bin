@@ -1,0 +1,24 @@
+pkgname=minoctl-bin
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="minoctl binary"
+arch=('x86_64')
+url="https://github.com/Delfi-CH/minopanel"
+license=('custom')
+depends=('nodejs')
+
+options=(!debug)
+provides=('minoctl')
+conflicts=('minoctl')
+
+source=("https://github.com/Delfi-CH/minopanel/releases/download/v${pkgver}/minoctl.deb")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir"
+
+    bsdtar -xf "minoctl.deb"
+
+    # Extract data.tar.* from the deb
+    bsdtar -xf data.tar.xz -C "$pkgdir"
+}

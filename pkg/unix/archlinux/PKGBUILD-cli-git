@@ -1,0 +1,29 @@
+pkgname=minoctl-git
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="minoctl git build"
+arch=('x86_64')
+url="https://github.com/Delfi-CH/minopanel"
+license=('custom')
+depends=('nodejs')
+makedepends=('pnpm')
+
+options=(!debug)
+provides=('minoctl')
+conflicts=('minoctl')
+
+source=("git+https://github.com/Delfi-CH/minopanel.git")
+sha256sums=('SKIP')
+
+prepare() {
+    cd $srcdir/minopanel
+    pnpm install
+    pnpm cli:build
+}
+
+package() {
+    cd $srcdir/minopanel
+    install -Dm755 pkg/unix/minoctl -t "$pkgdir/usr/bin/"
+    install -Dm755 dist/minoctl.cjs -t "$pkgdir/var/lib/minopanel/bin/"
+    mkdir -p "$pkgdir/etc/minopanel.d"
+}
