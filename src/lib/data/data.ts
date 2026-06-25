@@ -1,4 +1,4 @@
-import { Config, FrontendConfig } from '$lib/config/config';
+import { CLIConfig, Config, FrontendConfig } from '$lib/config/config';
 import { ApplicatonPaths } from '$lib/config/paths';
 import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
 import { MCServer } from '$lib/servers/servers';
@@ -63,6 +63,26 @@ export function loadFrontendConfig() {
 		cfg.writeToFile().then(()=>{
 			cfg.writeForFrontend().then()
 		});
+		return cfg;	
+	}
+}
+
+export function loadCLIConfig(path?: string) {
+	const paths = new ApplicatonPaths(system);
+	let cliConfigPath;
+	if (path) {
+		cliConfigPath = path
+	} else {
+		cliConfigPath = paths.cliConfigPath
+	}
+	try {
+		fs.accessSync(cliConfigPath);
+		return CLIConfig.fromJSON(JSON.parse(fs.readFileSync(cliConfigPath, 'utf8')));
+	} catch (err) {
+		console.error('Could not load config: ' + err);
+		console.log('Using default config...');
+		const cfg = new CLIConfig(system, arch, "localhost", "http", 6502, "0.0.1");
+		cfg.writeToFile().then(()=> {});
 		return cfg;	
 	}
 }

@@ -115,3 +115,45 @@ export class FrontendConfig {
 		return cfg;
 	}
 }
+
+export class CLIConfig {
+	backendHost: string
+	backendProtocoll: string
+	backendPort: number
+	system: OperatingSystem
+	arch: MachineArchitecture
+	binPath: string
+	scriptPath: string
+	configPath: string
+	version: string
+	constructor(system: OperatingSystem, arch: MachineArchitecture, backendHost: string, backendProtocoll: string, backendPort: number, version: string) {
+		this.system = system
+		this.arch = arch
+		this.backendHost = backendHost
+		this.backendPort = backendPort
+		this.backendProtocoll = backendProtocoll
+		this.version = version
+		if(system === OperatingSystem.Linux) {
+			this.binPath = "/usr/bin/minoctl"
+			this.scriptPath = "/var/lib/minopanel/bin/minoctl.cjs"
+			this.configPath = "/etc/minopanel.d/cli.conf.json"
+		} else {
+			this.binPath = ""
+			this.scriptPath = ""
+			this.configPath = ""
+		}
+	}
+	async writeToFile() {
+		if (!isNode) {
+			throw new Error('not a nodejs enviroment');
+		}
+
+		const { writeFile } = await import('node:fs/promises');
+		await writeFile(this.configPath, JSON.stringify(this, null, 2), 'utf-8');
+	}
+
+	static fromJSON(json: any) {
+		const cfg = new CLIConfig(json.system, json.arch, json.backendHost, json.backendProtocoll, json.backendPort, json.version);
+		return cfg;
+	}
+}

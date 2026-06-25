@@ -7,9 +7,30 @@ import { Command } from 'commander';
 import EasyTable from 'easy-table';
 import WebSocket from 'ws';
 import cliProgress from 'cli-progress';
+import { loadCLIConfig } from '../lib/data/data.ts';
 
 async function main() {
 	const program = new Command();
+
+	function parseOpts() {
+		const opts = program.opts()
+		let cfg;
+		if (opts.config) {
+			cfg = loadCLIConfig(opts.config)
+		} else {
+			cfg = loadCLIConfig()
+		}
+		if (opts.hostname) {
+			cfg.backendHost = opts.hostname
+		} 
+		if (opts.port) {
+			cfg.backendPort = opts.port
+		}
+		if (opts.protocol) {
+			cfg.backendProtocoll = opts.protocol
+		}
+		return cfg	
+	}
 
 	program.name('minoctl');
 	program.description('Command Line Interface for minopanel');
@@ -17,11 +38,10 @@ async function main() {
 
 	program.option(
 		'-H, --hostname <hostname/ip address>',
-		'hostname of the minopanel instance',
-		'localhost'
+		'hostname of the minopanel instance'
 	);
-	program.option('-p, --port <number>', 'port of the minopanel instance', '6502');
-	program.option('-P, --protocol <http(s)>', 'protocol of the minopanel instance', 'http');
+	program.option('-p, --port <number>', 'port of the minopanel instance');
+	program.option('-P, --protocol <http(s)>', 'protocol of the minopanel instance');
 	program.option('-c, --config <path>', 'use an alternative configuration file');
 
 	const serverCommand = program.command('servers');
@@ -41,8 +61,8 @@ async function main() {
 		.command('attach <name>')
 		.description('attach the server console to your console')
 		.action((name) => {
-			const opts = program.opts();
-			const ws = new WebSocket(`ws://${opts.hostname}:${opts.port}/api/server/stream/${name}`);
+			const cfg = parseOpts()
+			const ws = new WebSocket(`ws://${cfg.backendHost}:${cfg.backendPort}/api/server/stream/${name}`);
 			const stdin = process.stdin;
 			const stdout = process.stdout;
 			ws.on('open', () => {
@@ -121,10 +141,10 @@ async function main() {
 		.action((version) => {
 			if (Object.keys(JavaVersion).includes(version)) {
 				try {
-					const opts = program.opts();
+					const cfg = parseOpts()
 					const rand = Math.floor(Math.random() * 100);
 					const ws = new WebSocket(
-						'ws://' + opts.hostname + ':' + opts.port + '/api/download/stream/' + rand
+						'ws://' + cfg.backendHost + ':' + cfg.backendPort + '/api/download/stream/' + rand
 					);
 					const initDTO = new DownloadDTO(DownloadDTOType.openjdk, null, version);
 					const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -369,8 +389,8 @@ async function main() {
 	}
 
 	function getBaseUrl() {
-		const opts = program.opts();
-		return opts.protocol + '://' + opts.hostname + ':' + opts.port;
+		const cfg = parseOpts()
+		return cfg.backendProtocoll + '://' + cfg.backendHost + ':' + cfg.backendPort;
 	}
 
 	function drawServerTable(data: Array<any>) {
