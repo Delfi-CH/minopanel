@@ -296,8 +296,8 @@ class Modloader {
 
 	async buildURL() {
 		const versions = await Modloader.getSupportedMCVersions(this.type);
-		await loadConfig()
-		const backendURL = getBackendURL()
+		await loadConfig();
+		const backendURL = getBackendURL();
 		if (this.type === ModloaderType.Vanilla) {
 			const manifest = await axios.get(
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
@@ -328,9 +328,7 @@ class Modloader {
 			this.url = latestBuild.downloads['server:default'].url;
 			this.sha256sum = latestBuild.downloads['server:default'].checksums.sha256;
 		} else if (this.type === ModloaderType.Forge) {
-			const metadata = await axios.get(
-				`${backendURL}/api/proxy/forge-metadata`
-			);
+			const metadata = await axios.get(`${backendURL}/api/proxy/forge-metadata`);
 			const versionBase = metadata.data[this.gameVersion].reverse()[0];
 			this.modloaderVersion = versionBase.replace(this.gameVersion + '-', '');
 			this.url = `https://maven.minecraftforge.net/net/minecraftforge/forge/${versionBase}/forge-${versionBase}-installer.jar`;
@@ -354,8 +352,7 @@ class Modloader {
 			this.modloaderVersion = compatibleNeoforgeVersions.reverse()[0];
 			this.url = `https://maven.neoforged.net/releases/net/neoforged/neoforge/${this.modloaderVersion}/neoforge-${this.modloaderVersion}-installer.jar`;
 			const shaRes = await axios.get(
-				`${backendURL}/api/proxy/neoforge-maven/sha256/` +
-					this.modloaderVersion
+				`${backendURL}/api/proxy/neoforge-maven/sha256/` + this.modloaderVersion
 			);
 			this.sha256sum = shaRes.data;
 		} else if (this.type === ModloaderType.Fabric) {
@@ -370,8 +367,8 @@ class Modloader {
 	}
 
 	static async getSupportedMCVersions(type: ModloaderType) {
-		await loadConfig()
-		const backendURL = getBackendURL()
+		await loadConfig();
+		const backendURL = getBackendURL();
 		if (type === ModloaderType.Vanilla) {
 			const manifest = await axios.get(
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
@@ -424,9 +421,7 @@ class Modloader {
 			}
 			return versions;
 		} else if (type === ModloaderType.Forge) {
-			const metadata = await axios.get(
-				`${backendURL}/api/proxy/forge-metadata`
-			);
+			const metadata = await axios.get(`${backendURL}/api/proxy/forge-metadata`);
 			let versions = Object.keys(metadata.data);
 			const reallyOldVersions = /^1\.[1-4](\.[0-9])?$/m;
 			versions = versions.map((v) => {

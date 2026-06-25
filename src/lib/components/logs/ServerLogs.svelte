@@ -13,13 +13,11 @@
 	let button;
 
 	onMount(() => {
-			const backendURL = getBackendURL()
-			const logEvents = new EventSource(
-			`${backendURL}/api/server/static/` + name + '/logs'
-			);
-			logEvents.addEventListener('message', (e) => {
-				logData = [...logData, e.data];
-			});
+		const backendURL = getBackendURL();
+		const logEvents = new EventSource(`${backendURL}/api/server/static/` + name + '/logs');
+		logEvents.addEventListener('message', (e) => {
+			logData = [...logData, e.data];
+		});
 	});
 
 	function toggleLogs() {

@@ -23,7 +23,7 @@
 	});
 
 	onMount(async () => {
-		const backendURL = getBackendURL()
+		const backendURL = getBackendURL();
 		const res = await axios.get(`${backendURL}/api/config`);
 		branding = res.data.branding;
 	});

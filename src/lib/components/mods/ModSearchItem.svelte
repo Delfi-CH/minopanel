@@ -25,7 +25,7 @@
 			gameVersion: gameVersion
 		};
 
-		const backendURL = getBackendURL()
+		const backendURL = getBackendURL();
 
 		const tmpVersions = await getModVersions(opts);
 		modVersions = tmpVersions;

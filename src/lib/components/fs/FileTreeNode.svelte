@@ -116,7 +116,14 @@
 		{#if showChildren && entry.children.length > 0}
 			<div class="children" transition:slide>
 				{#each entry.children as child, index (index)}
-					<FileTreeNode entry={child} {name} {onChange} parentPath={fullPath} rootNode={false} backendURL={backendURL} />
+					<FileTreeNode
+						entry={child}
+						{name}
+						{onChange}
+						parentPath={fullPath}
+						rootNode={false}
+						{backendURL}
+					/>
 				{/each}
 			</div>
 		{:else if showChildren && entry.children.length <= 0}
@@ -159,7 +166,7 @@
 			{fullPath}
 			{onChange}
 			onClose={() => (showUpload = !showUpload)}
-			backendURL={backendURL}
+			{backendURL}
 		></UploadModal>
 	{/if}
 

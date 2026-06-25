@@ -7,10 +7,10 @@
 	const { name } = $props();
 	let serverProps = $state({});
 	let showWarn = $state(false);
-	let backendURL = $state("")
+	let backendURL = $state('');
 
 	onMount(async () => {
-		backendURL = getBackendURL()
+		backendURL = getBackendURL();
 		await getProps();
 		if (showWarn) {
 			setInterval(async () => {
@@ -30,9 +30,7 @@
 	}
 
 	async function getProps() {
-		const tmpProps = await axios.get(
-			`${backendURL}/api/server/static/` + name + '/props'
-		);
+		const tmpProps = await axios.get(`${backendURL}/api/server/static/` + name + '/props');
 		serverProps = tmpProps.data;
 		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({});
 	}

@@ -9,7 +9,7 @@
 	let config: Config = $state(Config.blank());
 
 	onMount(async () => {
-		const backendURL = getBackendURL()
+		const backendURL = getBackendURL();
 		const tmpConfig = await axios.get(`${backendURL}/api/config`);
 		config = tmpConfig.data;
 	});

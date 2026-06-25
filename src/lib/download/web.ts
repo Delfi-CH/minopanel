@@ -7,12 +7,13 @@ import isNode from 'is-node';
 export class WebDownloadManager {
 	private downloads = new Map<string, WebDownloadTask>();
 	private openDownloads = new Map<string, WebSocket>();
-	backendHost: string = ""
+	backendHost: string = '';
 	constructor() {
 		if (!isNode) {
-		loadConfig().then(()=> {
-			this.backendHost = getBackendHost()
-		})}
+			loadConfig().then(() => {
+				this.backendHost = getBackendHost();
+			});
+		}
 	}
 
 	addDownload(task: WebDownloadTask): WebDownloadTask {
@@ -57,9 +58,7 @@ export class WebDownloadManager {
 
 		const downloadID = Math.floor(Math.random() * 100);
 
-		const ws = new WebSocket(
-			`ws://${this.backendHost}/api/download/stream/` + downloadID
-		);
+		const ws = new WebSocket(`ws://${this.backendHost}/api/download/stream/` + downloadID);
 
 		ws.addEventListener('open', () => {
 			const initDTO = new DownloadDTO(DownloadDTOType.init_start, {
@@ -83,9 +82,7 @@ export class WebDownloadManager {
 
 		const downloadID = Math.floor(Math.random() * 100);
 
-		const ws = new WebSocket(
-			`ws://${this.backendHost}/api/download/stream/` + downloadID
-		);
+		const ws = new WebSocket(`ws://${this.backendHost}/api/download/stream/` + downloadID);
 
 		ws.addEventListener('open', () => {
 			if (!task.openJDK) {

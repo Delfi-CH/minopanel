@@ -15,7 +15,7 @@
 
 	export function startup() {
 		cleanup();
-		const backendHost = getBackendHost()
+		const backendHost = getBackendHost();
 		const ws = new WebSocket(`ws://${backendHost}/api/server/stream/` + serverID);
 		const term = new Terminal({
 			cursorBlink: true,

@@ -29,10 +29,7 @@
 		}
 
 		try {
-			await axios.post(
-				`${backendURL}/api/server/static/${name}/fs`,
-				form
-			);
+			await axios.post(`${backendURL}/api/server/static/${name}/fs`, form);
 			onChange();
 		} catch (err) {
 			console.error('Upload Error: ' + err);

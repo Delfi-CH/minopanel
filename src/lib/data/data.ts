@@ -50,7 +50,6 @@ export function loadConfig() {
 	}
 }
 
-
 export function loadFrontendConfig() {
 	const paths = new ApplicatonPaths(system);
 	try {
@@ -59,11 +58,11 @@ export function loadFrontendConfig() {
 	} catch (err) {
 		console.error('Could not load config: ' + err);
 		console.log('Using default config...');
-		const cfg = new FrontendConfig(system, 3000, "localhost", "http", 6502, "0.0.1");
-		cfg.writeToFile().then(()=>{
-			cfg.writeForFrontend().then()
+		const cfg = new FrontendConfig(system, 3000, 'localhost', 'http', 6502, '0.0.1');
+		cfg.writeToFile().then(() => {
+			cfg.writeForFrontend().then();
 		});
-		return cfg;	
+		return cfg;
 	}
 }
 
@@ -71,9 +70,9 @@ export function loadCLIConfig(path?: string) {
 	const paths = new ApplicatonPaths(system);
 	let cliConfigPath;
 	if (path) {
-		cliConfigPath = path
+		cliConfigPath = path;
 	} else {
-		cliConfigPath = paths.cliConfigPath
+		cliConfigPath = paths.cliConfigPath;
 	}
 	try {
 		fs.accessSync(cliConfigPath);
@@ -81,9 +80,9 @@ export function loadCLIConfig(path?: string) {
 	} catch (err) {
 		console.error('Could not load config: ' + err);
 		console.log('Using default config...');
-		const cfg = new CLIConfig(system, arch, "localhost", "http", 6502, "0.0.1");
-		cfg.writeToFile().then(()=> {});
-		return cfg;	
+		const cfg = new CLIConfig(system, arch, 'localhost', 'http', 6502, '0.0.1');
+		cfg.writeToFile().then(() => {});
+		return cfg;
 	}
 }
 

@@ -15,10 +15,10 @@
 	let showDeleteModal = $state(false);
 	let deleteModalMessage = $state('');
 	let deletedJavaVersion = $state();
-	let backendURL = $state("")
+	let backendURL = $state('');
 
 	onMount(async () => {
-		backendURL = getBackendURL()
+		backendURL = getBackendURL();
 		await fetchLocalJavaVersions();
 	});
 
@@ -51,11 +51,7 @@
 				<Button
 					onclick={async () => {
 						try {
-							await axios.post(
-								`${backendURL}/api/jvm/` +
-									JavaVersion[jversion.version] +
-									'/test'
-							);
+							await axios.post(`${backendURL}/api/jvm/` + JavaVersion[jversion.version] + '/test');
 							jversion.selfTestState = 'Self Test was sucessfull';
 						} catch {
 							jversion.selfTestState = 'Self Test failed!';
@@ -122,9 +118,7 @@
 			}}
 			onDelete={async () => {
 				showDeleteModal = false;
-				await axios.delete(
-					`${backendURL}/api/jvm/` + JavaVersion[deletedJavaVersion]
-				);
+				await axios.delete(`${backendURL}/api/jvm/` + JavaVersion[deletedJavaVersion]);
 				await fetchLocalJavaVersions();
 			}}
 		></DeleteModal>

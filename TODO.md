@@ -26,17 +26,13 @@ do player management (kick, ban, whitelist, admin, etc)
 
 ### Frontend-only
 
-set backend url
-
-some sort of config
+nothing
 
 ### Backend-only
 
 authentication
 
 ### CLI-only
-
-cli config
 
 edit server filesystem (upload worlds, mods, etc)
 

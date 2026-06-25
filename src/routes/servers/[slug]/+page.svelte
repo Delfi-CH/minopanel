@@ -25,10 +25,10 @@
 	let showDeleteModal = $state(false);
 	let running = $state(false);
 
-	let backendURL = $state("")
+	let backendURL = $state('');
 
 	onMount(async () => {
-		backendURL = getBackendURL()
+		backendURL = getBackendURL();
 		await isRunning();
 	});
 
@@ -48,9 +48,7 @@
 				disabled={!data.post.installed || running}
 				color="success"
 				onclick={async () => {
-					await axios.get(
-						`${backendURL}/api/server/static/` + data.post.name + '/start'
-					);
+					await axios.get(`${backendURL}/api/server/static/` + data.post.name + '/start');
 					restart();
 					await isRunning();
 				}}>Start</Button
@@ -59,9 +57,7 @@
 				disabled={!data.post.installed || !running}
 				color="warning"
 				onclick={async () => {
-					await axios.get(
-						`${backendURL}/api/server/static/` + data.post.name + '/stop'
-					);
+					await axios.get(`${backendURL}/api/server/static/` + data.post.name + '/stop');
 					restart();
 					await isRunning();
 				}}>Stop</Button
@@ -70,20 +66,14 @@
 				disabled={!data.post.installed || !running}
 				color="info"
 				onclick={async () => {
-					await axios.get(
-						`${backendURL}/api/server/static/` +
-							data.post.name +
-							'/restart'
-					);
+					await axios.get(`${backendURL}/api/server/static/` + data.post.name + '/restart');
 					restart();
 					await isRunning();
 				}}>Restart</Button
 			>
 			<Button
 				onclick={async () => {
-					await axios.post(
-						`${backendURL}/api/server/static/` + data.post.name + '/setup'
-					);
+					await axios.post(`${backendURL}/api/server/static/` + data.post.name + '/setup');
 					await isRunning();
 				}}>Run Setup</Button
 			>
@@ -144,9 +134,7 @@
 		message={'Server ' + data.post.name}
 		onClose={() => (showDeleteModal = false)}
 		onDelete={async () => {
-			await axios.delete(
-				`${backendURL}/api/server/static/` + data.post.name + ''
-			);
+			await axios.delete(`${backendURL}/api/server/static/` + data.post.name + '');
 			goto(resolve('/servers'));
 		}}
 	></DeleteModal>

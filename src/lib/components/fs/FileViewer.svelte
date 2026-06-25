@@ -5,25 +5,29 @@
 	import { getBackendURL } from '$lib/config/web';
 	const { name } = $props();
 	let fsData = $state([]);
-	let backendURL = $state("")
+	let backendURL = $state('');
 
 	onMount(async () => {
-		backendURL = getBackendURL()
+		backendURL = getBackendURL();
 		await getFS();
 		setInterval(async () => await getFS(), 5000);
 	});
 
 	async function getFS() {
-		const tmpFS = await axios.get(
-			`${backendURL}/api/server/static/` + name + '/fs'
-		);
+		const tmpFS = await axios.get(`${backendURL}/api/server/static/` + name + '/fs');
 		fsData = tmpFS.data;
 	}
 </script>
 
 <div>
 	{#each fsData as entry, index (index)}
-		<FileTreeNode {entry} {name} onChange={async () => await getFS()} parentPath="" rootNode={true} backendURL={backendURL}
+		<FileTreeNode
+			{entry}
+			{name}
+			onChange={async () => await getFS()}
+			parentPath=""
+			rootNode={true}
+			{backendURL}
 		></FileTreeNode>
 	{/each}
 </div>

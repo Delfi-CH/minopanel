@@ -7,10 +7,9 @@
 	import { onMount } from 'svelte';
 	let { children } = $props();
 
-	onMount(async()=>{
-		await loadConfig()
-	})
-	
+	onMount(async () => {
+		await loadConfig();
+	});
 </script>
 
 <svelte:head>

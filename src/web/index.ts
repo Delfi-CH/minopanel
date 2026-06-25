@@ -1,15 +1,15 @@
-import { loadFrontendConfig } from "../lib/data/data";
-import express from "express";
+import { loadFrontendConfig } from '../lib/data/data';
+import express from 'express';
 
-const config = loadFrontendConfig()
-const port = config.port
+const config = loadFrontendConfig();
+const port = config.port;
 
-const dir = config.webPath
+const dir = config.webPath;
 
-const app = express()
+const app = express();
 
-app.use("/", express.static(dir))
+app.use('/', express.static(dir));
 
-app.listen(port, "0.0.0.0", ()=>{
-    console.log("server listening on port " + port)
-})
+app.listen(port, '0.0.0.0', () => {
+	console.log('server listening on port ' + port);
+});

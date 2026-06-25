@@ -17,12 +17,12 @@
 	let agreedToEula = $state(false);
 	let errorMessage = $state('');
 
-	let backendURL = $state("")
+	let backendURL = $state('');
 
 	let paths: ApplicatonPaths | undefined = $state();
 
 	onMount(async () => {
-		backendURL = getBackendURL()
+		backendURL = getBackendURL();
 		await getAvailableVersions();
 
 		const tmpJavaVersions = await axios.get(`${backendURL}/api/jvm`);
@@ -78,11 +78,7 @@
 						await axios.post(`${backendURL}/api/server/static`, server);
 						server.installFiles(paths);
 						setTimeout(async () => {
-							await axios.post(
-								`${backendURL}/api/server/static/` +
-									server.name +
-									'/setup'
-							);
+							await axios.post(`${backendURL}/api/server/static/` + server.name + '/setup');
 						}, 2000);
 					} catch (err) {
 						if (err.status === 409) {

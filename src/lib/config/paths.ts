@@ -4,7 +4,7 @@ import isNode from 'is-node';
 export class ApplicatonPaths {
 	serverConfigPath: string = '.';
 	cliConfigPath: string = '.';
-	frontendConfigPath: string = '.'
+	frontendConfigPath: string = '.';
 
 	mcServerDirectory: string = '.';
 	mcServerMetadataDirectory: string = '.';
@@ -29,16 +29,16 @@ export class ApplicatonPaths {
 		if (system === OperatingSystem.Linux) {
 			this.serverConfigPath = `/etc/minopanel.d/server.conf.json`;
 			this.cliConfigPath = `/etc/minopanel.d/cli.conf.json`;
-			this.frontendConfigPath = `/etc/minopanel.d/web.conf.json`
+			this.frontendConfigPath = `/etc/minopanel.d/web.conf.json`;
 			this.mcServerDirectory = `/var/lib/minopanel/bin/servers`;
 			this.mcServerMetadataDirectory = `/var/lib/minopanel/data/servers`;
 			this.jdkDirectory = `/var/lib/minopanel/bin/java`;
 			this.jdkMetadataDirectory = `/var/lib/minopanel/data/java`;
 			this.jdkSelfTestCodePath = `/var/lib/minopanel/data/java`;
 			this.cliBinaryPath = `/usr/bin/minoctl`;
-			this.cliScriptPath = `/var/lib/minopanel/bin/minoctl.cjs`
+			this.cliScriptPath = `/var/lib/minopanel/bin/minoctl.cjs`;
 			this.serverBinaryPath = `/usr/bin/minopaneld`;
-			this.serverScriptPath = `/var/lib/minopanel/bin/minopaneld.cjs`
+			this.serverScriptPath = `/var/lib/minopanel/bin/minopaneld.cjs`;
 			this.frontendBinaryPath = '/usr/bin/minowebd';
 			this.frontendScriptPath = '/var/lib/minopanel/bin/minowebd.cjs';
 			this.frontendDirectory = `/var/lib/minopanel/web`;
@@ -88,7 +88,7 @@ export class ApplicatonPaths {
 			try {
 				await fs.access(this.serverConfigPath);
 				await fs.access(this.cliConfigPath);
-				await fs.access(this.frontendConfigPath)
+				await fs.access(this.frontendConfigPath);
 				await fs.access(this.mcServerDirectory);
 				await fs.access(this.mcServerMetadataDirectory);
 				await fs.access(this.jdkDirectory);

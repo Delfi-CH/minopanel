@@ -13,33 +13,30 @@ async function main() {
 	const program = new Command();
 
 	function parseOpts() {
-		const opts = program.opts()
+		const opts = program.opts();
 		let cfg;
 		if (opts.config) {
-			cfg = loadCLIConfig(opts.config)
+			cfg = loadCLIConfig(opts.config);
 		} else {
-			cfg = loadCLIConfig()
+			cfg = loadCLIConfig();
 		}
 		if (opts.hostname) {
-			cfg.backendHost = opts.hostname
-		} 
+			cfg.backendHost = opts.hostname;
+		}
 		if (opts.port) {
-			cfg.backendPort = opts.port
+			cfg.backendPort = opts.port;
 		}
 		if (opts.protocol) {
-			cfg.backendProtocoll = opts.protocol
+			cfg.backendProtocoll = opts.protocol;
 		}
-		return cfg	
+		return cfg;
 	}
 
 	program.name('minoctl');
 	program.description('Command Line Interface for minopanel');
 	program.version('0.1.0', '-v, --version');
 
-	program.option(
-		'-H, --hostname <hostname/ip address>',
-		'hostname of the minopanel instance'
-	);
+	program.option('-H, --hostname <hostname/ip address>', 'hostname of the minopanel instance');
 	program.option('-p, --port <number>', 'port of the minopanel instance');
 	program.option('-P, --protocol <http(s)>', 'protocol of the minopanel instance');
 	program.option('-c, --config <path>', 'use an alternative configuration file');
@@ -61,8 +58,10 @@ async function main() {
 		.command('attach <name>')
 		.description('attach the server console to your console')
 		.action((name) => {
-			const cfg = parseOpts()
-			const ws = new WebSocket(`ws://${cfg.backendHost}:${cfg.backendPort}/api/server/stream/${name}`);
+			const cfg = parseOpts();
+			const ws = new WebSocket(
+				`ws://${cfg.backendHost}:${cfg.backendPort}/api/server/stream/${name}`
+			);
 			const stdin = process.stdin;
 			const stdout = process.stdout;
 			ws.on('open', () => {
@@ -141,7 +140,7 @@ async function main() {
 		.action((version) => {
 			if (Object.keys(JavaVersion).includes(version)) {
 				try {
-					const cfg = parseOpts()
+					const cfg = parseOpts();
 					const rand = Math.floor(Math.random() * 100);
 					const ws = new WebSocket(
 						'ws://' + cfg.backendHost + ':' + cfg.backendPort + '/api/download/stream/' + rand
@@ -389,7 +388,7 @@ async function main() {
 	}
 
 	function getBaseUrl() {
-		const cfg = parseOpts()
+		const cfg = parseOpts();
 		return cfg.backendProtocoll + '://' + cfg.backendHost + ':' + cfg.backendPort;
 	}
 
