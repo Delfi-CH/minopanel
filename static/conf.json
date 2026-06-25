@@ -1,0 +1,13 @@
+{
+  "webPath": "/var/lib/minopanel/web",
+  "binPath": "/usr/bin/minowebd",
+  "scriptPath": "/var/lib/minopanel/bin/minowebd.cjs",
+  "configPath": "/etc/minopanel.d/web.conf.json",
+  "version": "0.0.1",
+  "webConfigPath": "/var/lib/minopanel/web/conf.json",
+  "system": "linux",
+  "port": 3000,
+  "backendHost": "localhost",
+  "backendProtocoll": "http",
+  "backendPort": 6502
+}

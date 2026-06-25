@@ -56,3 +56,62 @@ export class Config {
 export interface BackendOptions {
 	port: number;
 }
+
+export class FrontendConfig {
+	webPath: string
+	binPath: string
+	scriptPath: string
+	configPath: string
+	version: string
+	webConfigPath: string
+	system: OperatingSystem
+	port: number
+	backendHost: string
+	backendProtocoll: string
+	backendPort: number
+
+	constructor(system: OperatingSystem, port: number, backendHost: string, backendProtocoll: string, backendPort: number, version: string) {
+		this.port = port
+		this.system = system
+		this.backendHost = backendHost
+		this.backendProtocoll = backendProtocoll
+		this.backendPort = backendPort
+		this.version = version
+		if (system === OperatingSystem.Linux) {
+			this.webPath = "/var/lib/minopanel/web"
+			this.binPath = "/usr/bin/minowebd"
+			this.scriptPath = "/var/lib/minopanel/bin/minowebd.cjs"
+			this.configPath = "/etc/minopanel.d/web.conf.json"
+			this.webConfigPath = "/var/lib/minopanel/web/conf.json"
+		} else {
+			this.webPath = "."
+			this.binPath = "."
+			this.scriptPath = "."
+			this.configPath = "."
+			this.webConfigPath = "."
+		}
+	}
+
+	async writeToFile() {
+		if (!isNode) {
+			throw new Error('not a nodejs enviroment');
+		}
+
+		const { writeFile } = await import('node:fs/promises');
+		await writeFile(this.configPath, JSON.stringify(this, null, 2), 'utf-8');
+	}
+
+	async writeForFrontend() {
+		if (!isNode) {
+			throw new Error('not a nodejs enviroment');
+		}
+
+		const { writeFile } = await import('node:fs/promises');
+		await writeFile(this.webConfigPath, JSON.stringify(this, null, 2), 'utf-8');
+	}
+
+	static fromJSON(json: any) {
+		const cfg = new FrontendConfig(json.system, json.port, json.backendHost, json.backendProtocoll, json.backendPort, json.version);
+		return cfg;
+	}
+}

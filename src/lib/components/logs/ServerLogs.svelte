@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Button } from '@sveltestrap/sveltestrap';
 	import { slide } from 'svelte/transition';
+	import { getBackendURL } from '$lib/config/web';
 
 	let { name } = $props();
 
@@ -12,12 +13,13 @@
 	let button;
 
 	onMount(() => {
-		const logEvents = new EventSource(
-			`http://${window.location.hostname}:6502/api/server/static/` + name + '/logs'
-		);
-		logEvents.addEventListener('message', (e) => {
-			logData = [...logData, e.data];
-		});
+			const backendURL = getBackendURL()
+			const logEvents = new EventSource(
+			`${backendURL}/api/server/static/` + name + '/logs'
+			);
+			logEvents.addEventListener('message', (e) => {
+				logData = [...logData, e.data];
+			});
 	});
 
 	function toggleLogs() {

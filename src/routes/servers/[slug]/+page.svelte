@@ -11,6 +11,7 @@
 	import ServerSettings from '$lib/components/settings/ServerSettings.svelte';
 	import ServerLogs from '$lib/components/logs/ServerLogs.svelte';
 	import ModSearch from '$lib/components/mods/ModSearch.svelte';
+	import { getBackendURL } from '$lib/config/web.js';
 
 	//@ts-expect-error womp womp
 	let xterm;
@@ -24,13 +25,16 @@
 	let showDeleteModal = $state(false);
 	let running = $state(false);
 
+	let backendURL = $state("")
+
 	onMount(async () => {
+		backendURL = getBackendURL()
 		await isRunning();
 	});
 
 	async function isRunning() {
 		const tmpRunning = await axios.get(
-			`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/running'
+			`${backendURL}/api/server/static/` + data.post.name + '/running'
 		);
 		running = tmpRunning.data;
 	}
@@ -45,7 +49,7 @@
 				color="success"
 				onclick={async () => {
 					await axios.get(
-						`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/start'
+						`${backendURL}/api/server/static/` + data.post.name + '/start'
 					);
 					restart();
 					await isRunning();
@@ -56,7 +60,7 @@
 				color="warning"
 				onclick={async () => {
 					await axios.get(
-						`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/stop'
+						`${backendURL}/api/server/static/` + data.post.name + '/stop'
 					);
 					restart();
 					await isRunning();
@@ -67,7 +71,7 @@
 				color="info"
 				onclick={async () => {
 					await axios.get(
-						`http://${window.location.hostname}:6502/api/server/static/` +
+						`${backendURL}/api/server/static/` +
 							data.post.name +
 							'/restart'
 					);
@@ -78,7 +82,7 @@
 			<Button
 				onclick={async () => {
 					await axios.post(
-						`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + '/setup'
+						`${backendURL}/api/server/static/` + data.post.name + '/setup'
 					);
 					await isRunning();
 				}}>Run Setup</Button
@@ -141,7 +145,7 @@
 		onClose={() => (showDeleteModal = false)}
 		onDelete={async () => {
 			await axios.delete(
-				`http://${window.location.hostname}:6502/api/server/static/` + data.post.name + ''
+				`${backendURL}/api/server/static/` + data.post.name + ''
 			);
 			goto(resolve('/servers'));
 		}}

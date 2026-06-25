@@ -10,7 +10,7 @@
 	} from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 
-	let { open, name, fullPath, onClose, onChange } = $props();
+	let { open, name, fullPath, onClose, onChange, backendURL } = $props();
 
 	function toggle() {
 		onClose();
@@ -28,10 +28,9 @@
 			form.append('files', file);
 		}
 
-		console.log(form);
 		try {
 			await axios.post(
-				`http://${window.location.hostname}:6502/api/server/static/${name}/fs`,
+				`${backendURL}/api/server/static/${name}/fs`,
 				form
 			);
 			onChange();

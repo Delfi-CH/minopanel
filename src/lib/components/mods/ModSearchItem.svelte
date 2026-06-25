@@ -11,6 +11,7 @@
 	} from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
+	import { getBackendURL } from '$lib/config/web';
 	let { mod, gameVersion, modloader, serverName } = $props();
 
 	let modVersions = $state([]);
@@ -24,11 +25,13 @@
 			gameVersion: gameVersion
 		};
 
+		const backendURL = getBackendURL()
+
 		const tmpVersions = await getModVersions(opts);
 		modVersions = tmpVersions;
 		latestVersion = modVersions[0];
 
-		const config = await axios.get(`http://${window.location.hostname}:6502/api/config`);
+		const config = await axios.get(`${backendURL}/api/config`);
 		paths = config.data.paths;
 	});
 </script>

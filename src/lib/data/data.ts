@@ -1,4 +1,4 @@
-import { Config } from '$lib/config/config';
+import { Config, FrontendConfig } from '$lib/config/config';
 import { ApplicatonPaths } from '$lib/config/paths';
 import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
 import { MCServer } from '$lib/servers/servers';
@@ -47,6 +47,23 @@ export function loadConfig() {
 		);
 		cfg.writeToFile().then();
 		return cfg;
+	}
+}
+
+
+export function loadFrontendConfig() {
+	const paths = new ApplicatonPaths(system);
+	try {
+		fs.accessSync(paths.frontendConfigPath);
+		return FrontendConfig.fromJSON(JSON.parse(fs.readFileSync(paths.frontendConfigPath, 'utf8')));
+	} catch (err) {
+		console.error('Could not load config: ' + err);
+		console.log('Using default config...');
+		const cfg = new FrontendConfig(system, 3000, "localhost", "http", 6502, "0.0.1");
+		cfg.writeToFile().then(()=>{
+			cfg.writeForFrontend().then()
+		});
+		return cfg;	
 	}
 }
 

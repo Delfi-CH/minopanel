@@ -4,11 +4,13 @@
 	import { Col, ListGroup, ListGroupItem } from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
+	import { getBackendURL } from '$lib/config/web';
 
 	let config: Config = $state(Config.blank());
 
 	onMount(async () => {
-		const tmpConfig = await axios.get(`http://${window.location.hostname}:6502/api/config`);
+		const backendURL = getBackendURL()
+		const tmpConfig = await axios.get(`${backendURL}/api/config`);
 		config = tmpConfig.data;
 	});
 </script>

@@ -1,10 +1,19 @@
 import { DownloadState } from './shared';
 import type { WebDownloadTask } from './shared';
 import { DownloadDTO, DownloadDTOType } from './dataTransferObjects';
+import { loadConfig, getBackendHost } from '$lib/config/web';
+import isNode from 'is-node';
 
 export class WebDownloadManager {
 	private downloads = new Map<string, WebDownloadTask>();
 	private openDownloads = new Map<string, WebSocket>();
+	backendHost: string = ""
+	constructor() {
+		if (!isNode) {
+		loadConfig().then(()=> {
+			this.backendHost = getBackendHost()
+		})}
+	}
 
 	addDownload(task: WebDownloadTask): WebDownloadTask {
 		if (this.downloads.has(task.id)) {
@@ -49,7 +58,7 @@ export class WebDownloadManager {
 		const downloadID = Math.floor(Math.random() * 100);
 
 		const ws = new WebSocket(
-			`ws://${window.location.hostname}:6502/api/download/stream/` + downloadID
+			`ws://${this.backendHost}/api/download/stream/` + downloadID
 		);
 
 		ws.addEventListener('open', () => {
@@ -75,7 +84,7 @@ export class WebDownloadManager {
 		const downloadID = Math.floor(Math.random() * 100);
 
 		const ws = new WebSocket(
-			`ws://${window.location.hostname}:6502/api/download/stream/` + downloadID
+			`ws://${this.backendHost}/api/download/stream/` + downloadID
 		);
 
 		ws.addEventListener('open', () => {

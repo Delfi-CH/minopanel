@@ -5,6 +5,7 @@
 	import { onMount } from 'svelte';
 	import axios from 'axios';
 	import NavigationDownload from '$lib/components/nav/NavigationDownload.svelte';
+	import { getBackendURL } from '$lib/config/web';
 
 	let branding = $state('Minopanel');
 
@@ -22,7 +23,8 @@
 	});
 
 	onMount(async () => {
-		const res = await axios.get(`http://${window.location.hostname}:6502/api/config`);
+		const backendURL = getBackendURL()
+		const res = await axios.get(`${backendURL}/api/config`);
 		branding = res.data.branding;
 	});
 </script>

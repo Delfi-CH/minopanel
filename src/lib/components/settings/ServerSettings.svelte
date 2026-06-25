@@ -2,12 +2,15 @@
 	import axios from 'axios';
 	import { onMount } from 'svelte';
 	import { Table, Button, Input } from '@sveltestrap/sveltestrap';
+	import { getBackendURL } from '$lib/config/web';
 
 	const { name } = $props();
 	let serverProps = $state({});
 	let showWarn = $state(false);
+	let backendURL = $state("")
 
 	onMount(async () => {
+		backendURL = getBackendURL()
 		await getProps();
 		if (showWarn) {
 			setInterval(async () => {
@@ -18,7 +21,7 @@
 
 	async function saveProps() {
 		const tmpProps = await axios.post(
-			`http://${window.location.hostname}:6502/api/server/static/` + name + '/props',
+			`${backendURL}/api/server/static/` + name + '/props',
 			serverProps
 		);
 
@@ -28,7 +31,7 @@
 
 	async function getProps() {
 		const tmpProps = await axios.get(
-			`http://${window.location.hostname}:6502/api/server/static/` + name + '/props'
+			`${backendURL}/api/server/static/` + name + '/props'
 		);
 		serverProps = tmpProps.data;
 		showWarn = JSON.stringify(tmpProps.data) === JSON.stringify({});

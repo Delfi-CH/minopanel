@@ -5,6 +5,7 @@
 	import { CorretoOpenJDK, JavaVersion } from '$lib/jvm/java';
 	import axios from 'axios';
 	import type { ApplicatonPaths } from '$lib/config/paths';
+	import { getBackendURL } from '$lib/config/web';
 
 	let newServerName: string = $state('');
 	let selectedVersion: string = $state('');
@@ -16,15 +17,18 @@
 	let agreedToEula = $state(false);
 	let errorMessage = $state('');
 
+	let backendURL = $state("")
+
 	let paths: ApplicatonPaths | undefined = $state();
 
 	onMount(async () => {
+		backendURL = getBackendURL()
 		await getAvailableVersions();
 
-		const tmpJavaVersions = await axios.get(`http://${window.location.hostname}:6502/api/jvm`);
+		const tmpJavaVersions = await axios.get(`${backendURL}/api/jvm`);
 		avialableJavaVersions = tmpJavaVersions.data;
 
-		const config = await axios.get(`http://${window.location.hostname}:6502/api/config`);
+		const config = await axios.get(`${backendURL}/api/config`);
 		paths = config.data.paths;
 	});
 
@@ -38,7 +42,6 @@
 
 	function checkIfJavaVersionIsEnabled(version: JavaVersion) {
 		const list = Modloader.getSupportedJavaVersions(selectedVersion);
-		console.log(list.includes(JavaVersion.OpenJdk26));
 		return list.includes(version);
 	}
 
@@ -68,16 +71,15 @@
 						ml,
 						selectedJavaVersion as JavaVersion
 					);
-					console.log(server);
 					if (!paths) {
 						throw new Error('Paths not loaded!');
 					}
 					try {
-						await axios.post(`http://${window.location.hostname}:6502/api/server/static`, server);
+						await axios.post(`${backendURL}/api/server/static`, server);
 						server.installFiles(paths);
 						setTimeout(async () => {
 							await axios.post(
-								`http://${window.location.hostname}:6502/api/server/static/` +
+								`${backendURL}/api/server/static/` +
 									server.name +
 									'/setup'
 							);

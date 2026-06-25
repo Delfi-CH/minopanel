@@ -14,12 +14,14 @@
 	} from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
+	import { getBackendURL } from '$lib/config/web';
 
 	let activeList: MCServer[] = $state([]);
 	let inactiveList: MCServer[] = $state([]);
 
 	onMount(async () => {
-		const tmpList = await axios.get(`http://${window.location.hostname}:6502/api/server/static`);
+		const backendURL = getBackendURL()
+		const tmpList = await axios.get(`${backendURL}/api/server/static`);
 		activeList = tmpList.data.filter((srv) => srv.running === true);
 		inactiveList = tmpList.data.filter((srv) => srv.running === false);
 	});

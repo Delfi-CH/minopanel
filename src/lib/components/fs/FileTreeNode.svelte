@@ -7,7 +7,7 @@
 	import UploadModal from './UploadModal.svelte';
 	import DeleteModal from '../DeleteModal.svelte';
 
-	const { entry, name, parentPath, onChange, rootNode } = $props();
+	const { entry, name, parentPath, onChange, rootNode, backendURL } = $props();
 
 	let showChildren = $state(false);
 	let showUpload = $state(false);
@@ -44,7 +44,7 @@
 	async function deleteFile() {
 		try {
 			await axios.delete(
-				`http://${window.location.hostname}:6502/api/server/static/${name}/fs?path=${encodeURIComponent(fullPath)}`
+				`${backendURL}/api/server/static/${name}/fs?path=${encodeURIComponent(fullPath)}`
 			);
 			onChange();
 		} catch (err) {
@@ -55,7 +55,7 @@
 	function downloadFile() {
 		try {
 			window.open(
-				`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download?path=${encodeURIComponent(fullPath)}`
+				`${backendURL}/api/server/static/${name}/fs/download?path=${encodeURIComponent(fullPath)}`
 			);
 			onChange();
 		} catch (err) {
@@ -66,7 +66,7 @@
 	function downloadFolder() {
 		try {
 			window.open(
-				`http://${window.location.hostname}:6502/api/server/static/${name}/fs/download/folder?path=${encodeURIComponent(fullPath)}`
+				`${backendURL}/api/server/static/${name}/fs/download/folder?path=${encodeURIComponent(fullPath)}`
 			);
 			onChange();
 		} catch (err) {
@@ -116,7 +116,7 @@
 		{#if showChildren && entry.children.length > 0}
 			<div class="children" transition:slide>
 				{#each entry.children as child, index (index)}
-					<FileTreeNode entry={child} {name} {onChange} parentPath={fullPath} rootNode={false} />
+					<FileTreeNode entry={child} {name} {onChange} parentPath={fullPath} rootNode={false} backendURL={backendURL} />
 				{/each}
 			</div>
 		{:else if showChildren && entry.children.length <= 0}
@@ -136,7 +136,6 @@
 				indicator
 				pill
 				onfocus={() => {
-					console.log('focus');
 					showButtons = !showButtons;
 				}}
 			>
@@ -160,6 +159,7 @@
 			{fullPath}
 			{onChange}
 			onClose={() => (showUpload = !showUpload)}
+			backendURL={backendURL}
 		></UploadModal>
 	{/if}
 

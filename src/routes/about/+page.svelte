@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { Container, Row, Col } from '@sveltestrap/sveltestrap';
 	import axios from 'axios';
+	import { getBackendURL } from "$lib/config/web"
 
 	let config = $state({
 		branding: 'Minopanel',
@@ -9,7 +10,8 @@
 	});
 
 	onMount(async () => {
-		const res = await axios.get(`http://${window.location.hostname}:6502/api/config`);
+		const backendURL = getBackendURL()
+		const res = await axios.get(`${backendURL}/api/config`);
 		config = res.data;
 	});
 </script>

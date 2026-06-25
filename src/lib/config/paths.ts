@@ -4,6 +4,7 @@ import isNode from 'is-node';
 export class ApplicatonPaths {
 	serverConfigPath: string = '.';
 	cliConfigPath: string = '.';
+	frontendConfigPath: string = '.'
 
 	mcServerDirectory: string = '.';
 	mcServerMetadataDirectory: string = '.';
@@ -28,6 +29,7 @@ export class ApplicatonPaths {
 		if (system === OperatingSystem.Linux) {
 			this.serverConfigPath = `/etc/minopanel.d/server.conf.json`;
 			this.cliConfigPath = `/etc/minopanel.d/cli.conf.json`;
+			this.frontendConfigPath = `/etc/minopanel.d/web.conf.json`
 			this.mcServerDirectory = `/var/lib/minopanel/bin/servers`;
 			this.mcServerMetadataDirectory = `/var/lib/minopanel/data/servers`;
 			this.jdkDirectory = `/var/lib/minopanel/bin/java`;
@@ -46,6 +48,7 @@ export class ApplicatonPaths {
 		} else if (system === OperatingSystem.Windows) {
 			this.serverConfigPath = '.';
 			this.cliConfigPath = '.';
+			this.frontendConfigPath = '.';
 			this.mcServerDirectory = '.';
 			this.mcServerMetadataDirectory = '.';
 			this.jdkDirectory = '.';
@@ -62,6 +65,7 @@ export class ApplicatonPaths {
 		} else {
 			this.serverConfigPath = '.';
 			this.cliConfigPath = '.';
+			this.frontendConfigPath = '.';
 			this.mcServerDirectory = '.';
 			this.mcServerMetadataDirectory = '.';
 			this.jdkDirectory = '.';
@@ -84,6 +88,7 @@ export class ApplicatonPaths {
 			try {
 				await fs.access(this.serverConfigPath);
 				await fs.access(this.cliConfigPath);
+				await fs.access(this.frontendConfigPath)
 				await fs.access(this.mcServerDirectory);
 				await fs.access(this.mcServerMetadataDirectory);
 				await fs.access(this.jdkDirectory);
@@ -92,8 +97,12 @@ export class ApplicatonPaths {
 				await fs.access(this.serverBinaryPath);
 				await fs.access(this.frontendDirectory);
 				await fs.access(this.tmpPath);
-				if (this.systemdServicePath !== '.') {
-					await fs.access(this.systemdServicePath);
+				if (this.webSystemdServicePath !== '.') {
+					await fs.access(this.webSystemdServicePath);
+					return true;
+				}
+				if (this.serverSystemdServicePath !== '.') {
+					await fs.access(this.serverSystemdServicePath);
 					return true;
 				}
 				return true;
@@ -146,8 +155,11 @@ export class ApplicatonPaths {
 		list = [...list, `Server Binary: ${paths.serverBinaryPath}`];
 		list = [...list, `WebUI Directory: ${paths.frontendDirectory}`];
 		list = [...list, `OS Temporary Directory: ${paths.tmpPath}`];
-		if (paths.systemdServicePath !== '.') {
-			list = [...list, `systemd Service File: ${paths.systemdServicePath}`];
+		if (paths.webSystemdServicePath !== '.') {
+			list = [...list, `Web systemd Service File: ${paths.webSystemdServicePath}`];
+		}
+		if (paths.serverSystemdServicePath !== '.') {
+			list = [...list, `Server systemd Service File: ${paths.serverSystemdServicePath}`];
 		}
 
 		return list;

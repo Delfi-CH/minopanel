@@ -6,6 +6,7 @@ import { ApplicatonPaths } from '../config/paths';
 import { webDownloadManager } from '$lib/download/web';
 import type { DownloadManager } from '$lib/download/server';
 import { OperatingSystem } from '$lib/system';
+import { loadConfig, getBackendURL } from '$lib/config/web';
 
 class MCServer {
 	name: string;
@@ -295,6 +296,8 @@ class Modloader {
 
 	async buildURL() {
 		const versions = await Modloader.getSupportedMCVersions(this.type);
+		await loadConfig()
+		const backendURL = getBackendURL()
 		if (this.type === ModloaderType.Vanilla) {
 			const manifest = await axios.get(
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
@@ -326,7 +329,7 @@ class Modloader {
 			this.sha256sum = latestBuild.downloads['server:default'].checksums.sha256;
 		} else if (this.type === ModloaderType.Forge) {
 			const metadata = await axios.get(
-				`http://${window.location.hostname}:6502/api/proxy/forge-metadata`
+				`${backendURL}/api/proxy/forge-metadata`
 			);
 			const versionBase = metadata.data[this.gameVersion].reverse()[0];
 			this.modloaderVersion = versionBase.replace(this.gameVersion + '-', '');
@@ -351,7 +354,7 @@ class Modloader {
 			this.modloaderVersion = compatibleNeoforgeVersions.reverse()[0];
 			this.url = `https://maven.neoforged.net/releases/net/neoforged/neoforge/${this.modloaderVersion}/neoforge-${this.modloaderVersion}-installer.jar`;
 			const shaRes = await axios.get(
-				`http://${window.location.hostname}:6502/api/proxy/neoforge-maven/sha256/` +
+				`${backendURL}/api/proxy/neoforge-maven/sha256/` +
 					this.modloaderVersion
 			);
 			this.sha256sum = shaRes.data;
@@ -367,6 +370,8 @@ class Modloader {
 	}
 
 	static async getSupportedMCVersions(type: ModloaderType) {
+		await loadConfig()
+		const backendURL = getBackendURL()
 		if (type === ModloaderType.Vanilla) {
 			const manifest = await axios.get(
 				'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
@@ -420,7 +425,7 @@ class Modloader {
 			return versions;
 		} else if (type === ModloaderType.Forge) {
 			const metadata = await axios.get(
-				`http://${window.location.hostname}:6502/api/proxy/forge-metadata`
+				`${backendURL}/api/proxy/forge-metadata`
 			);
 			let versions = Object.keys(metadata.data);
 			const reallyOldVersions = /^1\.[1-4](\.[0-9])?$/m;

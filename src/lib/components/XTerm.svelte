@@ -2,6 +2,7 @@
 	import { Terminal } from '@xterm/xterm';
 	import { FitAddon } from '@xterm/addon-fit';
 	import { onMount, onDestroy } from 'svelte';
+	import { getBackendHost } from '$lib/config/web';
 	import '@xterm/xterm/css/xterm.css';
 
 	let termHtml: HTMLDivElement;
@@ -14,7 +15,8 @@
 
 	export function startup() {
 		cleanup();
-		const ws = new WebSocket(`ws://${window.location.hostname}:6502/api/server/stream/` + serverID);
+		const backendHost = getBackendHost()
+		const ws = new WebSocket(`ws://${backendHost}/api/server/stream/` + serverID);
 		const term = new Terminal({
 			cursorBlink: true,
 			cursorStyle: 'bar'

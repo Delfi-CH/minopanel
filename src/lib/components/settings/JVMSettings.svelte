@@ -6,6 +6,7 @@
 	import axios from 'axios';
 	import { onMount } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
+	import { getBackendURL } from '$lib/config/web';
 
 	let allJavaVersions = $state(Object.values(JavaVersion));
 	let downloadingVersions: SvelteSet<string | JavaVersion> = new SvelteSet<string | JavaVersion>();
@@ -14,15 +15,17 @@
 	let showDeleteModal = $state(false);
 	let deleteModalMessage = $state('');
 	let deletedJavaVersion = $state();
+	let backendURL = $state("")
 
 	onMount(async () => {
+		backendURL = getBackendURL()
 		await fetchLocalJavaVersions();
 	});
 
 	async function fetchLocalJavaVersions() {
 		allJavaVersions = Object.values(JavaVersion);
 		allJavaVersions = allJavaVersions.slice(0, allJavaVersions.length / 2);
-		const tmpJavaVersions = await axios.get(`http://${window.location.hostname}:6502/api/jvm`);
+		const tmpJavaVersions = await axios.get(`${backendURL}/api/jvm`);
 		localJavaVersions = tmpJavaVersions.data;
 		allJavaVersions = allJavaVersions.filter(
 			(e) => !localJavaVersions.map((e) => JavaVersion[e.version]).includes(e)
@@ -49,7 +52,7 @@
 					onclick={async () => {
 						try {
 							await axios.post(
-								`http://${window.location.hostname}:6502/api/jvm/` +
+								`${backendURL}/api/jvm/` +
 									JavaVersion[jversion.version] +
 									'/test'
 							);
@@ -96,7 +99,6 @@
 						);
 						webDownloadManager.startDownloadSilent(task.id);
 						const interval = setInterval(async () => {
-							console.log(!webDownloadManager.exists(task.id));
 							if (!webDownloadManager.exists(task.id)) {
 								clearInterval(interval);
 								await fetchLocalJavaVersions();
@@ -121,7 +123,7 @@
 			onDelete={async () => {
 				showDeleteModal = false;
 				await axios.delete(
-					`http://${window.location.hostname}:6502/api/jvm/` + JavaVersion[deletedJavaVersion]
+					`${backendURL}/api/jvm/` + JavaVersion[deletedJavaVersion]
 				);
 				await fetchLocalJavaVersions();
 			}}

@@ -1,10 +1,10 @@
-import { loadConfig } from "../lib/data/data";
+import { loadFrontendConfig } from "../lib/data/data";
 import express from "express";
 
-const config = loadConfig()
-const port = 3000
+const config = loadFrontendConfig()
+const port = config.port
 
-const dir = config.paths.frontendDirectory
+const dir = config.webPath
 
 const app = express()
 
