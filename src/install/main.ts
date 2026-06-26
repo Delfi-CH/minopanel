@@ -1,8 +1,12 @@
 import { ApplicatonPaths } from '$lib/config/paths';
 import { LinuxDistribution, OperatingSystem } from '$lib/system';
-import { intro, outro, confirm, log, isCancel, cancel, select, multiselect } from '@clack/prompts';
+import { DownloaderHelper } from 'node-downloader-helper';
+import { intro, outro, confirm, log, isCancel, cancel, select, multiselect, progress } from '@clack/prompts';
 import linuxOsInfo from '@delfi-ch/linux-os-info-esmodule';
 import * as os from "node:os"
+import * as fsPromises from "node:fs/promises"
+import * as childProcess from "node:child_process"
+import { once } from 'node:events';
 
 async function main() {
 	intro('minopanel-installer');
@@ -85,21 +89,189 @@ async function main() {
 		}
 	});
 
+	const buildFromSource = await select({
+		message: "How do you want to install minopanel?",
+		options: [
+			{value: "bin", label: "Download a prebuilt binary", hint: "Reccomended for most users."},
+			{value: "src", label: "Build from Source", hint: "Not reccomended for most users. Do not select this option if you dont know what you are doing."}
+		]
+	})
+
+	handleCancel(buildFromSource);
+
+	const doBuildFromSource = buildFromSource === "src" ? true : false;
+
 	if (installMinoctl) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			log.info("installing minoctl archlinux")
+			log.info("Installing minoctl...")
+			const basepath = "/tmp/minopanel/minoctl"
+			await fsPromises.mkdir(basepath, { recursive: true})
+			const dlUrl = doBuildFromSource ? "https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-cli-git" : "https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-cli-bin"
+			const dl = new DownloaderHelper(dlUrl, basepath, {
+				fileName: "PKGBUILD",
+				retry: {maxRetries: 3, delay: 3000},
+				resumeOnIncomplete: true,
+				resumeOnIncompleteMaxRetry: 3
+			})
+			const dlProgress = progress({max: 100})
+			dlProgress.start("Downloading PKGBUILD...")
+			dl.on("progress", (stats)=>{
+				dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`)
+			})
+			dl.on("end", ()=>{
+				dlProgress.stop("Download finished!")
+			})
+			dl.on("error", (err)=>{
+				dlProgress.cancel("An error has ocurred: " +err.message)
+				exit()
+			})
+			await dl.start().catch((err)=>{
+				dlProgress.cancel("An error has ocurred: " +err.message)
+				exit()
+			})
+			const pkgbuild = await fsPromises.readFile(`${basepath}/PKGBUILD`, "utf-8")
+			log.warn("Warning:\nThe following PKGBUILD will be run on your computer as root!\nPlease check for any suspicious behavior before continuing.\n" + pkgbuild)
+
+			const doMakepkg = await confirm({
+				message: "Do you want to continiue?"
+			})
+			handleCancel(doMakepkg)
+			if (doMakepkg) {
+				log.info("Building & installing package...")
+				const makepkg = childProcess.spawn("makepkg", ["-si"], {
+					cwd: basepath,
+					stdio: [
+						"inherit",
+						"inherit",
+						"inherit"
+					]
+				})
+				const [code] = await once(makepkg, "close")
+				if (code !== 0) {
+					log.error("makepkg failed with code " +code)
+					exit()
+				}
+			} else {
+				exit()
+			}
+		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
+			/* TODO
+			log.info("Installing minoctl...")
+			const basepath = "/tmp/minopanel/minoctl"
+			await fsPromises.mkdir(basepath, { recursive: true})
+			*/
 		}
 	}
 
 	if (installMinopaneld) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			log.info("installing minopaneld archlinux")
+			log.info("Installing minoctl...")
+			const basepath = "/tmp/minopanel/minopaneld"
+			await fsPromises.mkdir(basepath, { recursive: true})
+			const dlUrl = doBuildFromSource ? "https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-server-git" : "https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-server-bin"
+			const dl = new DownloaderHelper(dlUrl, basepath, {
+				fileName: "PKGBUILD",
+				retry: {maxRetries: 3, delay: 3000},
+				resumeOnIncomplete: true,
+				resumeOnIncompleteMaxRetry: 3
+			})
+			const dlProgress = progress({max: 100})
+			dlProgress.start("Downloading PKGBUILD...")
+			dl.on("progress", (stats)=>{
+				dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`)
+			})
+			dl.on("end", ()=>{
+				dlProgress.stop("Download finished!")
+			})
+			dl.on("error", (err)=>{
+				dlProgress.cancel("An error has ocurred: " +err.message)
+				exit()
+			})
+			await dl.start().catch((err)=>{
+				dlProgress.cancel("An error has ocurred: " +err.message)
+				exit()
+			})
+			const pkgbuild = await fsPromises.readFile(`${basepath}/PKGBUILD`, "utf-8")
+			log.warn("Warning:\nThe following PKGBUILD will be run on your computer as root!\nPlease check for any suspicious behavior before continuing.\n" + pkgbuild)
+
+			const doMakepkg = await confirm({
+				message: "Do you want to continiue?"
+			})
+			handleCancel(doMakepkg)
+			if (doMakepkg) {
+				log.info("Building & installing package...")
+				const makepkg = childProcess.spawn("makepkg", ["-si"], {
+					cwd: basepath,
+					stdio: [
+						"inherit",
+						"inherit",
+						"inherit"
+					]
+				})
+				const [code] = await once(makepkg, "close")
+				if (code !== 0) {
+					log.error("makepkg failed with code " +code)
+					exit()
+				}
+			} else {
+				exit()
+			}
 		}
 	}
 
 	if (installMinowebd) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			log.info("installing minowebd archlinux")
+			log.info("Installing minoctl...")
+			const basepath = "/tmp/minopanel/minowebd"
+			await fsPromises.mkdir(basepath, { recursive: true})
+			const dlUrl = doBuildFromSource ? "https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-web-git" : "https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-web-bin"
+			const dl = new DownloaderHelper(dlUrl, basepath, {
+				fileName: "PKGBUILD",
+				retry: {maxRetries: 3, delay: 3000},
+				resumeOnIncomplete: true,
+				resumeOnIncompleteMaxRetry: 3
+			})
+			const dlProgress = progress({max: 100})
+			dlProgress.start("Downloading PKGBUILD...")
+			dl.on("progress", (stats)=>{
+				dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`)
+			})
+			dl.on("end", ()=>{
+				dlProgress.stop("Download finished!")
+			})
+			dl.on("error", (err)=>{
+				dlProgress.cancel("An error has ocurred: " +err.message)
+				exit()
+			})
+			await dl.start().catch((err)=>{
+				dlProgress.cancel("An error has ocurred: " +err.message)
+				exit()
+			})
+			const pkgbuild = await fsPromises.readFile(`${basepath}/PKGBUILD`, "utf-8")
+			log.warn("Warning:\nThe following PKGBUILD will be run on your computer as root!\nPlease check for any suspicious behavior before continuing.\n" + pkgbuild)
+
+			const doMakepkg = await confirm({
+				message: "Do you want to continiue?"
+			})
+			handleCancel(doMakepkg)
+			if (doMakepkg) {
+				log.info("Building & installing package...")
+				const makepkg = childProcess.spawn("makepkg", ["-si"], {
+					cwd: basepath,
+					stdio: [
+						"inherit",
+						"inherit",
+						"inherit"
+					]
+				})
+				const [code] = await once(makepkg, "close")
+				if (code !== 0) {
+					log.error("makepkg failed with code " +code)
+					exit()
+				}
+			} else {
+				exit()
+			}
 		}
 	}
 
@@ -108,9 +280,13 @@ async function main() {
 
 function handleCancel(value: any) {
 	if (isCancel(value)) {
-		cancel('Installation was cancelled!');
-		process.exit(1);
+		exit()
 	}
+}
+
+function exit() {
+	cancel('Installation was cancelled!');
+	process.exit(1);
 }
 
 main();

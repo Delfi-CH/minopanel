@@ -16,7 +16,7 @@
 		"cli:build": "esbuild src/cli/main.ts --bundle --platform=node --format=cjs --outfile=dist/minoctl.cjs --external:node-downloader-helper",
 		"cli:copy": "rm -f /var/lib/minopanel/bin/minoctl.cjs && cp dist/minoctl.cjs /var/lib/minopanel/bin/minoctl.cjs",
 		"installer:dev": "tsx src/install/main.ts",
-		"installer:build": "esbuild src/install/main.ts --bundle --platform=node --format=cjs --outfile=dist/minopanel-installer.cjs",
+		"installer:build": "esbuild src/install/main.ts --bundle --platform=node --format=cjs --outfile=dist/minopanel-installer.cjs --external:node-downloader-helper",
 		"prepare": "svelte-kit sync || echo ''",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
