@@ -18,4 +18,7 @@ javac ../../../src/lib/jvm/SelfTest.java
 
 cp ../../../src/lib/jvm/SelfTest.class ./server/var/lib/minopanel/data/java
 
+chmod -R 777 ./server/var/lib/minopanel
+chmod -R 777 ./server/etc/minopanel.d
+
 dpkg-deb --root-owner-group -b server ../../../dist/minopaneld-amd64.deb

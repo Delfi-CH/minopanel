@@ -19,6 +19,10 @@ package() {
 
     bsdtar -xf "minoctl-amd64.deb"
 
-    # Extract data.tar.* from the deb
+    mkdir -p "$pkgdir/etc/minopanel.d"
+    mkdir -p "$pkgdir/var/lib/minopanel"
+    chmod -R 777 "$pkgdir/etc/minopanel.d"
+    chmod -R 777 "$pkgdir/var/lib/minopanel"
+
     bsdtar -xf data.tar.xz -C "$pkgdir"
 }

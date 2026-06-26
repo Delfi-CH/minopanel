@@ -9,4 +9,7 @@ cp ../minoctl ./cli/usr/bin
 
 cp ../../../dist/minoctl.cjs ./cli/var/lib/minopanel/bin
 
+chmod -R 777 ./cli/var/lib/minopanel
+chmod -R 777 ./cli/etc/minopanel.d
+
 dpkg-deb --root-owner-group -b cli ../../../dist/minoctl-amd64.deb
