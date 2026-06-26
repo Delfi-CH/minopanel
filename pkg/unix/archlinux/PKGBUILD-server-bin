@@ -11,7 +11,7 @@ options=(!debug)
 provides=('minopaneld')
 conflicts=('minopaneld')
 
-source=("https://github.com/Delfi-CH/minopanel/releases/download/latest/minopaneld-amd64.deb")
+source=("https://github.com/Delfi-CH/minopanel/releases/download/v${pkgver}/minopaneld-amd64.deb")
 sha256sums=('SKIP')
 
 package() {

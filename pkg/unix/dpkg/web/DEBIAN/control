@@ -1,0 +1,8 @@
+Package: minowebd
+Version: 0.0.1-1
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends: nodejs (>= 20)
+Maintainer: Delfi-CH <delfi@delfi.dev>
+Description: minopanel web interface

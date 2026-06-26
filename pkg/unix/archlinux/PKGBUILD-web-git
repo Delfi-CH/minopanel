@@ -1,0 +1,31 @@
+pkgname=minowebd-git
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="minowebd git build"
+arch=('x86_64')
+url="https://github.com/Delfi-CH/minopanel"
+license=('AGPL-3.0-or-later')
+depends=('nodejs')
+makedepends=('pnpm')
+
+options=(!debug)
+provides=('minowebd')
+conflicts=('minowebd')
+
+source=("git+https://github.com/Delfi-CH/minopanel.git")
+sha256sums=('SKIP')
+
+prepare() {
+    cd $srcdir/minopanel
+    pnpm install
+    pnpm frontend:build
+}
+
+package() {
+    cd $srcdir/minopanel
+    install -Dm755 pkg/unix/minowebd -t "$pkgdir/usr/bin/"
+    install -Dm755 dist/minowebd.cjs -t "$pkgdir/var/lib/minopanel/bin/"
+    mkdir -p "$pkgdir/var/lib/minopanel/web"
+    cp -r build/* "$pkgdir/var/lib/minopanel/web/"
+    mkdir -p "$pkgdir/etc/minopanel.d"
+}
