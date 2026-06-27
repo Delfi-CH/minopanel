@@ -56,7 +56,17 @@ none
 
 ### Installation
 
-Run the installer
+##### Windows
+
+```bash
+irm https://raw.githubusercontent.com/Delfi-CH/minopanel/refs/heads/main/pkg/windows/install.ps1 | iex
+```
+
+##### Unix
+
+```bash
+curl -s https://raw.githubusercontent.com/Delfi-CH/minopanel/refs/heads/main/pkg/unix/install.sh | bash
+```
 
 #### Requirements
 
