@@ -117,58 +117,7 @@ async function main() {
 
 	if (installMinoctl) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			log.info('Installing minoctl...');
-			const basepath = '/tmp/minopanel/minoctl';
-			await fsPromises.mkdir(basepath, { recursive: true });
-			const dlUrl = doBuildFromSource
-				? 'https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-cli-git'
-				: 'https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-cli-bin';
-			const dl = new DownloaderHelper(dlUrl, basepath, {
-				fileName: 'PKGBUILD',
-				retry: { maxRetries: 3, delay: 3000 },
-				resumeOnIncomplete: true,
-				resumeOnIncompleteMaxRetry: 3
-			});
-			const dlProgress = progress({ max: 100 });
-			dlProgress.start('Downloading PKGBUILD...');
-			dl.on('progress', (stats) => {
-				dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`);
-			});
-			dl.on('end', () => {
-				dlProgress.stop('Download finished!');
-			});
-			dl.on('error', (err) => {
-				dlProgress.cancel('An error has ocurred: ' + err.message);
-				exit();
-			});
-			await dl.start().catch((err) => {
-				dlProgress.cancel('An error has ocurred: ' + err.message);
-				exit();
-			});
-			const pkgbuild = await fsPromises.readFile(`${basepath}/PKGBUILD`, 'utf-8');
-			log.warn(
-				'Warning:\nThe following PKGBUILD will be run on your computer as root!\nPlease check for any suspicious behavior before continuing.\n' +
-					pkgbuild
-			);
-
-			const doMakepkg = await confirm({
-				message: 'Do you want to continiue?'
-			});
-			handleCancel(doMakepkg);
-			if (doMakepkg) {
-				log.info('Building & installing package...');
-				const makepkg = childProcess.spawn('makepkg', ['-si'], {
-					cwd: basepath,
-					stdio: ['inherit', 'inherit', 'inherit']
-				});
-				const [code] = await once(makepkg, 'close');
-				if (code !== 0) {
-					log.error('makepkg failed with code ' + code);
-					exit();
-				}
-			} else {
-				exit();
-			}
+			await runMakepkg("minoctl", doBuildFromSource)
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
 			/* TODO
 			log.info("Installing minoctl...")
@@ -180,119 +129,83 @@ async function main() {
 
 	if (installMinopaneld) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			log.info('Installing minoctl...');
-			const basepath = '/tmp/minopanel/minopaneld';
-			await fsPromises.mkdir(basepath, { recursive: true });
-			const dlUrl = doBuildFromSource
-				? 'https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-server-git'
-				: 'https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-server-bin';
-			const dl = new DownloaderHelper(dlUrl, basepath, {
-				fileName: 'PKGBUILD',
-				retry: { maxRetries: 3, delay: 3000 },
-				resumeOnIncomplete: true,
-				resumeOnIncompleteMaxRetry: 3
-			});
-			const dlProgress = progress({ max: 100 });
-			dlProgress.start('Downloading PKGBUILD...');
-			dl.on('progress', (stats) => {
-				dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`);
-			});
-			dl.on('end', () => {
-				dlProgress.stop('Download finished!');
-			});
-			dl.on('error', (err) => {
-				dlProgress.cancel('An error has ocurred: ' + err.message);
-				exit();
-			});
-			await dl.start().catch((err) => {
-				dlProgress.cancel('An error has ocurred: ' + err.message);
-				exit();
-			});
-			const pkgbuild = await fsPromises.readFile(`${basepath}/PKGBUILD`, 'utf-8');
-			log.warn(
-				'Warning:\nThe following PKGBUILD will be run on your computer as root!\nPlease check for any suspicious behavior before continuing.\n' +
-					pkgbuild
-			);
-
-			const doMakepkg = await confirm({
-				message: 'Do you want to continiue?'
-			});
-			handleCancel(doMakepkg);
-			if (doMakepkg) {
-				log.info('Building & installing package...');
-				const makepkg = childProcess.spawn('makepkg', ['-si'], {
-					cwd: basepath,
-					stdio: ['inherit', 'inherit', 'inherit']
-				});
-				const [code] = await once(makepkg, 'close');
-				if (code !== 0) {
-					log.error('makepkg failed with code ' + code);
-					exit();
-				}
-			} else {
-				exit();
-			}
+			await runMakepkg("minpaneld", doBuildFromSource)	
 		}
 	}
 
 	if (installMinowebd) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			log.info('Installing minoctl...');
-			const basepath = '/tmp/minopanel/minowebd';
-			await fsPromises.mkdir(basepath, { recursive: true });
-			const dlUrl = doBuildFromSource
-				? 'https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-web-git'
-				: 'https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-web-bin';
-			const dl = new DownloaderHelper(dlUrl, basepath, {
-				fileName: 'PKGBUILD',
-				retry: { maxRetries: 3, delay: 3000 },
-				resumeOnIncomplete: true,
-				resumeOnIncompleteMaxRetry: 3
-			});
-			const dlProgress = progress({ max: 100 });
-			dlProgress.start('Downloading PKGBUILD...');
-			dl.on('progress', (stats) => {
-				dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`);
-			});
-			dl.on('end', () => {
-				dlProgress.stop('Download finished!');
-			});
-			dl.on('error', (err) => {
-				dlProgress.cancel('An error has ocurred: ' + err.message);
-				exit();
-			});
-			await dl.start().catch((err) => {
-				dlProgress.cancel('An error has ocurred: ' + err.message);
-				exit();
-			});
-			const pkgbuild = await fsPromises.readFile(`${basepath}/PKGBUILD`, 'utf-8');
-			log.warn(
-				'Warning:\nThe following PKGBUILD will be run on your computer as root!\nPlease check for any suspicious behavior before continuing.\n' +
-					pkgbuild
-			);
-
-			const doMakepkg = await confirm({
-				message: 'Do you want to continiue?'
-			});
-			handleCancel(doMakepkg);
-			if (doMakepkg) {
-				log.info('Building & installing package...');
-				const makepkg = childProcess.spawn('makepkg', ['-si'], {
-					cwd: basepath,
-					stdio: ['inherit', 'inherit', 'inherit']
-				});
-				const [code] = await once(makepkg, 'close');
-				if (code !== 0) {
-					log.error('makepkg failed with code ' + code);
-					exit();
-				}
-			} else {
-				exit();
-			}
+			await runMakepkg("minowebd", doBuildFromSource)
 		}
 	}
 
 	outro('minopanel was installed successfully');
+}
+
+async function runMakepkg(name: string, doBuildFromSource: boolean) {
+	log.info(`Installing ${name}...`);
+	const basepath = `/tmp/minopanel/${name}`;
+	await fsPromises.mkdir(basepath, { recursive: true });
+
+	let type = "cli"
+	if (name === "minoctl") {
+		type = "cli"
+	} else if (name === "minopaneld") {
+		type = "server"
+	} else if (name === "minowebd") {
+		type = "web"
+	}
+
+	const dlUrl = doBuildFromSource
+		? `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-git`
+		: `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-bin`;
+
+	const dl = new DownloaderHelper(dlUrl, basepath, {
+		fileName: 'PKGBUILD',
+		retry: { maxRetries: 3, delay: 3000 },
+		resumeOnIncomplete: true,
+		resumeOnIncompleteMaxRetry: 3
+	});
+	const dlProgress = progress({ max: 100 });
+	dlProgress.start('Downloading PKGBUILD...');
+	dl.on('progress', (stats) => {
+		dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`);
+	});
+	dl.on('end', () => {
+		dlProgress.stop('Download finished!');
+	});
+	dl.on('error', (err) => {
+		dlProgress.cancel('An error has ocurred: ' + err.message);
+		exit();
+	});
+	await dl.start().catch((err) => {
+		dlProgress.cancel('An error has ocurred: ' + err.message);
+		exit();
+	});
+	const pkgbuild = await fsPromises.readFile(`${basepath}/PKGBUILD`, 'utf-8');
+	log.warn(
+		'Warning:\nThe following PKGBUILD will be run on your computer as root!\nPlease check for any suspicious behavior before continuing.\n' +
+			pkgbuild
+	);
+
+	const doMakepkg = await confirm({
+		message: 'Do you want to continiue?'
+	});
+	handleCancel(doMakepkg);
+	if (doMakepkg) {
+		log.info('Building & installing package...');
+		const makepkg = childProcess.spawn('makepkg', ['-si'], {
+			cwd: basepath,
+			stdio: ['inherit', 'inherit', 'inherit']
+		});
+		const [code] = await once(makepkg, 'close');
+		if (code !== 0) {
+			log.error('makepkg failed with code ' + code);
+			exit();
+		}
+	} else {
+		exit();
+	}
 }
 
 function handleCancel(value: any) {
