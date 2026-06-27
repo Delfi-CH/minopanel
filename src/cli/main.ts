@@ -58,24 +58,23 @@ async function main() {
 	serverCommand
 		.command('attach <name>')
 		.description('attach the server console to your console')
-		.action(async(name) => {
+		.action(async (name) => {
 			const cfg = parseOpts();
 			try {
-				const res = await axios.get(getBaseUrl() + `/api/server/static/${name}/running`)
-				const isRunning = res.data
+				const res = await axios.get(getBaseUrl() + `/api/server/static/${name}/running`);
+				const isRunning = res.data;
 				if (!isRunning) {
-					console.error(colors.red(`Server ${name} inst running!`))
-					process.exit(1)
+					console.error(colors.red(`Server ${name} inst running!`));
+					process.exit(1);
 				}
 			} catch (err) {
 				if (axios.isAxiosError(err) && err.response?.status === 404) {
-					console.error(colors.red(`Server ${name} not found!`))
-					process.exit(1)
+					console.error(colors.red(`Server ${name} not found!`));
+					process.exit(1);
 				} else {
-					console.error(colors.red(`An error has occurred: ${err}`))
-					process.exit(1)
+					console.error(colors.red(`An error has occurred: ${err}`));
+					process.exit(1);
 				}
-				
 			}
 			const ws = new WebSocket(
 				`ws://${cfg.backendHost}:${cfg.backendPort}/api/server/stream/${name}`
@@ -101,29 +100,32 @@ async function main() {
 			});
 		});
 
-	serverCommand.command("logs <name>").description("get the logs of a server").action((name)=>{
-		const stream = new EventSource(getBaseUrl() + `/api/server/static/${name}/logs`)
-		if (!stream) {
-			console.error(colors.red(`Server ${name} not found!`))
-			process.exit(1)
-		}
-		const stdin = process.stdin;
+	serverCommand
+		.command('logs <name>')
+		.description('get the logs of a server')
+		.action((name) => {
+			const stream = new EventSource(getBaseUrl() + `/api/server/static/${name}/logs`);
+			if (!stream) {
+				console.error(colors.red(`Server ${name} not found!`));
+				process.exit(1);
+			}
+			const stdin = process.stdin;
 
-		stream.addEventListener("open", ()=>{
-			console.log('Connected to server ' + name + '.');
-			console.log('Press CTRL+D to exit.');
-		})
+			stream.addEventListener('open', () => {
+				console.log('Connected to server ' + name + '.');
+				console.log('Press CTRL+D to exit.');
+			});
 
-		stream.addEventListener("message", (e)=>{ 
-			console.log(e.data)
-		})
+			stream.addEventListener('message', (e) => {
+				console.log(e.data);
+			});
 
-		stdin.resume()
-		stdin.on('end', () => {
-			stream.close();
-			process.exit(0	)
+			stdin.resume();
+			stdin.on('end', () => {
+				stream.close();
+				process.exit(0);
+			});
 		});
-	})
 
 	serverCommand
 		.command('info <name>')
@@ -348,7 +350,7 @@ async function main() {
 		type: ModloaderType,
 		java: JavaVersion
 	) {
-		console.log("Creating server...")
+		console.log('Creating server...');
 		try {
 			await axios.post(getBaseUrl() + '/api/server/static/simple', {
 				name: name,
@@ -360,7 +362,7 @@ async function main() {
 				try {
 					await axios.post(getBaseUrl() + '/api/server/static/' + name + '/setup');
 					console.log('Server was created.');
-					clearInterval(interval)
+					clearInterval(interval);
 				} catch {
 					//
 				}

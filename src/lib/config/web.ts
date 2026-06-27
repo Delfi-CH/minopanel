@@ -1,4 +1,4 @@
-import isNode from "is-node";
+import isNode from 'is-node';
 
 export interface Config {
 	backendProtocoll: string;
@@ -23,7 +23,7 @@ export function getBackendURL() {
 	if (!isNode) {
 		return `${conf.backendProtocoll}://${conf.backendHost}:${conf.backendPort}`;
 	} else {
-		return "/"
+		return '/';
 	}
 }
 
@@ -31,6 +31,6 @@ export function getBackendHost() {
 	if (!isNode) {
 		return `${conf.backendHost}:${conf.backendPort}`;
 	} else {
-		return "/"
+		return '/';
 	}
 }

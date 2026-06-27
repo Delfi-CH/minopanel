@@ -1,1 +1,1 @@
-declare module "@delfi-ch/linux-os-info-esmodule"
+declare module '@delfi-ch/linux-os-info-esmodule';

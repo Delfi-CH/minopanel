@@ -256,7 +256,7 @@ router.get('/:name/start', async (req, res) => {
 		return;
 	}
 	if (!srv.installed) {
-		await srv.runSetup(config.paths, java)
+		await srv.runSetup(config.paths, java);
 	}
 	const srvInstance = new ActiveServerInstance(srv, java);
 	serverManager.addInstance(srvInstance.base.name, srvInstance);

@@ -84,30 +84,30 @@ Run the installer
 
 ```json
 {
-  "branding": "Minopanel", // Branding of the Instance
-  "version": "0.0.1", // Minopanel Version, Automaticly set on Installation
-  "system": "linux", // Operating System Type, Automaticly set on Installation
-  "arch": "x64", // Processor Architecture, Automaticly set on Installation
-  "paths": {
-    "serverConfigPath": "/etc/minopanel.d/server.conf.json",
-    "cliConfigPath": "/etc/minopanel.d/cli.conf.json",
-    "mcServerDirectory": "/var/lib/minopanel/bin/servers",
-    "mcServerMetadataDirectory": "/var/lib/minopanel/data/servers",
-    "jdkDirectory": "/var/lib/minopanel/bin/java",
-    "jdkMetadataDirectory": "/var/lib/minopanel/data/java",
-    "jdkSelfTestCodePath": "/var/lib/minopanel/data/java",
-    "cliBinaryPath": "/usr/bin/minoctl",
-    "cliScriptPath": "/var/lib/minopanel/bin/minoctl.cjs",
-    "serverBinaryPath": "/opt/minopanel/minopaneld",
-    "serverScriptPath": "/var/lib/minopanel/bin/minopaneld.cjs",
-    "frontendDirectory": "/var/lib/minopanel/web",
-    "systemdServicePath": "/usr/lib/systemd/system/minopanel.service",
-    "tmpPath": "/tmp"
-  },
-  "backend": {
-    "port": 6502 // Port that the Instance Server runs on
-  },
-  "memory": 33062.883328 // Total Amount of RAM on the system in Megabytes
+	"branding": "Minopanel", // Branding of the Instance
+	"version": "0.0.1", // Minopanel Version, Automaticly set on Installation
+	"system": "linux", // Operating System Type, Automaticly set on Installation
+	"arch": "x64", // Processor Architecture, Automaticly set on Installation
+	"paths": {
+		"serverConfigPath": "/etc/minopanel.d/server.conf.json",
+		"cliConfigPath": "/etc/minopanel.d/cli.conf.json",
+		"mcServerDirectory": "/var/lib/minopanel/bin/servers",
+		"mcServerMetadataDirectory": "/var/lib/minopanel/data/servers",
+		"jdkDirectory": "/var/lib/minopanel/bin/java",
+		"jdkMetadataDirectory": "/var/lib/minopanel/data/java",
+		"jdkSelfTestCodePath": "/var/lib/minopanel/data/java",
+		"cliBinaryPath": "/usr/bin/minoctl",
+		"cliScriptPath": "/var/lib/minopanel/bin/minoctl.cjs",
+		"serverBinaryPath": "/opt/minopanel/minopaneld",
+		"serverScriptPath": "/var/lib/minopanel/bin/minopaneld.cjs",
+		"frontendDirectory": "/var/lib/minopanel/web",
+		"systemdServicePath": "/usr/lib/systemd/system/minopanel.service",
+		"tmpPath": "/tmp"
+	},
+	"backend": {
+		"port": 6502 // Port that the Instance Server runs on
+	},
+	"memory": 33062.883328 // Total Amount of RAM on the system in Megabytes
 }
 ```
 
@@ -123,17 +123,17 @@ Run the installer
 
 ```json
 {
-  "webPath": "/var/lib/minopanel/web", // Path to the website files
-  "binPath": "/usr/bin/minowebd",
-  "scriptPath": "/var/lib/minopanel/bin/minowebd.cjs",
-  "configPath": "/etc/minopanel.d/web.conf.json",
-  "version": "0.0.1", // Minopanel Version, Automaticly set on Installation
-  "webConfigPath": "/var/lib/minopanel/web/conf.json",
-  "system": "linux", // Operating System Type, Automaticly set on Installation
-  "port": 3000, // Port of the Webserver
-  "backendHost": "localhost", // IP-Adress/Hostname of the Backend Instance
-  "backendProtocoll": "http", // Protocoll of the Backend Instance, has to be either http or https
-  "backendPort": 6502 // Port of the Backend Instance
+	"webPath": "/var/lib/minopanel/web", // Path to the website files
+	"binPath": "/usr/bin/minowebd",
+	"scriptPath": "/var/lib/minopanel/bin/minowebd.cjs",
+	"configPath": "/etc/minopanel.d/web.conf.json",
+	"version": "0.0.1", // Minopanel Version, Automaticly set on Installation
+	"webConfigPath": "/var/lib/minopanel/web/conf.json",
+	"system": "linux", // Operating System Type, Automaticly set on Installation
+	"port": 3000, // Port of the Webserver
+	"backendHost": "localhost", // IP-Adress/Hostname of the Backend Instance
+	"backendProtocoll": "http", // Protocoll of the Backend Instance, has to be either http or https
+	"backendPort": 6502 // Port of the Backend Instance
 }
 ```
 
@@ -149,15 +149,15 @@ Run the installer
 
 ```json
 {
-  "backendHost": "localhost", // IP-Adress/Hostname of the Backend Instance
-  "backendProtocoll": "http", // Protocoll of the Backend Instance, has to be either http or https
-  "backendPort": 6502, // Port of the Backend Instance
-  "system": "linux", // Operating System Type, Automaticly set on Installation
-  "arch": "x64", // Processor Architecture, Automaticly set on Installation
-  "binPath": "/usr/bin/minoctl",
-  "scriptPath": "/var/lib/minopanel/bin/minoctl.cjs",
-  "configPath": "/etc/minopanel.d/cli.conf.json",
-  "version": "0.0.1" // Minopanel Version, Automaticly set on Installation 
+	"backendHost": "localhost", // IP-Adress/Hostname of the Backend Instance
+	"backendProtocoll": "http", // Protocoll of the Backend Instance, has to be either http or https
+	"backendPort": 6502, // Port of the Backend Instance
+	"system": "linux", // Operating System Type, Automaticly set on Installation
+	"arch": "x64", // Processor Architecture, Automaticly set on Installation
+	"binPath": "/usr/bin/minoctl",
+	"scriptPath": "/var/lib/minopanel/bin/minoctl.cjs",
+	"configPath": "/etc/minopanel.d/cli.conf.json",
+	"version": "0.0.1" // Minopanel Version, Automaticly set on Installation
 }
 ```
 
