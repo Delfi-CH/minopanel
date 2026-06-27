@@ -28,6 +28,6 @@ package() {
     mkdir -p "$pkgdir/var/lib/minopanel/web"
     cp -r build/* "$pkgdir/var/lib/minopanel/web/"
     mkdir -p "$pkgdir/etc/minopanel.d"
-    chmod -R 777 "$pkgdir/etc/minopanel.d"
-    chmod -R 777 "$pkgdir/var/lib/minopanel"
+    chmod -R 776 "$pkgdir/etc/minopanel.d"
+    chmod -R 776 "$pkgdir/var/lib/minopanel"
 }
