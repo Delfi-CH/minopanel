@@ -243,7 +243,7 @@ router.post('/:name/props', async (req, res) => {
 	res.send(props);
 });
 
-router.get('/:name/start', (req, res) => {
+router.get('/:name/start', async (req, res) => {
 	const name = req.params.name;
 	const srv = loadServerFile(config.paths, name);
 	if (!srv) {
@@ -254,6 +254,9 @@ router.get('/:name/start', (req, res) => {
 	if (!java) {
 		res.sendStatus(404);
 		return;
+	}
+	if (!srv.installed) {
+		await srv.runSetup(config.paths, java)
 	}
 	const srvInstance = new ActiveServerInstance(srv, java);
 	serverManager.addInstance(srvInstance.base.name, srvInstance);

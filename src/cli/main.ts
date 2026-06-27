@@ -41,7 +41,7 @@ async function main() {
 	program.option('-P, --protocol <http(s)>', 'protocol of the minopanel instance');
 	program.option('-c, --config <path>', 'use an alternative configuration file');
 
-	const serverCommand = program.command('servers');
+	const serverCommand = program.command('server');
 	serverCommand
 		.command('get')
 		.description('get a list of servers')
@@ -57,8 +57,25 @@ async function main() {
 	serverCommand
 		.command('attach <name>')
 		.description('attach the server console to your console')
-		.action((name) => {
+		.action(async(name) => {
 			const cfg = parseOpts();
+			try {
+				const res = await axios.get(getBaseUrl() + `/api/server/static/${name}/running`)
+				const isRunning = res.data
+				if (!isRunning) {
+					console.error(colors.red(`Server ${name} inst running!`))
+					process.exit(1)
+				}
+			} catch (err) {
+				if (axios.isAxiosError(err) && err.response?.status === 404) {
+					console.error(colors.red(`Server ${name} not found!`))
+					process.exit(1)
+				} else {
+					console.error(colors.red(`An error has occurred: ${err}`))
+					process.exit(1)
+				}
+				
+			}
 			const ws = new WebSocket(
 				`ws://${cfg.backendHost}:${cfg.backendPort}/api/server/stream/${name}`
 			);
@@ -306,6 +323,7 @@ async function main() {
 		type: ModloaderType,
 		java: JavaVersion
 	) {
+		console.log("Creating server...")
 		try {
 			await axios.post(getBaseUrl() + '/api/server/static/simple', {
 				name: name,
@@ -313,8 +331,15 @@ async function main() {
 				type: type,
 				java: java
 			});
-			await axios.post(getBaseUrl() + '/api/server/static/' + name + '/setup');
-			console.log('Server was created.');
+			const interval = setInterval(async () => {
+				try {
+					await axios.post(getBaseUrl() + '/api/server/static/' + name + '/setup');
+					console.log('Server was created.');
+					clearInterval(interval)
+				} catch {
+					//
+				}
+			}, 1000);
 		} catch (err) {
 			if (axios.isAxiosError(err)) {
 				if (err.response?.status === 409) {
