@@ -1,0 +1,67 @@
+name: Release nightly build
+
+on:
+  push:
+    branches:
+      - nightly
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package-linux-x64:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm ci
+
+      - name: Install Linux Packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential devscripts debhelper lintian fakeroot
+
+      - run: pnpm frontend:package:unix
+      - run: pnpm frontend:package:deb
+
+      - run: pnpm server:package:unix
+      - run: pnpm server:package:deb
+
+      - run: pnpm cli:package:unix
+      - run: pnpm cli:package:deb
+
+      - run: pnpm installer:build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-linux-x64
+          path: dist/
+
+  release:
+    needs:
+      - package-linux-x64
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Build
+          prerelease: false
+          files: |
+            **/*.tar.*
+            **/*.deb
+            minopanel-installer.cjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

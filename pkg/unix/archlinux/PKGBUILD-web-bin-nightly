@@ -1,0 +1,29 @@
+pkgname=minowebd-bin
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="minowebd binary"
+arch=('x86_64')
+url="https://github.com/Delfi-CH/minopanel"
+license=('AGPL-3.0-or-later')
+depends=('nodejs')
+
+options=(!debug)
+provides=('minowebd')
+conflicts=('minowebd')
+
+source=("https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/minowebd-amd64.deb")
+sha256sums=('SKIP')
+
+package() {
+    cd "$srcdir"
+
+    bsdtar -xf "minowebd-amd64.deb"
+
+    mkdir -p "$pkgdir/etc/minopanel.d"
+    mkdir -p "$pkgdir/var/lib/minopanel"
+    chmod -R 776 "$pkgdir/etc/minopanel.d"
+    chmod -R 776 "$pkgdir/var/lib/minopanel"
+
+    # Extract data.tar.* from the deb
+    bsdtar -xf data.tar.xz -C "$pkgdir"
+}

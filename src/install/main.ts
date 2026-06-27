@@ -102,7 +102,8 @@ async function main() {
 	const buildFromSource = await select({
 		message: 'How do you want to install minopanel?',
 		options: [
-			{ value: 'bin', label: 'Download a prebuilt binary', hint: 'Reccomended for most users.' },
+			{ value: 'bin', label: 'Stable Release', hint: 'Reccomended for most users.' },
+			{ value: 'nightly', label: 'Nightly Release' },
 			{
 				value: 'src',
 				label: 'Build from Source',
@@ -115,9 +116,11 @@ async function main() {
 
 	const doBuildFromSource = buildFromSource === 'src' ? true : false;
 
+	const nightly = buildFromSource === "nightly" ? true : false
+
 	if (installMinoctl) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			await runMakepkg("minoctl", doBuildFromSource)
+			await runMakepkg("minoctl", doBuildFromSource, nightly)
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
 			/* TODO
 			log.info("Installing minoctl...")
@@ -142,7 +145,7 @@ async function main() {
 	outro('minopanel was installed successfully');
 }
 
-async function runMakepkg(name: string, doBuildFromSource: boolean) {
+async function runMakepkg(name: string, doBuildFromSource: boolean, doNightly: boolean) {
 	log.info(`Installing ${name}...`);
 	const basepath = `/tmp/minopanel/${name}`;
 	await fsPromises.mkdir(basepath, { recursive: true });
@@ -156,9 +159,12 @@ async function runMakepkg(name: string, doBuildFromSource: boolean) {
 		type = "web"
 	}
 
-	const dlUrl = doBuildFromSource
-		? `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-git`
-		: `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-bin`;
+	let dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-bin`;
+	if (doBuildFromSource) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-git`
+	} else if (doNightly) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-bin-nightly`
+	}
 
 	const dl = new DownloaderHelper(dlUrl, basepath, {
 		fileName: 'PKGBUILD',
