@@ -25,7 +25,7 @@ async function main() {
 	let system = OperatingSystem.Other;
 	let distroName = '';
 	let finalOS = LinuxDistribution.other;
-	log.info('Determining your OperatingSystem...');
+	log.info('Determining your operating system...');
 	if (distro.type === 'Linux') {
 		system = OperatingSystem.Linux;
 		distroName = distro.name;
