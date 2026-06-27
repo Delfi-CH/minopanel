@@ -65,6 +65,6 @@ jobs:
           files: |
             **/*.tar.*
             **/*.deb
-            minopanel-installer.cjs
+            **/minopanel-installer.cjs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
