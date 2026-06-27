@@ -7,6 +7,7 @@ import { Command } from 'commander';
 import EasyTable from 'easy-table';
 import WebSocket from 'ws';
 import cliProgress from 'cli-progress';
+import { EventSource } from 'eventsource';
 import { loadCLIConfig } from '../lib/data/data.ts';
 
 async function main() {
@@ -99,6 +100,30 @@ async function main() {
 				ws.send(data);
 			});
 		});
+
+	serverCommand.command("logs <name>").description("get the logs of a server").action((name)=>{
+		const stream = new EventSource(getBaseUrl() + `/api/server/static/${name}/logs`)
+		if (!stream) {
+			console.error(colors.red(`Server ${name} not found!`))
+			process.exit(1)
+		}
+		const stdin = process.stdin;
+
+		stream.addEventListener("open", ()=>{
+			console.log('Connected to server ' + name + '.');
+			console.log('Press CTRL+D to exit.');
+		})
+
+		stream.addEventListener("message", (e)=>{ 
+			console.log(e.data)
+		})
+
+		stdin.resume()
+		stdin.on('end', () => {
+			stream.close();
+			process.exit(0	)
+		});
+	})
 
 	serverCommand
 		.command('info <name>')

@@ -36,8 +36,6 @@ nothing
 
 edit server filesystem (upload worlds, mods, etc)
 
-stream logs
-
 server.properties editing
 
 install mods via modrinth api
