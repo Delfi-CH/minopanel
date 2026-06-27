@@ -6,9 +6,7 @@ write docs
 
 ## Packaging
 
-- Debian (deb)
 - Fedora/RHEL (rpm)
-- ArchLinux (pacman)
 - Linux (tar.gz)
 - Docker
 - Windows (exe)
@@ -24,13 +22,15 @@ add [Minecraft Server Management Protocol](https://minecraft.wiki/w/Minecraft_Se
 
 do player management (kick, ban, whitelist, admin, etc)
 
+authentication
+
 ### Frontend-only
 
 improve homepage
 
 ### Backend-only
 
-authentication
+nothing
 
 ### CLI-only
 
