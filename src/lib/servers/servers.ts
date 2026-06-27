@@ -6,8 +6,6 @@ import { ApplicatonPaths } from '../config/paths';
 import { webDownloadManager } from '$lib/download/web';
 import type { DownloadManager } from '$lib/download/server';
 import { OperatingSystem } from '$lib/system';
-import { loadConfig, getBackendURL } from '$lib/config/web';
-
 class MCServer {
 	name: string;
 	mcVersion: string;
@@ -296,6 +294,8 @@ class Modloader {
 
 	async buildURL() {
 		const versions = await Modloader.getSupportedMCVersions(this.type);
+		const { loadConfig, getBackendURL } = await import('$lib/config/web');
+
 		await loadConfig();
 		const backendURL = getBackendURL();
 		if (this.type === ModloaderType.Vanilla) {
@@ -367,6 +367,7 @@ class Modloader {
 	}
 
 	static async getSupportedMCVersions(type: ModloaderType) {
+		const { loadConfig, getBackendURL } = await import('$lib/config/web');
 		await loadConfig();
 		const backendURL = getBackendURL();
 		if (type === ModloaderType.Vanilla) {

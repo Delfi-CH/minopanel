@@ -1,4 +1,5 @@
-// src/lib/conf.ts
+import isNode from "is-node";
+
 export interface Config {
 	backendProtocoll: string;
 	backendHost: string;
@@ -12,14 +13,24 @@ let conf: Config = {
 };
 
 export async function loadConfig() {
-	const res = await fetch('/conf.json');
-	conf = await res.json();
+	if (!isNode) {
+		const res = await fetch('/conf.json');
+		conf = await res.json();
+	}
 }
 
 export function getBackendURL() {
-	return `${conf.backendProtocoll}://${conf.backendHost}:${conf.backendPort}`;
+	if (!isNode) {
+		return `${conf.backendProtocoll}://${conf.backendHost}:${conf.backendPort}`;
+	} else {
+		return "/"
+	}
 }
 
 export function getBackendHost() {
-	return `${conf.backendHost}:${conf.backendPort}`;
+	if (!isNode) {
+		return `${conf.backendHost}:${conf.backendPort}`;
+	} else {
+		return "/"
+	}
 }
