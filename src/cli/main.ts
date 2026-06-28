@@ -9,7 +9,7 @@ import WebSocket from 'ws';
 import cliProgress from 'cli-progress';
 import { EventSource } from 'eventsource';
 import { loadCLIConfig } from '../lib/data/data.ts';
-import tab from "@bomb.sh/tab/commander"
+import tab from '@bomb.sh/tab/commander';
 
 async function main() {
 	const program = new Command('minoctl');
@@ -225,8 +225,8 @@ async function main() {
 		.action(async (version) => {
 			await deleteJavaVersion(version);
 		});
-	
-	tab(program)
+
+	tab(program);
 	await program.parseAsync();
 
 	async function getServers() {

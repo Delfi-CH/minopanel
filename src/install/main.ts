@@ -116,11 +116,11 @@ async function main() {
 
 	const doBuildFromSource = buildFromSource === 'src' ? true : false;
 
-	const nightly = buildFromSource === "nightly" ? true : false
+	const nightly = buildFromSource === 'nightly' ? true : false;
 
 	if (installMinoctl) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			await runMakepkg("minoctl", doBuildFromSource, nightly)
+			await runMakepkg('minoctl', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
 			/* TODO
 			log.info("Installing minoctl...")
@@ -132,13 +132,13 @@ async function main() {
 
 	if (installMinopaneld) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			await runMakepkg("minpaneld", doBuildFromSource)	
+			await runMakepkg('minpaneld', doBuildFromSource);
 		}
 	}
 
 	if (installMinowebd) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			await runMakepkg("minowebd", doBuildFromSource)
+			await runMakepkg('minowebd', doBuildFromSource);
 		}
 	}
 
@@ -150,20 +150,20 @@ async function runMakepkg(name: string, doBuildFromSource: boolean, doNightly: b
 	const basepath = `/tmp/minopanel/${name}`;
 	await fsPromises.mkdir(basepath, { recursive: true });
 
-	let type = "cli"
-	if (name === "minoctl") {
-		type = "cli"
-	} else if (name === "minopaneld") {
-		type = "server"
-	} else if (name === "minowebd") {
-		type = "web"
+	let type = 'cli';
+	if (name === 'minoctl') {
+		type = 'cli';
+	} else if (name === 'minopaneld') {
+		type = 'server';
+	} else if (name === 'minowebd') {
+		type = 'web';
 	}
 
 	let dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-bin`;
 	if (doBuildFromSource) {
-		dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-git`
+		dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-git`;
 	} else if (doNightly) {
-		dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-bin-nightly`
+		dlUrl = `https://github.com/Delfi-CH/minopanel/raw/refs/heads/main/pkg/unix/archlinux/PKGBUILD-${type}-bin-nightly`;
 	}
 
 	const dl = new DownloaderHelper(dlUrl, basepath, {
