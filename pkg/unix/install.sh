@@ -10,6 +10,6 @@ if [ "$status" != 0 ]; then
 fi
 
 echo "Downloading Installer..."
-curl -L -o /tmp/minopanel-installer.cjs https://github.com/Delfi-CH/minopanel/releases/download/rolling/minopanel-installer.cjs &> /dev/null
+curl -L -o /tmp/minopanel-installer.cjs https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/minopanel-installer.cjs &> /dev/null
 clear 
 node /tmp/minopanel-installer.cjs </dev/tty
