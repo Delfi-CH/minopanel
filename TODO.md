@@ -7,14 +7,13 @@ write docs
 ## Packaging
 
 - Fedora/RHEL (rpm)
-- Linux (tar.gz)
 - Docker
 - Windows (exe)
 - Homebrew (Linux/OSX)
 
 ## Features
 
-Write an Installer
+none
 
 ### General
 
@@ -41,5 +40,3 @@ server.properties editing
 install mods via modrinth api
 
 add some sort of eula confirm
-
-shell autocompletion (bash, zsh, fish, nu)
