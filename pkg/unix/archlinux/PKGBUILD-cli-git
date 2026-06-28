@@ -29,4 +29,20 @@ package() {
     chmod -R 776 "$pkgdir/var/lib/minopanel"
     install -Dm755 pkg/unix/minoctl -t "$pkgdir/usr/bin/"
     install -Dm755 dist/minoctl.cjs -t "$pkgdir/var/lib/minopanel/bin/"
+
+    # Generate Shell Completion
+    node ./dist/minoctl.cjs complete bash > $pkgdir /etc/bash_completion.d/minoctl
+    sed -i \
+        's|requestComp=".*complete --|requestComp="minoctl complete --|g' \
+        $pkgdir/etc/bash_completion.d/minoctl
+
+    node ./dist/minoctl.cjs complete zsh > $pkgdir/usr/share/zsh/site-functions/_minoctl
+    sed -i \
+        's|requestComp=".*complete --|requestComp="minoctl complete --|g' \
+        $pkgdir/usr/share/zsh/site-functions/_minoctl
+
+    node ./dist/minoctl.cjs complete fish > $pkgdir/usr/share/fish/completions/minoctl.fish
+    sed -i \
+        's|set -l requestComp ".*|set -l requestComp "minoctl complete -- (string join '"'"' '"'"' -- (string escape -- $args[2..-1])) $lastArg"|g' \
+        $pkgdir/usr/share/fish/completions/minoctl.fish
 }
