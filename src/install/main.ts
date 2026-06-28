@@ -17,6 +17,7 @@ import * as os from 'node:os';
 import * as fsPromises from 'node:fs/promises';
 import * as childProcess from 'node:child_process';
 import { once } from 'node:events';
+import axios from 'axios';
 
 async function main() {
 	intro('minopanel-installer');
@@ -122,27 +123,84 @@ async function main() {
 		if (finalOS === LinuxDistribution.archlinux) {
 			await runMakepkg('minoctl', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
-			/* TODO
-			log.info("Installing minoctl...")
-			const basepath = "/tmp/minopanel/minoctl"
-			await fsPromises.mkdir(basepath, { recursive: true})
-			*/
+			await installDpkg('minoctl', doBuildFromSource, nightly)
+		} else {
+			log.info("No builds available for your operating system...")
+			process.exit(0)
 		}
 	}
 
 	if (installMinopaneld) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			await runMakepkg('minpaneld', doBuildFromSource);
+			await runMakepkg('minopaneld', doBuildFromSource, nightly);
+		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
+			await installDpkg('minopaneld', doBuildFromSource, nightly)
+		} else {
+			log.info("No builds available for your operating system...")
+			process.exit(0)
 		}
 	}
 
 	if (installMinowebd) {
 		if (finalOS === LinuxDistribution.archlinux) {
-			await runMakepkg('minowebd', doBuildFromSource);
+			await runMakepkg('minowebd', doBuildFromSource, nightly);
+		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
+			await installDpkg('minowebd', doBuildFromSource, nightly)
+		} else {
+			log.info("No builds available for your operating system...")
+			process.exit(0)
 		}
 	}
 
 	outro('minopanel was installed successfully');
+}
+
+async function installDpkg(name: string, doBuildFromSource: boolean, doNightly: boolean) {
+	log.info(`Installing ${name}...`);
+	const basepath = `/tmp/minopanel/${name}`;
+	await fsPromises.mkdir(basepath, { recursive: true });
+
+	const gh = await axios.get('https://api.github.com/repos/Delfi-CH/minopanel/releases/latest');
+	const tag = gh.data.tag_name;
+
+	let dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/${tag}/${name}-amd64.deb`;
+	if (doNightly) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/${name}-amd64.deb`;
+	}
+
+	if (doBuildFromSource) {
+		// todo
+	}
+	const dl = new DownloaderHelper(dlUrl, basepath, {
+		fileName: `${name}-amd64.deb`,
+		retry: { maxRetries: 3, delay: 3000 },
+		resumeOnIncomplete: true,
+		resumeOnIncompleteMaxRetry: 3
+	});
+	const dlProgress = progress({ max: 100 });
+	dlProgress.start(`Downloading ${name}-amd64.deb...`);
+	dl.on('progress', (stats) => {
+		dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`);
+	});
+	dl.on('end', () => {
+		dlProgress.stop('Download finished!');
+	});
+	dl.on('error', (err) => {
+		dlProgress.cancel('An error has ocurred: ' + err.message);
+		exit();
+	});
+	await dl.start().catch((err) => {
+		dlProgress.cancel('An error has ocurred: ' + err.message);
+		exit();
+	});
+	const sudoDpkg = childProcess.spawn('sudo', ['apt', 'install', `${basepath}/${name}-amd64.deb`], {
+		stdio: ['inherit', 'inherit', 'inherit']
+	});
+	const [code] = await once(sudoDpkg, 'close');
+	if (code !== 0) {
+		log.error('dpkg failed with code ' + code);
+		exit();
+	}
 }
 
 async function runMakepkg(name: string, doBuildFromSource: boolean, doNightly: boolean) {
