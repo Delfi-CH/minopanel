@@ -27,7 +27,7 @@ sed -i \
   's|set -l requestComp ".*|set -l requestComp "minoctl complete -- (string join '"'"' '"'"' -- (string escape -- $args[2..-1])) $lastArg"|g' \
   ./cli/usr/share/fish/completions/minoctl.fish
 
-chmod -R 776 ./cli/var/lib/minopanel
-chmod -R 776 ./cli/etc/minopanel.d
+chmod -R 777 ./cli/var/lib/minopanel
+chmod -R 777 ./cli/etc/minopanel.d
 
 dpkg-deb --root-owner-group -Zxz -z6 -b cli ../../../dist/minoctl-amd64.deb

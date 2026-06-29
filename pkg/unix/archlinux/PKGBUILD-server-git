@@ -33,6 +33,6 @@ package() {
     mkdir -p "$pkgdir/var/lib/minopanel/data/servers"
     javac src/lib/jvm/SelfTest.java
     cp src/lib/jvm/SelfTest.class "$pkgdir/var/lib/minopanel/data/java"
-    chmod -R 776 "$pkgdir/etc/minopanel.d"
-    chmod -R 776 "$pkgdir/var/lib/minopanel"
+    chmod -R 777 "$pkgdir/etc/minopanel.d"
+    chmod -R 777 "$pkgdir/var/lib/minopanel"
 }

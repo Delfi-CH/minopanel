@@ -4,8 +4,8 @@ mkdir -p minoctl/usr/bin
 mkdir -p minoctl/etc/minopanel.d
 mkdir -p minoctl/var/lib/minopanel/bin
 
-chmod -R 776 minoctl/etc/minopanel.d
-chmod -R 776 minoctl/var/lib/minopanel/bin
+chmod -R 777 minoctl/etc/minopanel.d
+chmod -R 777 minoctl/var/lib/minopanel/bin
 
 cp ../../../README.md ./minoctl
 cp ../../../LICENSE ./minoctl

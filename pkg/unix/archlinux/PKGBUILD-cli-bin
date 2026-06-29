@@ -21,8 +21,8 @@ package() {
 
     mkdir -p "$pkgdir/etc/minopanel.d"
     mkdir -p "$pkgdir/var/lib/minopanel"
-    chmod -R 776 "$pkgdir/etc/minopanel.d"
-    chmod -R 776 "$pkgdir/var/lib/minopanel"
+    chmod -R 777 "$pkgdir/etc/minopanel.d"
+    chmod -R 777 "$pkgdir/var/lib/minopanel"
 
     bsdtar -xf data.tar.xz -C "$pkgdir"
 }

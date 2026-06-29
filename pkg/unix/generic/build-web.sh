@@ -5,9 +5,9 @@ mkdir -p minowebd/etc/minopanel.d
 mkdir -p minowebd/var/lib/minopanel/bin
 mkdir -p minowebd/var/lib/minopanel/web
 
-chmod -R 776 minowebd/etc/minopanel.d
-chmod -R 776 minowebd/var/lib/minopanel/bin
-chmod -R 776 minowebd/var/lib/minopanel/web
+chmod -R 777 minowebd/etc/minopanel.d
+chmod -R 777 minowebd/var/lib/minopanel/bin
+chmod -R 777 minowebd/var/lib/minopanel/web
 
 cp ../../../README.md ./minowebd
 cp ../../../LICENSE ./minowebd

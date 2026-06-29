@@ -7,12 +7,12 @@ mkdir -p minopaneld/var/lib/minopanel/bin/java
 mkdir -p minopaneld/var/lib/minopanel/data/servers
 mkdir -p minopaneld/var/lib/minopanel/data/java
 
-chmod -R 776 minopaneld/etc/minopanel.d
-chmod -R 776 minopaneld/var/lib/minopanel/bin
-chmod -R 776 minopaneld/var/lib/minopanel/bin/servers
-chmod -R 776 minopaneld/var/lib/minopanel/bin/java
-chmod -R 776 minopaneld/var/lib/minopanel/data/servers
-chmod -R 776 minopaneld/var/lib/minopanel/data/java
+chmod -R 777 minopaneld/etc/minopanel.d
+chmod -R 777 minopaneld/var/lib/minopanel/bin
+chmod -R 777 minopaneld/var/lib/minopanel/bin/servers
+chmod -R 777 minopaneld/var/lib/minopanel/bin/java
+chmod -R 777 minopaneld/var/lib/minopanel/data/servers
+chmod -R 777 minopaneld/var/lib/minopanel/data/java
 
 cp ../../../README.md ./minopaneld
 cp ../../../LICENSE ./minopaneld
