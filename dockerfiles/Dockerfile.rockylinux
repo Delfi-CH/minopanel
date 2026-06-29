@@ -1,0 +1,3 @@
+FROM rockylinux/rockylinux:latest
+
+RUN echo "hello rockylinux"

@@ -22,7 +22,9 @@
 		"installer:build": "esbuild src/install/main.ts --bundle --platform=node --format=cjs --outfile=dist/minopanel-installer.cjs",
 		"prepare": "svelte-kit sync || echo ''",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"package:deb": "docker buildx build . -f dockerfiles/Dockerfile.debian --output ./dist",
+		"package:unix": "docker buildx build . -f dockerfiles/Dockerfile.unix --output ./dist"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.0.4",

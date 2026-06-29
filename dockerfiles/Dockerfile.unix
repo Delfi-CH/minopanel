@@ -1,0 +1,29 @@
+FROM debian:latest AS builder
+
+RUN apt-get update && apt-get install -y curl ca-certificates wget build-essential fakeroot dpkg-dev tar gzip xz-utils
+
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+RUN apt-get install -y nodejs
+
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+
+RUN wget https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.deb
+
+RUN apt-get install -y ./amazon-corretto-8-x64-linux-jdk.deb
+
+WORKDIR /app
+
+COPY . .
+
+RUN pnpm ci
+
+RUN pnpm cli:package:unix
+
+RUN pnpm frontend:package:unix
+
+RUN pnpm server:package:unix
+
+FROM scratch AS export
+
+COPY --from=builder /app/dist/*.tar* /
