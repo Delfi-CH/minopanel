@@ -30,4 +30,4 @@ sed -i \
 chmod -R 776 ./cli/var/lib/minopanel
 chmod -R 776 ./cli/etc/minopanel.d
 
-dpkg-deb --root-owner-group -b cli ../../../dist/minoctl-amd64.deb
+dpkg-deb --root-owner-group -Zxz -z6 -b cli ../../../dist/minoctl-amd64.deb

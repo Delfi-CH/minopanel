@@ -21,4 +21,4 @@ cp ../../../src/lib/jvm/SelfTest.class ./server/var/lib/minopanel/data/java
 chmod -R 776 ./server/var/lib/minopanel
 chmod -R 776 ./server/etc/minopanel.d
 
-dpkg-deb --root-owner-group -b server ../../../dist/minopaneld-amd64.deb
+dpkg-deb --root-owner-group -Zxz -z6 -b server ../../../dist/minopaneld-amd64.deb
