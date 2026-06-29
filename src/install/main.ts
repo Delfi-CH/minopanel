@@ -123,10 +123,10 @@ async function main() {
 		if (finalOS === LinuxDistribution.archlinux) {
 			await runMakepkg('minoctl', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
-			await installDpkg('minoctl', doBuildFromSource, nightly)
+			await installDpkg('minoctl', doBuildFromSource, nightly);
 		} else {
-			log.info("No builds available for your operating system...")
-			process.exit(0)
+			log.info('No builds available for your operating system...');
+			process.exit(0);
 		}
 	}
 
@@ -134,10 +134,10 @@ async function main() {
 		if (finalOS === LinuxDistribution.archlinux) {
 			await runMakepkg('minopaneld', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
-			await installDpkg('minopaneld', doBuildFromSource, nightly)
+			await installDpkg('minopaneld', doBuildFromSource, nightly);
 		} else {
-			log.info("No builds available for your operating system...")
-			process.exit(0)
+			log.info('No builds available for your operating system...');
+			process.exit(0);
 		}
 	}
 
@@ -145,10 +145,10 @@ async function main() {
 		if (finalOS === LinuxDistribution.archlinux) {
 			await runMakepkg('minowebd', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
-			await installDpkg('minowebd', doBuildFromSource, nightly)
+			await installDpkg('minowebd', doBuildFromSource, nightly);
 		} else {
-			log.info("No builds available for your operating system...")
-			process.exit(0)
+			log.info('No builds available for your operating system...');
+			process.exit(0);
 		}
 	}
 

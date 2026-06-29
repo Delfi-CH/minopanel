@@ -11,13 +11,23 @@ permissions:
 
 jobs:
   package-linux-x64:
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - frontend
+          - server
+          - cli
+
     runs-on: ubuntu-24.04
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
           version: 11
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -31,25 +41,42 @@ jobs:
           sudo apt-get install -y \
             build-essential devscripts debhelper lintian fakeroot
 
-      - run: pnpm frontend:package:unix
-      - run: pnpm frontend:package:deb
+      - run: pnpm ${{ matrix.package }}:package:unix
+      - run: pnpm ${{ matrix.package }}:package:deb
 
-      - run: pnpm server:package:unix
-      - run: pnpm server:package:deb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-linux-x64-${{ matrix.package }}
+          path: dist/
 
-      - run: pnpm cli:package:unix
-      - run: pnpm cli:package:deb
+  installer-linux-x64:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm ci
 
       - run: pnpm installer:build
 
       - uses: actions/upload-artifact@v4
         with:
-          name: package-linux-x64
+          name: installer-linux-x64
           path: dist/
 
   release:
     needs:
       - package-linux-x64
+      - installer-linux-x64
 
     runs-on: ubuntu-latest
 
