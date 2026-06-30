@@ -1,6 +1,6 @@
 Name:           minoctl
 Version:        0.0.1
-Release:        1%{?dist}
+Release:        1
 Summary:        minopanel cli
 
 License:        AGPL

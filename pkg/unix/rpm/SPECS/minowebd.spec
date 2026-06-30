@@ -1,6 +1,6 @@
 Name:           minowebd
 Version:        0.0.1
-Release:        1%{?dist}
+Release:        1
 Summary:        minopanel webui
 BuildArch:      x86_64
 
