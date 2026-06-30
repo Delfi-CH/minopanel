@@ -41,6 +41,12 @@ pkg/unix/dpkg/web/var
 
 *.deb
 
+# RPM Packaging
+
+pkg/unix/rpm/minoctl-*
+pkg/unix/rpm/minowebd-*
+pkg/unix/rpm/minopaneld-*
+
 *.rpm
 
 # Generic unix packaging
