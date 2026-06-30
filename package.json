@@ -28,6 +28,9 @@
 		"format": "prettier --write .",
 		"clean":"rm -rf build dist/*",
 		"package:deb": "docker buildx build . -f dockerfiles/Dockerfile.debian --output ./dist",
+		"package:fedora": "docker buildx build . -f dockerfiles/Dockerfile.fedora --output ./dist",
+		"package:almalinux": "docker buildx build . -f dockerfiles/Dockerfile.almalinux --output ./dist",
+		"package:rockylinux": "docker buildx build . -f dockerfiles/Dockerfile.rockylinux --output ./dist",
 		"package:unix": "docker buildx build . -f dockerfiles/Dockerfile.unix --output ./dist"
 	},
 	"devDependencies": {

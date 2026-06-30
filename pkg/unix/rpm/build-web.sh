@@ -1,24 +1,26 @@
 #!/usr/bin/env bash
 
+MINOPANEL_VERSION=0.0.1
+
 mkdir -p BUILD BUILDROOT RPMS SRPMS SOURCES SPECS
 
-mkdir -p minowebd-0.0.1/dist
+mkdir -p minowebd-$MINOPANEL_VERSION/dist
 
-mkdir -p minowebd-0.0.1/build
+mkdir -p minowebd-$MINOPANEL_VERSION/build
 
-cp ../minowebd minowebd-0.0.1
+cp ../minowebd minowebd-$MINOPANEL_VERSION
 
-cp ../../../dist/minowebd.cjs minowebd-0.0.1/dist
+cp ../../../dist/minowebd.cjs minowebd-$MINOPANEL_VERSION/dist
 
-cp -r ../../../build/* minowebd-0.0.1/build
+cp -r ../../../build/* minowebd-$MINOPANEL_VERSION/build
 
-cp ../../../LICENSE minowebd-0.0.1
+cp ../../../LICENSE minowebd-$MINOPANEL_VERSION
 
-cp ../../../README.md minowebd-0.0.1
-tar czf minowebd-0.0.1.tar.gz minowebd-0.0.1
+cp ../../../README.md minowebd-$MINOPANEL_VERSION
+tar czf minowebd-$MINOPANEL_VERSION.tar.gz minowebd-$MINOPANEL_VERSION
 
-mv minowebd-0.0.1.tar.gz SOURCES
+mv minowebd-$MINOPANEL_VERSION.tar.gz SOURCES
 
 rpmbuild --define "_topdir $(pwd)" --define "_debugsource_packages 0" --define "debug_package %{nil}" -bb SPECS/minowebd.spec
 
-mv RPMS/x86_64/*.rpm ../../../dist
+mv RPMS/x86_64/minowebd-$MINOPANEL_VERSION-1.x86_64.rpm ../../../dist/minowebd-$DISTRIBUTION-$MINOPANEL_VERSION-1.x86_64.rpm

@@ -1,3 +1,31 @@
-FROM fedora:latest
+FROM fedora:44 AS builder
 
-RUN echo "hello fedora"
+RUN dnf install -y curl ca-certificates git python3 make gcc glibc-devel kernel-devel fakeroot rpm-build wget gnupg gcc-c++
+
+RUN curl -fsSL https://rpm.nodesource.com/setup_24.x | bash -
+RUN dnf install -y nodejs
+
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+
+RUN wget https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.rpm
+
+RUN dnf install -y ./amazon-corretto-8-x64-linux-jdk.rpm
+
+WORKDIR /app
+
+COPY . .
+
+RUN pnpm ci
+
+ENV DISTRIBUTION=fedora
+
+RUN pnpm cli:package:rpm
+
+RUN pnpm frontend:package:rpm
+
+RUN pnpm server:package:rpm
+
+FROM scratch AS export
+
+COPY --from=builder /app/dist/*.rpm /
