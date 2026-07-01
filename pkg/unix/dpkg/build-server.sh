@@ -12,6 +12,8 @@ cp ../minopaneld ./server/usr/bin
 
 cp ../../../dist/minopaneld.cjs ./server/var/lib/minopanel/bin
 
+pnpm prune --prod
+
 cp -r ../../../node_modules ./server/var/lib/minopanel/bin
 
 javac ../../../src/lib/jvm/SelfTest.java

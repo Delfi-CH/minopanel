@@ -17,6 +17,8 @@ chmod -R 777 minopaneld/var/lib/minopanel/data/java
 cp ../../../README.md ./minopaneld
 cp ../../../LICENSE ./minopaneld
 
+pnpm prune --prod
+
 cp -r ../../../node_modules ./minopaneld/var/lib/minopanel/bin
 cp ../minopaneld ./minopaneld/usr/bin
 javac ../../../src/lib/jvm/SelfTest.java

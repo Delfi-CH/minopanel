@@ -20,4 +20,6 @@ mv minoctl-$MINOPANEL_VERSION.tar.gz SOURCES
 
 rpmbuild --define "_topdir $(pwd)" --define "_debugsource_packages 0" --define "debug_package %{nil}" -bb SPECS/minoctl.spec
 
+sleep 3s
+
 mv RPMS/x86_64/minoctl-$MINOPANEL_VERSION-1.x86_64.rpm ../../../dist/minoctl-$DISTRIBUTION-$MINOPANEL_VERSION-1.x86_64.rpm

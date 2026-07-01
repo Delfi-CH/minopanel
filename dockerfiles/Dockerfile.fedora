@@ -24,7 +24,7 @@ RUN pnpm cli:package:rpm
 
 RUN pnpm frontend:package:rpm
 
-RUN pnpm server:package:rpm
+RUN pnpm server:package:rpm || (ls -R /app/pkg/unix/rpm && exit 1)
 
 FROM scratch AS export
 

@@ -1,9 +1,6 @@
 name: Release nightly build
 
 on:
-  push:
-    branches:
-      - nightly
   workflow_dispatch:
 
 permissions:
