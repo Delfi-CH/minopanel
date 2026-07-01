@@ -46,7 +46,7 @@ chmod -R 777 %{buildroot}%{_sysconfdir}/minopanel.d
 
 %{_bindir}/minopaneld
 %dir %{_localstatedir}/lib/minopanel
-%{_localstatedir}/lib/minopanel/bin/*
+%{_localstatedir}/lib/minopanel/bin
 %dir %{_localstatedir}/lib/minopanel/data/servers
 %dir %{_localstatedir}/lib/minopanel/data/java
 %{_localstatedir}/lib/minopanel/data/java/SelfTest.class
