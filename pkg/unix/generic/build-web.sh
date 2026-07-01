@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+MINOPANEL_VERSION=0.0.1
+
 mkdir -p minowebd/usr/bin
 mkdir -p minowebd/etc/minopanel.d
 mkdir -p minowebd/var/lib/minopanel/bin
@@ -16,5 +18,5 @@ cp -r ../../../build/ ./minowebd/var/lib/minopanel/web
 cp ../minowebd ./minowebd/usr/bin
 cp ../../../dist/minowebd.cjs ./minowebd/var/lib/minopanel/bin
 
-tar czf ../../../dist/minowebd-amd64.tar.gz ./minowebd
-tar cjf ../../../dist/minowebd-amd64.tar.xz ./minowebd
+tar czf ../../../dist/minowebd-$MINOPANEL_VERSION-amd64.tar.gz ./minowebd
+tar cjf ../../../dist/minowebd-$MINOPANEL_VERSION-amd64.tar.xz ./minowebd

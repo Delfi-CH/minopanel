@@ -7,6 +7,7 @@ mkdir -p ./cli/usr/bin
 mkdir -p ./cli/usr/share/zsh/site-functions/
 mkdir -p ./cli/usr/share/fish/completions/
 
+MINOPANEL_VERSION=0.0.1
 
 cp ../minoctl ./cli/usr/bin
 
@@ -30,4 +31,4 @@ sed -i \
 chmod -R 777 ./cli/var/lib/minopanel
 chmod -R 777 ./cli/etc/minopanel.d
 
-dpkg-deb --root-owner-group -Zxz -z6 -b cli ../../../dist/minoctl-amd64.deb
+dpkg-deb --root-owner-group -Zxz -z6 -b cli ../../../dist/minoctl-$MINOPANEL_VERSION-amd64.deb

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+MINOPANEL_VERSION=0.0.1
+
 mkdir -p ./server/var/lib/minopanel/bin
 mkdir -p ./server/var/lib/minopanel/bin/java
 mkdir -p ./server/var/lib/minopanel/bin/servers
@@ -23,4 +25,4 @@ cp ../../../src/lib/jvm/SelfTest.class ./server/var/lib/minopanel/data/java
 chmod -R 777 ./server/var/lib/minopanel
 chmod -R 777 ./server/etc/minopanel.d
 
-dpkg-deb --root-owner-group -Zxz -z6 -b server ../../../dist/minopaneld-amd64.deb
+dpkg-deb --root-owner-group -Zxz -z6 -b server ../../../dist/minopaneld-$MINOPANEL_VERSION-amd64.deb
