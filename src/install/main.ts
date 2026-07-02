@@ -19,7 +19,10 @@ import * as childProcess from 'node:child_process';
 import { once } from 'node:events';
 import axios from 'axios';
 
+const minopanelVersion = "0.0.1"
+
 async function main() {
+
 	intro('minopanel-installer');
 
 	const distro = linuxOsInfo({ mode: 'sync' });
@@ -124,6 +127,8 @@ async function main() {
 			await runMakepkg('minoctl', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
 			await installDpkg('minoctl', doBuildFromSource, nightly);
+		} else if (finalOS === LinuxDistribution.fedora || finalOS === LinuxDistribution.alma || finalOS === LinuxDistribution.rocky || finalOS === LinuxDistribution.rhel  || finalOS === LinuxDistribution.suse  || finalOS === LinuxDistribution.opensuse)  {
+			await installRPM('minoctl', doBuildFromSource, nightly, finalOS);
 		} else {
 			log.info('No builds available for your operating system...');
 			process.exit(0);
@@ -135,6 +140,8 @@ async function main() {
 			await runMakepkg('minopaneld', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
 			await installDpkg('minopaneld', doBuildFromSource, nightly);
+		} else if (finalOS === LinuxDistribution.fedora || finalOS === LinuxDistribution.alma || finalOS === LinuxDistribution.rocky || finalOS === LinuxDistribution.rhel  || finalOS === LinuxDistribution.suse  || finalOS === LinuxDistribution.opensuse)  {
+			await installRPM('minopaneld', doBuildFromSource, nightly, finalOS);
 		} else {
 			log.info('No builds available for your operating system...');
 			process.exit(0);
@@ -146,6 +153,8 @@ async function main() {
 			await runMakepkg('minowebd', doBuildFromSource, nightly);
 		} else if (finalOS === LinuxDistribution.debian || finalOS === LinuxDistribution.ubuntu) {
 			await installDpkg('minowebd', doBuildFromSource, nightly);
+		} else if (finalOS === LinuxDistribution.fedora || finalOS === LinuxDistribution.alma || finalOS === LinuxDistribution.rocky || finalOS === LinuxDistribution.rhel  || finalOS === LinuxDistribution.suse  || finalOS === LinuxDistribution.opensuse)  {
+			await installRPM('minowebd', doBuildFromSource, nightly, finalOS);
 		} else {
 			log.info('No builds available for your operating system...');
 			process.exit(0);
@@ -160,25 +169,34 @@ async function installDpkg(name: string, doBuildFromSource: boolean, doNightly: 
 	const basepath = `/tmp/minopanel/${name}`;
 	await fsPromises.mkdir(basepath, { recursive: true });
 
-	const gh = await axios.get('https://api.github.com/repos/Delfi-CH/minopanel/releases/latest');
-	const tag = gh.data.tag_name;
+	let tag = `v${minopanelVersion}`
 
-	let dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/${tag}/${name}-amd64.deb`;
+	try {
+		const gh = await axios.get('https://api.github.com/repos/Delfi-CH/minopanel/releases/latest');
+		tag = gh.data.tag_name;
+	} catch {
+		//
+	}
+	
+
+	let dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/${tag}/${name}-${minopanelVersion}-amd64.deb`;
 	if (doNightly) {
-		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/${name}-amd64.deb`;
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/${name}-${minopanelVersion}-amd64.deb`;
 	}
 
 	if (doBuildFromSource) {
-		// todo
+		log.info("build from source: not yet implemented")
+		exit()
 	}
+
 	const dl = new DownloaderHelper(dlUrl, basepath, {
-		fileName: `${name}-amd64.deb`,
+		fileName: `${name}-${minopanelVersion}-amd64.deb`,
 		retry: { maxRetries: 3, delay: 3000 },
 		resumeOnIncomplete: true,
 		resumeOnIncompleteMaxRetry: 3
 	});
 	const dlProgress = progress({ max: 100 });
-	dlProgress.start(`Downloading ${name}-amd64.deb...`);
+	dlProgress.start(`Downloading ${name}-${minopanelVersion}-amd64.deb...`);
 	dl.on('progress', (stats) => {
 		dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`);
 	});
@@ -193,12 +211,91 @@ async function installDpkg(name: string, doBuildFromSource: boolean, doNightly: 
 		dlProgress.cancel('An error has ocurred: ' + err.message);
 		exit();
 	});
-	const sudoDpkg = childProcess.spawn('sudo', ['apt', 'install', `${basepath}/${name}-amd64.deb`], {
+	const sudoDpkg = childProcess.spawn('sudo', ['apt', 'install', `${basepath}/${name}-${minopanelVersion}-amd64.deb`], {
 		stdio: ['inherit', 'inherit', 'inherit']
 	});
 	const [code] = await once(sudoDpkg, 'close');
 	if (code !== 0) {
 		log.error('dpkg failed with code ' + code);
+		exit();
+	}
+}
+
+async function installRPM(name: string, doBuildFromSource: boolean, doNightly: boolean, distro: LinuxDistribution) {
+	log.info(`Installing ${name}...`);
+	const basepath = `/tmp/minopanel/${name}`;
+	await fsPromises.mkdir(basepath, { recursive: true });
+
+	let tag = `v${minopanelVersion}`
+
+	try {
+		const gh = await axios.get('https://api.github.com/repos/Delfi-CH/minopanel/releases/latest');
+		tag = gh.data.tag_name;
+	} catch {
+		//
+	}
+
+	let dlUrl;
+	
+	if (distro === LinuxDistribution.fedora && doNightly) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/${name}-fedora-${minopanelVersion}-1.x86_64.rpm`
+	} else if (distro === LinuxDistribution.fedora) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/${tag}/${name}-fedora-${minopanelVersion}-1.x86_64.rpm`
+	} else if (distro === LinuxDistribution.alma && doNightly) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/${name}-almalinux-${minopanelVersion}-1.x86_64.rpm`
+	} else if (distro === LinuxDistribution.alma) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/${tag}/${name}-almalinux-${minopanelVersion}-1.x86_64.rpm`
+	} else if (doNightly) {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/rolling-nightly/${name}-rockylinux-${minopanelVersion}-1.x86_64.rpm`
+	} else  {
+		dlUrl = `https://github.com/Delfi-CH/minopanel/releases/download/${tag}/${name}-rockylinux-${minopanelVersion}-1.x86_64.rpm`
+	}
+
+	if (doBuildFromSource) {
+		// todo
+		log.info("build from source: not yet implemented")
+		exit()
+	}
+
+	const fname = `${name}-${minopanelVersion}-1.x86_64.rpm`
+
+	const dl = new DownloaderHelper(dlUrl, basepath, {
+		fileName: fname,
+		retry: { maxRetries: 3, delay: 3000 },
+		resumeOnIncomplete: true,
+		resumeOnIncompleteMaxRetry: 3
+	});
+
+	const dlProgress = progress({ max: 100 });
+	dlProgress.start(`Downloading ${fname}...`);
+	dl.on('progress', (stats) => {
+		dlProgress.advance(Math.floor(stats.progress), `${Math.floor(stats.progress)}%`);
+	});
+	dl.on('end', () => {
+		dlProgress.stop('Download finished!');
+	});
+	dl.on('error', (err) => {
+		dlProgress.cancel('An error has ocurred: ' + err.message);
+		exit();
+	});
+	await dl.start().catch((err) => {
+		dlProgress.cancel('An error has ocurred: ' + err.message);
+		exit();
+	});
+
+	let installCommand = ["rpm", "-ivh", `${basepath}/${fname}`]
+
+	if (distro === LinuxDistribution.fedora || distro === LinuxDistribution.alma || distro === LinuxDistribution.rocky || distro === LinuxDistribution.rhel) {
+		installCommand = ["dnf", "install", `${basepath}/${fname}`]
+	}
+
+	const sudoRpm = childProcess.spawn("sudo", installCommand, {
+		stdio: ['inherit', 'inherit', 'inherit']
+	})
+
+	const [code] = await once(sudoRpm, 'close');
+	if (code !== 0) {
+		log.error(`${installCommand.join(" ")} failed with code ${code}`);
 		exit();
 	}
 }

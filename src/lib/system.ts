@@ -18,6 +18,8 @@ export enum LinuxDistribution {
 	rhel = 'Red Hat Enterprise Linux',
 	alma = 'AlmaLinux',
 	rocky = 'Rocky Linux',
+	opensuse = 'openSUSE',
+	suse = 'SUSE Enterprise Linux',
 	other = 'Generic Linux',
 	freebsd = 'FreeBSD',
 	windows = 'Windows NT'
