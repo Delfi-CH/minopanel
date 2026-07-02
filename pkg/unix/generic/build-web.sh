@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MINOPANEL_VERSION=0.0.1
+MINOPANEL_VERSION=0.8.0
 
 mkdir -p minowebd/usr/bin
 mkdir -p minowebd/etc/minopanel.d

@@ -1,5 +1,5 @@
 Name:           minopaneld
-Version:        0.0.1
+Version:        0.8.0
 Release:        1
 Summary:        Minopanel server
 
@@ -79,5 +79,5 @@ chmod 644 %{buildroot}%{_localstatedir}/lib/minopanel/bin/minopaneld.cjs
 %dir %{_sysconfdir}/minopanel.d
 
 %changelog
-* Wed Jul 01 2026 Your Name <you@example.com> - 0.0.1-1
+* Tue Jun 30 2026 Delfi-CH <delfi@delfi.dev> - 0.8.0-1
 - Initial package

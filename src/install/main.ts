@@ -19,7 +19,7 @@ import * as childProcess from 'node:child_process';
 import { once } from 'node:events';
 import axios from 'axios';
 
-const minopanelVersion = "0.0.1"
+const minopanelVersion = "0.8.0"
 
 async function main() {
 

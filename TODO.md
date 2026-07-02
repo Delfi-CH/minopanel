@@ -6,14 +6,11 @@ write docs
 
 ## Packaging
 
-- Fedora/RHEL (rpm)
 - Docker
 - Windows (exe)
 - Homebrew (Linux/OSX)
 
 ## Features
-
-none
 
 ### General
 

@@ -35,7 +35,7 @@ async function main() {
 	}
 
 	program.description('Command Line Interface for minopanel');
-	program.version('0.1.0', '-v, --version');
+	program.version('0.8.0', '-v, --version');
 
 	program.option('-H, --hostname <hostname/ip address>', 'hostname of the minopanel instance');
 	program.option('-p, --port <number>', 'port of the minopanel instance');

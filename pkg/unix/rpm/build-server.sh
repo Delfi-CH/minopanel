@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MINOPANEL_VERSION=0.0.1
+MINOPANEL_VERSION=0.8.0
 
 TOPDIR="$(pwd)"
 

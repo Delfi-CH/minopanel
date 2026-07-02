@@ -7,7 +7,7 @@ mkdir -p ./cli/usr/bin
 mkdir -p ./cli/usr/share/zsh/site-functions/
 mkdir -p ./cli/usr/share/fish/completions/
 
-MINOPANEL_VERSION=0.0.1
+MINOPANEL_VERSION=0.8.0
 
 cp ../minoctl ./cli/usr/bin
 

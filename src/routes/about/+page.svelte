@@ -6,7 +6,7 @@
 
 	let config = $state({
 		branding: 'Minopanel',
-		version: '0.0.1'
+		version: '0.8.0'
 	});
 
 	onMount(async () => {

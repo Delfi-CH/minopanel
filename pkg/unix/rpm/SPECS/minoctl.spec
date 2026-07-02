@@ -1,5 +1,5 @@
 Name:           minoctl
-Version:        0.0.1
+Version:        0.8.0
 Release:        1
 Summary:        minopanel cli
 
@@ -74,5 +74,5 @@ chmod -R 777 %{buildroot}%{_sysconfdir}/minopanel.d
 %{_datadir}/fish/vendor_completions.d/minoctl.fish
 
 %changelog
-* Tue Jun 30 2026 Your Name <you@example.com> - 0.0.1-1
+* Tue Jun 30 2026 Delfi-CH <delfi@delfi.dev> - 0.8.0-1
 - Initial package
